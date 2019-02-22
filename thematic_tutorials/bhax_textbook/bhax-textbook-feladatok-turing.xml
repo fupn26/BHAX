@@ -12,15 +12,76 @@
             100 százalékban minden magot!
         </para>
         <para>
-            Megoldás videó:
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/V%C3%A9gtelen%20ciklus">itt</link>               
         </para>
         <para>
-            Megoldás forrása:                
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
-    </section>        
+            Végtelen ciklusnak olyan ciklusokat hívunk, melyek soha nem érnek véget, általában valamilyen logikai hiba miatt.
+            Pl:
+            <programlisting language="c"><![CDATA[Program pelda
+                {
+                int main()
+                {
+                    int i = 0;
+                    while (i=0)
+                    {
+                        i = i+0;
+                    }
+                }
+                }]]>
+            </programlisting>
+            Ebben jól láthatod, hogy a while cilusban lévő feltétel folyamatosan teljesül, theát a program végtelen ciklusba kerül.
+            Viszont, ha kifejezetten végtelen ciklust szeretnél írni, ennek a legelegánsabb módja a következő:
+            <programlisting language="c"><![CDATA[Program vegtelen.c
+                {
+                int main()
+                {
+                    for(;;);
+                }
+                }
+                ]]>
+            </programlisting>
+            Ez a végtelen ciklus csak egy magot dolgoztat, de azt 100%. A lényege annyi, hogy a for cilus nem kap semmilyen argumentumot,
+            ennek következtében a ciklus előtti teszt folyamatosan igazat fog adni, tehát a ciklus nem fejeződik be.
+        </para>
+        <para>    
+            De nem elégszünk meg az egy maggal, hiszen ma már a legtöbb számítógép legalább 4 maggal rendelkezik. Tehát találni kell egy 
+            megoldást, hogy az összes mag dolgozzon 100%-on. Ezt oldja meg az OpenMP.(Bővebben <link xlink:href="https://en.wikipedia.org/wiki/OpenMP">itt</link> olvashatsz erről.)
+            A lényege annyi, hogy program több szálon dolgozhat, így kihasználva a rendelkezésre álló erőforrásokat. Ráadásul ez könnyen implementálható az előző kódunkba:
+            <programlisting language="c"><![CDATA[Program vegtelen_all.c
+                {
+                int main()
+                {
+                    #pragma omp parallel
+                    for(;;);
+                }
+                }
+                ]]>
+            </programlisting>
+            Amint látod, csak a #pragma omp paralellel sort kellett hozzáadni. Természetesen ezt bármelyik programodnál használhatod, sőt javasolt is, köszönthetően a hardverek gyors fejlődésének.
+        </para>
+        <para>
+            Még egy dologgal adós vagyok. Már láttad, hogy hogyan lehet megoldani, hogy egy végtelen ciklus 100%-ban használjon egy magot, majd azt is, hogyan használjon 100%-ban a processzort.
+            Itt az idő megnézni, hogyan lehet elérni, hogy egy végtelen ciklus egyáltalán ne használjon (vagyis nagyon keveset) a CPU által biztosított erőforrásból. Ehhez a sleep függvényre lesz szükségünk.
+            A kód a következő:
+            <programlisting language="c"><![CDATA[Program vegtelen_s.c
+                {
+                    int main()
+                    {
+                        for(;;)
+                        {
+                            sleep(1);
+                        }
+                    }
+                }
+                ]]>
+            </programlisting>
+            A sleep függvény lényegében minden meghívásánál "aludni" küldi azt a szálat a program használna, jelen esetben 1 másodpercig altatja.
+        </para>
+    </section>
+                     
         
     <section>
         <title>Lefagyott, nem fagyott, akkor most mi van?</title>
