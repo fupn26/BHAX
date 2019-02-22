@@ -25,5 +25,27 @@
                 <link xlink:href="https://arato.inf.unideb.hu/batfai.norbert/">https://arato.inf.unideb.hu/batfai.norbert/</link>
             </otheraddr>
         </address>
-    </author>    
+    </author>
+    <author>
+        <personname>
+            <surname>Fürjes-Benke</surname>
+            <firstname>Péter</firstname>        
+        </personname>    
+        <affiliation>
+            <shortaffil>E. Hallg.</shortaffil>
+            <jobtitle>Egyetemi hallgató</jobtitle>
+            <orgname>Debreceni Egyetem</orgname>
+            <orgdiv>Informatikai Kar</orgdiv>
+            <address>
+                <email>furjes.peter99@gmail.com</email>
+                <email>fupn26@hotmail.hu</email>
+            </address>
+        </affiliation>
+        <address>
+            <street>Kassai út 26.</street>
+            <city>Debrecen</city>
+            <postcode>4028</postcode>
+            <country>Magyarország</country>
+        </address>
+    </author> 
 </authorgroup>
