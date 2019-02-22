@@ -14,6 +14,13 @@ int main()
 	b = a-b;
 	a = a-b;
 	
+	//Másik megoldás
+	/*
+	a = a*b;
+	b= a/b;
+	a = a/b;
+	*/
+	
 	printf("Az a értéke:");
 	printf("%d\n",a);
 	printf("Az b értéke:");
