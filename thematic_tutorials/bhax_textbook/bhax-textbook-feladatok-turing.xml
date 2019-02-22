@@ -93,7 +93,7 @@
         </para>
         <para>
             Megoldás forrása:  tegyük fel, hogy akkora haxorok vagyunk, hogy meg tudjuk írni a <function>Lefagy</function>
-            függvényt, amely tetszőleges programról el tudja dönteni, hogy van-e benne vlgtelen ciklus:              
+            függvényt, amely tetszőleges programról el tudja dönteni, hogy van-e benne végtelen ciklus:              
         </para>
         <programlisting language="c"><![CDATA[Program T100
 {
@@ -179,10 +179,34 @@ false]]></screen>
             Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2018/08/28/10_begin_goto_20_avagy_elindulunk">https://bhaxor.blog.hu/2018/08/28/10_begin_goto_20_avagy_elindulunk</link>
         </para>
         <para>
-            Megoldás forrása:  
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/V%C3%A1ltoz%C3%B3%20felcser%C3%A9l%C3%A9se">itt</link>
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ha valaki két változónak az értékét fel akarja cserélni, akkor a legegyszerűbb megoldásnak egy segédváltozó bevezetése tűnhet. De természetesen ennél sokkal kifinomultabb eszközök is vannak
+            erre a célra. Az egyik ilyen megoldás, hogy valamilyen matematikai műveletet használunk. Egyik megoldás az, hogy a két változó értékét összeadjuk, majd ebből az összegből kivonjuk a változók régi értékét
+            úgy, hogy a értékük felcserélődjön.
+            Tehát:
+            <programlisting language = "c"><![CDATA[
+                int a = 4;
+                int b = 5;
+                a = a+b;
+                b = a-b;
+                a = a-b;
+            ]]></programlisting>
+            Ez szín tiszta matematika, viszont ennél egy sokkal érdekesebb dolog ugyan ennek a feladatnak EXOR-ral való megvalósítása. A lényeg annyi, hogy a számítógép a változó értékét 2-es számrendszerben tárolja
+            ennek következtében a szám 0-kból és 1-kből áll. A XOR (kizáró vagy) minden esetben 1-et ad vissza kivéve, azaz igaz értéket, kivéve ha a művelet jobb és bal oldalán azonos érték van,
+            mert ilyenkor 0-t ad vissza. Ezt használjuk most ki a következő példában:
+            <programlisting language = "c"><![CDATA[
+                int a = 4; //2-es számrendszerben: 0100
+                int b = 5; //2-es számrendszerben: 0101
+                a = a^b; // 0100 ^ 0101 = 0001
+                b = a^b; //0001 ^ 0101 = 0100
+                a = a^b //0001 ^ 0100 = 0101
+            ]]></programlisting>
+            A komment szekcióban láthatjátok, hogy mi is történik a háttérben.
         </para>
     </section>                     
 
