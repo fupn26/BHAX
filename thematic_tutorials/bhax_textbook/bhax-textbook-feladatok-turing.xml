@@ -368,7 +368,78 @@ false]]></screen>
             Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/MontyHall_R">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/MontyHall_R</link>
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A Monty HAll probléma lényege a következő. Van 3 ajtó, az egyik mögött van a nyeremény, a többi mögött semmi. A játékos választ egyet a 3 ajtó közül, majd a játékmester kinyit egy olyan
+            ajtót, amit a játékos nem választott, és nincs mögötte semmi. Ezután megkérdezi a játékost, hogy szeretne-e változtatni a döntésén, vagy marad az általa elsőnek kiszemelt ajtónál. Kérdés az, hogy megéri-e váltania?
+            Ahogy a belinkelt videóban is láthattad ez még a legjobb matematikusoknak is fejfájést okozott. Tehát a válsz, a mindenkit foglalkoztató kérdésre az, hogy igen, megéri váltani.
+        </para>
+        <para>
+            Ennek oka nagyon egyszerű. Az első tippednél 1/3 az esélye annak, hogy eltaláltad a helyes ajtót. Ekkor ha váltasz, akkor buksz, ha maradsz a döntésednél, akkor viszont nyersz. De tegyük
+            fel, hogy nem találtad el a megfelelő ajtót. Ebben az esetben te rámutatsz egy üres ajtóra, a játékmester kinyitja neked a másik üres ajtót. Tehát, ha ebben az esetben váltasz, akkor nyersz.
+            Ennek az esély pedig 2/3-hoz. Hiszen 2/3 eséllyel tippelsz rosszul az elején. 
+            Egy szemléltető ábra, a fent linkelt oldalról: <link xlink:href="https://m.blog.hu/bh/bhaxor/image/montyhall2.png">https://m.blog.hu/bh/bhaxor/image/montyhall2.png</link>.
+        </para>
+        <para>
+            Ezt próbáljuk szimulálni egy R programban.
+            <programlisting language= "R"><![CDATA[
+                kiserletek_szama=10000000
+                kiserlet = sample(1:3, kiserletek_szama, replace=T)
+                jatekos = sample(1:3, kiserletek_szama, replace=T)
+                musorvezeto=vector(length = kiserletek_szama)
+            ]]>
+            </programlisting>
+            Első lépésben megadjuk, hogy mennyi legyen a kíssérletek száma. Ha ez meg volt, akkor véletlenszerűséget szimuláljuk a sample() függvénnyel. Ahogy látjátok ennek 3 argumentuma van, az első
+            megadja, hogy mettől-meddig generáljon random számokat. Majd megadjuk, hogy háynszor tegye meg ezt, és a replace=T(rue) pedig azt engedi meg, hogy lehessen ismétlődés a számok között. Lényegében itt
+            egy tömböt adunk a sample()-nek át, amit átrendez.
+            Tehát a kísérletek tömbben tároljuk, hogy az egyes esetekben hol van a nyeremény, a jatekos tömbben a játékos tippjeit. A műsorvezető változó pedig szintén egy tömb/vektor, melynek jelenleg csak a méretét adjuk meg, mivel
+            az ő döntése függ a játékosétól és a nyeremény helyétől is.   
+            <programlisting language="R"><![CDATA[
+                for (i in 1:kiserletek_szama) {
+
+                    if(kiserlet[i]==jatekos[i]){
+    
+                        mibol=setdiff(c(1,2,3), kiserlet[i])
+    
+                    }else{
+    
+                        mibol=setdiff(c(1,2,3), c(kiserlet[i], jatekos[i]))
+    
+                    }
+
+                    musorvezeto[i] = mibol[sample(1:length(mibol),1)]
+
+                }]]>   
+            </programlisting>
+            A for ciklusban az i változót futtajuk 1-től a kísérletek számáig. Két esetet kell szétbontani itt, a játékos elatlálta a megfelelő ajtót, vagy sem. Ezt vizsgáljuk az if-ben. Tehát, ha az
+            a kiserlet tömb első elem és a jatekos tömb első elem megegyezik, akkor a játékvezető csak azt az egy ajtót nem választhatja. A mibol tömbben, pont ezt tároljuk el. Ehhez a setdiff() függvényt használjuk
+            ,mely a megadott tömbből kiveszi a kiserlet tömb első elemével megegyző értéket. Ugyen ez történik az else ágon is, csak ott mind a kiserlet, mind a jatekos tömb első elemét ki kell vonni a meagdott 
+            tömbből. Ez alapján pedig fel tudjuk tölteni a musorvezeto vektort a megfelelő értékekkel, ehhez megint a sample() függyvényt használjuk.
+            <programlisting language="R"><![CDATA[
+                nemvaltoztatesnyer= which(kiserlet==jatekos)
+                valtoztat=vector(length = kiserletek_szama)
+             ]]>
+            </programlisting>
+            A nemvaltozatesnyer vektorba a which() függvénnyel betöltjük azon elemek indexét melyek a a kiserlet és a jatekos tömben azonos pozícióban vannak, és megegyeznek. Ezután létrehozzuk a
+            valtoztat vektort, melynek mérete megyegyezik a kísérletek számával.
+            <programlisting language="R"><![CDATA[
+                for (i in 1:kiserletek_szama) {
+
+                    holvalt = setdiff(c(1,2,3), c(musorvezeto[i], jatekos[i]))
+                    valtoztat[i] = holvalt[sample(1:length(holvalt),1)]
+    
+                }
+                valtoztatesnyer = which(kiserlet==valtoztat)             
+            ]]>
+            </programlisting>
+            A for cikkluson belül feltöltjük a valtoztat vektort minden esetben azzal az ajtóval amire a játékos muatat, ha újra választ. Ezutána a vvaltoztatesnyer vektorbe betöltjük azonak az elemeknek
+            az indexét, melyeknek az értéke megegyezik mind a kiserlet, mind a valtoztat tömbben. Ha ezzel megvagyunk, már csak ki kell print-elni a valtoztatesnyer és a nemvaltoztatesnyer vektorok hosszát, és
+            ezzel megtudjuk, hogy melyik lesz a nagyobb. Természetesen az előbbi, ahogy már azt említettem.
+            <programlisting language="R"><![CDATA[
+                
+            ]]>
+            </programlisting>
         </para>
     </section>
 
