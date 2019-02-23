@@ -1,3 +1,7 @@
+//fordítás: gcc pattog_if.c -o pattog_if -lncurses
+//előtte telepítsd: sudo apt-get install libncurses5-dev libncursesw5-dev
+
+
 #include <stdio.h>
 #include <curses.h>
 #include <unistd.h>
