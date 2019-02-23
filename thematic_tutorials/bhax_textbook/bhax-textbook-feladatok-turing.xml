@@ -25,9 +25,9 @@
                 int main()
                 {
                     int i = 0;
-                    while (i=0)
+                    while (i<=0)
                     {
-                        i = i+0;
+                        i = i-1;
                     }
                 }
                 }]]>
@@ -43,7 +43,7 @@
                 }
                 ]]>
             </programlisting>
-            Ez a végtelen ciklus csak egy magot dolgoztat, de azt 100%. A lényege annyi, hogy a for cilus nem kap semmilyen argumentumot,
+            Ez a végtelen ciklus csak egy magot dolgoztat, de azt 100%. A lényege annyi, hogy a for ciklus nem kap semmilyen argumentumot,
             ennek következtében a ciklus előtti teszt folyamatosan igazat fog adni, tehát a ciklus nem fejeződik be.
         </para>
         <para>    
@@ -78,7 +78,7 @@
                 }
                 ]]>
             </programlisting>
-            A sleep függvény lényegében minden meghívásánál "aludni" küldi azt a szálat a program használna, jelen esetben 1 másodpercig altatja.
+            A sleep függvény lényegében minden meghívásánál "aludni" küldi azt a szálat, amit program használna, jelen esetben 1 másodpercig altatja.
         </para>
     </section>
                      
@@ -221,10 +221,91 @@ false]]></screen>
             Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2018/08/28/labdapattogas">https://bhaxor.blog.hu/2018/08/28/labdapattogas</link>
         </para>
         <para>
-            Megoldás forrása:  
+            Megoldás forrása:<link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Labdapattog%C3%A1s">itt</link>
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ahogy a videóban láthattátok, a labdapattogás annyiból áll, hogy a terminálon belül egy karakter pattog a az ablak teljes méretében. Fontos, hogy az ablak méretét állíthatjuk, és a program ezt érzékeli.
+            <programlisting language="c"><![CDATA[
+                WINDOW *ablak;
+                ablak = initscr ();
+            ]]>
+            </programlisting>
+            Az initscr() beolvassa az ablak adatait, melynek segítségével megtudjuk az ablak méretét.
+            Ezután létrehozunk változókat, melyekben a lépésközt, a pozíciót, és az ablak méretét fogjuk eltárolni.
+            <programlisting language="c"><![CDATA[
+                int x = 0; //aktuális pozíció x-tengelyen
+                int y = 0; //aktuális pozíció y-tengelyen
+
+                int xnov = 1; //lépésköz az x-tengelyen
+                int ynov = 1; //lépésköz az y-tengelyen
+
+                int mx; //ebben lesz eltárolva az ablak szélessége
+                int my; //ebben pedig az ablak magassága
+            ]]>
+            </programlisting>
+            Ezután létrehozunk egy végtelen ciklust a már megszokott módon:
+            <programlisting language="c"><![CDATA[
+                for (;;)
+                {
+                }
+            ]]>
+            </programlisting>
+            És ebbe a végtelen ciklusba fogjuk "pattogtatni" a labdát. Ehhez elsőnek meghívjuk a getmaxyx() függvényt melynek átadjuk paraméterként a az ablakban eltárolt értékeket, és azt, hogy meylik
+            változóba tárolja el az ablak hosszúságát és szélességét. És az mvprintw() függvény fogja az általunk megadott koordinátákba a karaktert "mozgatni".
+            <programlisting language="c"><![CDATA[
+                getmaxyx ( ablak, my , mx );
+                mvprintw ( y, x, "O" );
+            ]]>
+            </programlisting>
+            Mostmár tudjuk az ablak méretét. Az x és az y változót folyamatosan 1-el növelve a karakter el kezd mozogni a terminálban. Azt, hogy ez milyen gyorsan történjen, azt a usleep() függvénnyel
+            tudjuk beállítani. A usleep mikroszekundumba számol, tehát az másodperc egymiliomod részében. Ha azt akarjuk, hogy a labda másodpercenként menjen 1-et, akkor 1000000-et kell beírnunk a usleep-be.
+            Így:
+            <programlisting language="c"><![CDATA[
+                usleep(1000000);
+            ]]>
+            </programlisting>
+            Most, hogy a labda már mozog, már csak meg kéne állnia az ablak határainál.
+            Ezt pedig if-el fogjuk elsősorban megoldani.
+            <programlisting language="c"><![CDATA[
+                if ( x>=mx-1 ) { // elerte-e a jobb oldalt?
+                xnov = xnov * -1;
+                }
+                if ( x<=0 ) { // elerte-e a bal oldalt?
+                        xnov = xnov * -1;
+                }
+                if ( y<=0 ) { // elerte-e a tetejet?
+                        ynov = ynov * -1;
+                }
+                if ( y>=my-1 ) { // elerte-e a aljat?
+                        ynov = ynov * -1;
+                }
+            ]]>
+            </programlisting>
+            Tehát, ha a labda eléri valamelyik szélét az ablaknak, akkor a lépésközt megszorozzuk -1-el, így elérve, hogy visszapattanjon.
+        </para>
+        <para>
+            Egy másik megoldás is létezik ehhez, mégpedig az, ahol nem használunk if-et. Ennél a for-cikluson belül a következőt írjuk:
+            <programlisting language="c"><![CDATA[
+                getmaxyx(ablak, my, mx);
+                xj = (xj - 1) % mx;
+                xk = (xk + 1) % mx;
+
+                yj = (yj - 1) % my;
+                yk = (yk + 1) % my;
+
+                //clear ();
+
+                mvprintw (abs (yj + (my - yk)),
+                  abs (xj + (mx - xk)), "X");
+
+                refresh ();
+                usleep (150000);
+            ]]>
+            </programlisting>
+            Jelenleg ehhez további magyarázatot nem tudok fűzni, mivel nem igazán értem, de majd pótlom ezt a hiányosságot.
         </para>
     </section>                     
 
