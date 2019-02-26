@@ -305,7 +305,10 @@ false]]></screen>
                 usleep (150000);
             ]]>
             </programlisting>
-            Jelenleg ehhez további magyarázatot nem tudok fűzni, mivel nem igazán értem, de majd pótlom ezt a hiányosságot.
+            Ennél a maradékos ozstást használjuk ahhoz, hogy a labda egy bizonyos érték után "visszapattanjon". A lényeg annyi, hogy a modulóval való osztás, mindig annak
+            a szának az értékét adja vissza, amit elosztunk egészen addig, ameddig egyenlő nem lesz az ablak szélességével/hosszával, mert akkor újra visszaáll 1-re(vagy -1-re),
+            ebben a pillanatban a lapbda elindul visszafelé, és ez folytatódik végtelen ciklusban. A program futását Ctrl+c-vel tudjátok megállítani.
+            Jelenleg ehhez további magyarázatot nem tudok fűzni, mivel én nekem eszembe se jutott volna ez a megoldás módszer.
         </para>
     </section>                     
 
@@ -319,10 +322,38 @@ false]]></screen>
             Megoldás videó: <link xlink:href=""></link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href=""></link>
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Sz%C3%B3hossz">itt</link>
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat... 
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ahogy láthattad a forrásban, a gépeden egy szó 32 bites. Hogy ezt kiszámold, arra rengeteg megoldás létezik. Az egyik iylen a bitshiftelés, melynek lényege az, hogy
+            addig léptetjük a számot, ameddig nulla nem lesz.
+            <programlisting language="C"><![CDATA[
+                int a = 1; //kettes számrendszerben: 00000000 00000000 00000000 00000001
+                while (a != 0){
+                    a << = 1; //itt léptetjük eggyel:00000000 00000000 00000000 00000010
+                }
+            ]]>
+            </programlisting>
+            Ha ezt megismételjük 32-ször, akkor végén csak nullákból fog állni, mivel ez nem körkörös folyamat, ha az egy elér az elejére, akkor nem fogvisszaugrani a végére.
+            A linkelt forrásban az 1 hexadecimálisan lett megadva, de nyugodtan használhatod az általam írt példát, mivel ugyan azt az eredményt adja.
+        </para>
+        <para>
+            Ennek a résznek a másik fontos témája a BogoMIPS. Ez lényegében egy Cpu tesztelő program, melyet Linus Torvalds írt. A lényege az, hogy a program méri, hogy
+            mennyi idő alatt fut le, ezzel megmondva, hogy a CPU-d milyen gyors. Persze, ha CPU vásárlás előtt állsz, ne pont ez alapján dönts egyik-másik processzor mellett.
+            Számunkra azért érdekes ez a program, mert ennek a while fejlécét bemásolva a mi programunkba, akkor ugyan azt az eredményt kapjuk.
+            <programlisting language="c"><![CDATA[
+                unsigned long long int loops_per_sec = 1;
+                do
+                    ++steps;
+                while ((loops_per_sec <<= 1));
+                ]]>
+            </programlisting>
+            Itt jön képbe egy érdekes ciklus, amiről én most hallok először, ez a <function>do while</function>, melynek a lényege az, hogy egyszer mindenképpen belépünk a ciklusba, és
+            csak utána nézzük meg a feltételt. Erre azért van szükség, mert a rendes while cilusnál false eredményt kapnánk, mivel amint a <function>loops_per_sec</function> kinullázódik,
+            már nem lépnénk be a ciklusba.   
         </para>
     </section>                     
 
