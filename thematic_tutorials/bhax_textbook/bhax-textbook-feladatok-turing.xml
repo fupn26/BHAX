@@ -390,7 +390,7 @@ false]]></screen>
                 musorvezeto=vector(length = kiserletek_szama)
             ]]>
             </programlisting>
-            Első lépésben megadjuk, hogy mennyi legyen a kíssérletek száma. Ha ez meg volt, akkor véletlenszerűséget szimuláljuk a sample() függvénnyel. Ahogy látjátok ennek 3 argumentuma van, az első
+            Első lépésben megadjuk, hogy mennyi legyen a kísérletek száma. Ha ez meg volt, akkor véletlenszerűséget szimuláljuk a sample() függvénnyel. Ahogy látjátok ennek 3 argumentuma van, az első
             megadja, hogy mettől-meddig generáljon random számokat. Majd megadjuk, hogy háynszor tegye meg ezt, és a replace=T(rue) pedig azt engedi meg, hogy lehessen ismétlődés a számok között. Lényegében itt
             egy tömböt adunk a sample()-nek át, amit átrendez.
             Tehát a kísérletek tömbben tároljuk, hogy az egyes esetekben hol van a nyeremény, a jatekos tömbben a játékos tippjeit. A műsorvezető változó pedig szintén egy tömb/vektor, melynek jelenleg csak a méretét adjuk meg, mivel
@@ -413,7 +413,7 @@ false]]></screen>
                 }]]>   
             </programlisting>
             A for ciklusban az i változót futtajuk 1-től a kísérletek számáig. Két esetet kell szétbontani itt, a játékos elatlálta a megfelelő ajtót, vagy sem. Ezt vizsgáljuk az if-ben. Tehát, ha az
-            a kiserlet tömb első elem és a jatekos tömb első elem megegyezik, akkor a játékvezető csak azt az egy ajtót nem választhatja. A mibol tömbben, pont ezt tároljuk el. Ehhez a setdiff() függvényt használjuk
+            a kiserlet tömb első elem és a jatekos tömb első eleme megegyezik, akkor a játékvezető csak azt az egy ajtót nem választhatja. A mibol tömbben, pont ezt tároljuk el. Ehhez a setdiff() függvényt használjuk
             ,mely a megadott tömbből kiveszi a kiserlet tömb első elemével megegyző értéket. Ugyen ez történik az else ágon is, csak ott mind a kiserlet, mind a jatekos tömb első elemét ki kell vonni a meagdott 
             tömbből. Ez alapján pedig fel tudjuk tölteni a musorvezeto vektort a megfelelő értékekkel, ehhez megint a sample() függyvényt használjuk.
             <programlisting language="R"><![CDATA[
@@ -421,7 +421,7 @@ false]]></screen>
                 valtoztat=vector(length = kiserletek_szama)
              ]]>
             </programlisting>
-            A nemvaltozatesnyer vektorba a which() függvénnyel betöltjük azon elemek indexét melyek a a kiserlet és a jatekos tömben azonos pozícióban vannak, és megegyeznek. Ezután létrehozzuk a
+            A nemvaltozatesnyer vektorba a which() függvénnyel betöltjük azon elemek indexét melyek a a kiserlet és a jatekos tömbben azonos pozícióban vannak, és megegyeznek. Ezután létrehozzuk a
             valtoztat vektort, melynek mérete megyegyezik a kísérletek számával.
             <programlisting language="R"><![CDATA[
                 for (i in 1:kiserletek_szama) {
@@ -433,7 +433,7 @@ false]]></screen>
                 valtoztatesnyer = which(kiserlet==valtoztat)             
             ]]>
             </programlisting>
-            A for cikkluson belül feltöltjük a valtoztat vektort minden esetben azzal az ajtóval amire a játékos muatat, ha újra választ. Ezutána a vvaltoztatesnyer vektorbe betöltjük azonak az elemeknek
+            A for cikluson belül feltöltjük a valtoztat vektort minden esetben azzal az ajtóval, amire a játékos muatat, ha újra választ. Ezutána a valtoztatesnyer vektorbe betöltjük azonak az elemeknek
             az indexét, melyeknek az értéke megegyezik mind a kiserlet, mind a valtoztat tömbben. Ha ezzel megvagyunk, már csak ki kell print-elni a valtoztatesnyer és a nemvaltoztatesnyer vektorok hosszát, és
             ezzel megtudjuk, hogy melyik lesz a nagyobb. Természetesen az előbbi, ahogy már azt említettem.
             <programlisting language="R"><![CDATA[
