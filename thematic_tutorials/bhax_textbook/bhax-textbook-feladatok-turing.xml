@@ -419,7 +419,76 @@ false]]></screen>
             Megoldás forrása: <link xlink:href=""></link>
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A PageRank-et Larry Page és Sergey Brin fejlesztette ki 1998-ban. Az algoritmus az alapja mind a mai napig a Google keresőmotorjának. A lényege az, hogy osztályozza az oldalakat az alapján, hogy hány link mutat
+            rájuk és a rájuk mutató oldalakra hány oldal mutat. Tehát általában az az oldal lesz az első találat, amelyikre a legtöbb oldal hivatkozik. Ez az ötlet megjelenésekor hatalmas forradalmat hozptt az internetes keresők
+            világában, hiszen a pontos találatok száma jelentősen megnőtt. Az előtt csak álom volt, hogy már az első találat az lesz, amit éppen keres, de a PageRank-kel ez valósággá vált. Ezt a forradalmi agoritmusnak láthatod
+            a forrásban is, egy 4 honlapos hálózatra leszűkítve. 
+        </para>
+        <para>
+            Az első iterációban mindegyik oldal PageRank-je 1/4, hiszen 4 oldalunk van. Ezután kezdjük el viszgálni, hogy ezek között milyen kapcsolatvan. A kapcsolatokat egy mátrixban tároljuk:
+            <programlisting language="c"><![CDATA[
+                double L[4][4] = {
+                      /*1.*/   /*2.*/   /*3.*/  /*4.*/ 
+                 /*1.*/{0.0,      0.0,  1.0/3.0,  0.0}, 
+                 /*2.*/{1.0,  1.0/2.0,  1.0/3.0,  1.0},
+                 /*3.*/{0.0,  1.0/2.0,      0.0,  0.0},
+                 /*4.*/{0.0,      0.0,  1.0/3.0,  0.0}
+                };	
+            ]]>    
+            </programlisting>
+            Az sorok és oszlopok metszetében láthatod, hogy milyen kapcsolatvan van az oldalak között. Ezt a mátrixot adjuk át argumentumként a <function>pagerank()</function> függvénynek, mely így néz ki:
+            <programlisting language="c"><![CDATA[
+            void
+            pagerank(double T[4][4]){
+                double PR[4] = { 0.0, 0.0, 0.0, 0.0 }; //ebbe megy az eredmény
+                double PRv[4] = { 1.0/4.0, 1.0/4.0, 1.0/4.0, 1.0/4.0}; //ezzel szorzok
+	
+                int i, j;
+	
+                for(;;){
+		
+                    // ide jön a mátrix művelet		
+		
+                    for (i=0; i<4; i++){
+                            PR[i]=0.0;
+                            for (j=0; j<4; j++){
+                                    PR[i] = PR[i] + T[i][j]*PRv[j];
+                            }
+                    }
+	
+                    if (tavolsag(PR,PRv,4) < 0.0000000001) 
+				break;
+		
+                    // ide meg az átpakolás PR-ből PRv-be
+			
+                    for (i=0;i<4; i++){
+			PRv[i]=PR[i];
+                    }	
+                }
+	
+                kiir (PR, 4);
+            }   
+            ]]>    
+            </programlisting>
+            A <function>PRv[]</function> tömbben tároljuk az oldalak első iterációbeli értékét, és a <function>PR</function> tároljuk el a mátrixszorzás eredményét. A mátrixszorzást a L és PRv tömb között hajtjuk végre,
+            pontosan ebben a sorrendben, mivel ez a művelet nem kommutatív, csak bizonyos esetekben. A szorzás eredménye lesz egy 4x1-es oszlopvektor lesz, mely a mi "kis" hálózatunkban lévő 4 oldal PageRank-jét tartalmazza.
+            A <function>kiir()</function> függvénnyel pedig kiíratjuk az egyes oldalakhoz tartozó eredményeket, mely a következő képpen zajlik:
+            <programlisting language="c"><![CDATA[
+                void
+                kiir (double tomb[], int db){
+	
+                    int i;
+	
+                    for (i=0; i<db; ++i){
+                        printf("%f\n",tomb[i]);
+                    }
+                }
+            ]]>
+            </programlisting>
+            Tehát egy <function>for</function> ciklussal bejárjuk a tömböt, és egyenkét kiírjuk az értékeket. 
         </para>
     </section>
 
