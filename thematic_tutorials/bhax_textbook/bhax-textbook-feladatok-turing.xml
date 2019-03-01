@@ -434,6 +434,60 @@ false]]></screen>
         <para>
             Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/blob/master/attention_raising/Primek_R">https://gitlab.com/nbatfai/bhax/blob/master/attention_raising/Primek_R</link>
         </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Viggo Brun, XX. századi norvég matematikushoz kpacsolódik a Brun tétel kidolgozása, melyet 1919-ben bizonyított be. A tétel azt mondja ki, hogy <emphasis role="strong">az ikerprímek reciprokösszege egy véges értékhez, úgynevezett
+            Brun-konstanshoz konvergál.</emphasis> Ikerprímeknek nevezzük azokat a prímpárokat, melyek különbsége 2. A konvergálás pedig azt jelenti, hogy az reciprokösszeg soha nem halad meg egy bizonyos értéket, csak
+            tetszőleges mértékben megközelíti. Ezt bitonyítottuk be egy R programmal, amit az előbbi linken láthatsz. Az R nyelv kifejezetten matematikai számításokhoz, statisztikák és grafikonok készítéséhez lett
+            kifejlesztve. Ezért ideális ennek a tételnek a bizonyítsásához is. Magát az ehhez szükséges programot <link xlink:href="https://www.rstudio.com/products/rstudio/download/#download">itt</link> tudod letölteni.
+            A feladat megoldásához a matlab kiegészítőre lesz szükséged, melyet ezzel a parancsal tudsz telepíteni:
+            <programlisting>
+                install.packages("matlab")
+            </programlisting>  
+        </para>
+        <para>
+            Ha megnézed a <filename>stp.r</filename> forráskódot, láthatod, hogy az R nyelv szintaktikája eltér a C nyelvétől, de könnyen tanulható. Mivel az R nyelv iteratív nyelv, ezért nem kell lefordítanod az egész
+            fájlt gépi kóddá, hanem sorról sorra írod be, és folyamatosan lefordul, majd végrahajtódik. A program futtatásához elsőnek be kell tölteni a matlab függvénykönyvtárat, majd létrehozzuk a stp függvényt.
+            <programlisting language="R"><![CDATA[
+                library(matlab)
+
+                stp <- function(x){
+
+                        primes = primes(x)
+                        diff = primes[2:length(primes)]-primes[1:length(primes)-1]
+                        idx = which(diff==2)
+                        t1primes = primes[idx]
+                        t2primes = primes[idx]+2
+                        rt1plust2 = 1/t1primes+1/t2primes
+                        return(sum(rt1plust2))
+                }
+            ]]>
+            </programlisting>
+            Ez a függvény 1 paramétert kér, és ezt adja tovább a <function>primes</function> beépitett matlab függvénynek. Ez a függvény a megadott x-ig kiír minden prím számot egy vektorba. A <function>diff</function>
+            változóban eltároljuk a <function>primes</function> vektorban lévő egymás melleti prímek különbségét. Ezután az <function>idx</function> vektorban pedig <function>diff</function> vektor elemeinek indexét
+            tároljuk el, ahol amelyek értéke 2. Ezután index alapján megnézzük, hogy melyek ezek párok, ahol a különbség kettő. Majd felhasználjuk a Brun-tételt, tehát vesszük a prímeknek a reciprokát, és azt adjuk össze.
+            Mivel egy függvéynt akarunk kirajzolni, ezért meg kell adnunk egy x és egy y értéket, hogy ki tudjuk rajzolni az ábrát.
+            <programlisting language="R"><![CDATA[
+                x=seq(13, 1000000, by=10000) 
+                y=sapply(x, FUN = stp)
+                plot(x,y,type="b")
+            ]]>
+            </programlisting>
+            A <function>seq()</function> függvénnyel megadjuk, hogy x-tengekyen mettől-meddig haladjunk, és milyen lépésközzel. A következő sort, pedig így kell érteni: <function>y = stp(x)</function>. Tehát minden y-hoz
+            hozzárendeljük az <function>stp(x)</function> értékét. A <function>plot()</function> függvény pedig kirajzolja az (x,y) értékeket egy grafikonon. Ha majd MATLAB-ot kell használnod, akkor jól megfogod ismerni a
+            <function>plot(), plot3()</function> és a hasonló kiírató függvényeket. Tehát, ha ezt lefuttatod, akkor a következő ábrát fogod látni:
+            <figure>
+                <title>Brun-tétel</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Primek_R/brun_tetel.png" format="JPG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+ 
+        </para>
     </section>
     
     <section xml:id="bhax-textbook-feladatok-turing.MontyHall">
@@ -516,10 +570,6 @@ false]]></screen>
             A for cikluson belül feltöltjük a valtoztat vektort minden esetben azzal az ajtóval, amire a játékos muatat, ha újra választ. Ezutána a valtoztatesnyer vektorbe betöltjük azonak az elemeknek
             az indexét, melyeknek az értéke megegyezik mind a kiserlet, mind a valtoztat tömbben. Ha ezzel megvagyunk, már csak ki kell print-elni a valtoztatesnyer és a nemvaltoztatesnyer vektorok hosszát, és
             ezzel megtudjuk, hogy melyik lesz a nagyobb. Természetesen az előbbi, ahogy már azt említettem.
-            <programlisting language="R"><![CDATA[
-                
-            ]]>
-            </programlisting>
         </para>
     </section>
 
