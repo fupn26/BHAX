@@ -334,6 +334,8 @@ false]]></screen>
                 int a = 1; //kettes számrendszerben: 00000000 00000000 00000000 00000001
                 while (a != 0){
                     a << = 1; //itt léptetjük eggyel:00000000 00000000 00000000 00000010
+                              // újra: 00000000 00000000 00000000 00000100
+                              //...
                 }
             ]]>
             </programlisting>
@@ -341,19 +343,66 @@ false]]></screen>
             A linkelt forrásban az 1 hexadecimálisan lett megadva, de nyugodtan használhatod az általam írt példát, mivel ugyan azt az eredményt adja.
         </para>
         <para>
-            Ennek a résznek a másik fontos témája a BogoMIPS. Ez lényegében egy Cpu tesztelő program, melyet Linus Torvalds írt. A lényege az, hogy a program méri, hogy
+            Ennek a résznek a másik fontos témája a BogoMIPS. Ez lényegében egy Cpu tesztelő program, melyet Linus Torvalds írt, és a linux kernel része mind a mai napig. A lényege az, hogy a program méri, hogy
             mennyi idő alatt fut le, ezzel megmondva, hogy a CPU-d milyen gyors. Persze, ha CPU vásárlás előtt állsz, ne pont ez alapján dönts egyik-másik processzor mellett.
-            Számunkra azért érdekes ez a program, mert ennek a while fejlécét bemásolva a mi programunkba, akkor ugyan azt az eredményt kapjuk.
+            Számunkra azért érdekes ez a program, mert ennek a while fejléce ugyan azt a megoldást hasznája, amit mi a szóhossz számítsásához. 
             <programlisting language="c"><![CDATA[
-                unsigned long long int loops_per_sec = 1;
-                do
-                    ++steps;
-                while ((loops_per_sec <<= 1));
+                while (loops_per_sec <<= 1)
+                {
+                    ;
+                }
                 ]]>
             </programlisting>
-            Itt jön képbe egy érdekes ciklus, amiről én most hallok először, ez a <function>do while</function>, melynek a lényege az, hogy egyszer mindenképpen belépünk a ciklusba, és
-            csak utána nézzük meg a feltételt. Erre azért van szükség, mert a rendes while cilusnál false eredményt kapnánk, mivel amint a <function>loops_per_sec</function> kinullázódik,
-            már nem lépnénk be a ciklusba.   
+            Most, hogy láttátok, hogy mi a kapcsolat a mi kis programunk és a Linus Torvalds féle BogoMIPS között, akkor lássuk is, hogy hogyan működik pontosan.
+            Elsőnek deklarálnunk kell 2 változót, az első a <function>loops_per_sec</function>, melynek definiálása során az értékét egyre álllítjuk. A bitshiftelésnek köszönhetően ebbe 2 hatványokat fogunk tárolni.
+            A <function>ticks</function> pedig a CPU időt fogja tárolni.
+            <programlisting language="c"><![CDATA[
+                while (loops_per_sec <<= 1 )
+                {
+                    ticks = clock();
+                    delay (loops_per_sec);
+                    ticks = clock() - ticks;
+		
+                    ...
+                }
+            ]]>
+            </programlisting>
+            A while ciklus addig tart, ameddig a <function>loops_per_sec</function> le nem nullázódik. A ciklusba belépve, minden iterációban, lekérdezzük az aktuális CPU időt, és eltároljuk a <function>ticks</function>
+            változóban. Ezután pedig meghívjuk a <function>delay</function> függvényt.
+            <programlisting language="c"><![CDATA[
+                void delay (unsigned long long  loops)
+                    {
+                        unsigned long long i;
+                        for ( i=0; i<loops; i++);
+                    }
+            ]]>
+            </programlisting>
+            Ez a függvény egy hosszú egész számot kér paraméteréül, és amint látod, csak egy for ciklus megy végig 0-tól paraméter-1-ig. Ezután a <function>while</function> cikluson belül újra lekérjük az aktuális
+            processzot időt és kivonjuk belőle a kezdeti étéket. Így megkapjuk, hogy menniy ideig tartott a cpu-nak befejeznie a <function>delay</function> függvényben lévő <function>for</function> ciklus befejezéséig.
+            Ezt egészen addig iteráljuk, ameddig nem teljesül az <function>if</function>-ben lévő feltétel.
+            <programlisting language="c"><![CDATA[
+                while (loops_per_sec <<= 1 )
+                {
+                    ...
+                    
+                    if (ticks >= CLOCKS_PER_SEC)
+                    {
+			loops_per_sec = (loops_per_sec / ticks) * CLOCKS_PER_SEC; //loops_per_sec/ticks = ???/CLOCKS_PER_SEC
+			
+			printf ("ok - %llu.%02llu BogoMIPS\n", loops_per_sec/500000,
+						(loops_per_sec/5000) % 100);
+                        return 0;
+                    }
+                }
+                ]]>
+            </programlisting> 
+            A <function>CLOCKS_PER_SEC</function> a POSIX szabvány szerinti értéke 1.000.000, tehát akkor teljesül a feltétel, ha a processzor idő ezzel egyenlő, vagy nagyobb. Ezután pedig kiszámoljuk, hogy 
+            <function>CLOCKS_PER_SEC</function> idő alatt milyen hosszú ciklust képes végrahajtani a gép. Ennek az eredénye egy viszonylag nagy szám lesz, de a végeredmény megadásához használhatjuk a <function>log</function>
+            függvényt, mely sokkal lassabban növekszik, így egy jóval kisebb számot kapunk eredményül. Ehhez csak egy kicsit kell módosítani az előbbi forrást:
+            <programlisting language="c"><![CDATA[
+                printf("ok - %lld %f BogoMIPS\n", loops_per_sec, log(loops_per_sec));
+             ]]>   
+            </programlisting>
         </para>
     </section>                     
 
