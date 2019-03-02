@@ -165,7 +165,36 @@ false]]></screen>
             függvényt, azaz a T100 program nem is létezik.                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Alan Turing a XX.század egyik legjelentősebb brit matematikusa, a modern számítógép-tudomány atyja. Az ő nevéhez fűződik a Turing-gép, mint fogalom, ezt 1936-ban dolgozta ki. De
+            egy másik fontos eredménye is van, hiszen az ő segítségével sikerült a szövetségeseknek feltörni a Náci Németország titkosító berendezését, az Enigmát. Enélkül talán soha nem sikerült
+            volna véget vetni a II. világháborúnak, de az biztos, hogy sokkal több emberveszteséggel járt volna. Ezt a történetet dolgozza a fel a <link xlink:href="https://www.imdb.com/title/tt2084970/">Kódjátszma</link>
+            című film.
+        </para>
+        <para>
+            De visszatérve a Turing-géphez, ez egy 3 főbb fizikai egységből áll: egy cellákra osztott papírszalagból, egy vezérlőegységből és egy író-olvasó fejből. A működése nagyjából abból áll, hogy az
+            író-olvasó fej a szalagon beolvas egy cellát, módosítja, majd tovább mozog. Ez folytatódik minden iterációban. Ennek kétféle kimenetele lehet, vagy megáll a "program", vagy végtelen ciklusba kerül.
+            Egy másik fontos fogalom az Univerzális Turing-gép, melynek lényege az, hogy egy bemenetre ugyan azt az eredményt adja mindegyik Turing-gépen. Ezzel eljutottunk a megállási problémához, mely mind a
+            mai napig megoldhatatlan probléma elé állította a számítógép-tudományt. A megállási probléma azt mondja ki, hogy nem tudunk olyan programot írni, amely meg tudja mondani egy másikról, hogy az le fog-e
+            fagyni, azaz végtelen ciklusba kerül-e, vagy sem.
+            Ez az ábra szemlélteti a forrásban leírtakat:
+            <figure>
+                <title>Megállási probléma</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Megállás/vegtelen.png" format="JPG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
+        <para>
+            Tehát a T100-as program kap egy programot bemenetként, és arról eldönti, hogy az megáll-e vagy sem. Ebben az esetben a bemeneti programot úgy kell elképzelni, mint egy szöveges fájlt.
+            A program beolvassa és eldönti, hogy van-e benne végtelen ciklus. A T100-as visszaad egy igaz/hamis értéket. Ezt átadjuk a T1000-es programnak, mely ha a bemenet igaz, akkor megáll, ha az érték
+            hamis, akkor pedig végtelen ciklusba kerül. Itt azt hihetnén, hogy minden rendben, hiszen a program működik, de mi történik akkor, ha a T1000-es program bemenete önmaga. Ha úgy érzékeli, hogy nincs
+            önmagában végtelen ciklus, akkor végtelenciklusba kerül, ha pedig van benne végtelen ciklus, akkor pedig megáll. Itt jól láthatod az ellentmondást. Ez az oka annak, hogy mind a mai napig nem tudott senki
+            ilyen programot létrehozni. 
         </para>
     </section>        
                 
@@ -428,7 +457,16 @@ false]]></screen>
             a forrásban is, egy 4 honlapos hálózatra leszűkítve. 
         </para>
         <para>
-            Az első iterációban mindegyik oldal PageRank-je 1/4, hiszen 4 oldalunk van. Ezután kezdjük el viszgálni, hogy ezek között milyen kapcsolatvan. A kapcsolatokat egy mátrixban tároljuk:
+            Az első iterációban mindegyik oldal PageRank-je 1/4, hiszen 4 oldalunk van. Ezután kezdjük el viszgálni, hogy ezek között milyen kapcsolatvan.
+            <figure>
+                <title>PageRank</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/PageRank/pagerank.png" format="JPG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A kapcsolatokat egy mátrixban tároljuk:
             <programlisting language="c"><![CDATA[
                 double L[4][4] = {
                       /*1.*/   /*2.*/   /*3.*/  /*4.*/ 
