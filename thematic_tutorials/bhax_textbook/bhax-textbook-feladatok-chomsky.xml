@@ -120,38 +120,28 @@
             <programlisting language = "c"><![CDATA[
  %{
   #include <stdio.h>
-  #include <string.h>
-  int betuk_szama = 0, szavak_szama = 0, szamok_szama = 0, sorok_szama = 0;
+  int realnumbers = 0;
  %}]]>
             </programlisting>
             Ahogy említettem, itt importáljuk a header fájlokat, és a szükésges változókat is itt
             deklaráljuk. Ezután következik a második rész:
             <programlisting language="c"><![CDATA[
-.						++betuk_szama;
-\n						++sorok_szama;
-[0-9]+					{++szavak_szama; ++szamok_szama,
-						  printf("szam=[%s]", yytext);
-						  betuk_szama += strlen(yytext);}
-[a-zA-Z][a-zA-Z0-9]*	{++szavak_szama; betuk_szama += strlen(yytext);}
+{digit}*(\.{digit}+)?	{++realnumbers; 
+        printf("[realnum=%s %f]", yytext, atof(yytext));}
                 ]]>
             </programlisting>
             Itt a bal oldalon vannak a reguláris kifejezések, jobb oldalon pedig az, amit a C program
-            végrehajt. Az első sorban egy .-t látsz, az lényegében minden karakterre illeszkedik, ezért
-            ezzel számoljuk a betűk számát. A második sorban láthatjátok a sortörést, mint regexp
-            kifejezést. Tehát ezzel meg tudjuk számolni, hogy hány sorból áll a bemenet. A harmadik sor
-            azt láthatod, hogy oylan bemenetet keresünk, ami számmal kezdődik, és azt további számok
-            követik. Ezzel számoljuk meg a bemenetben található számokat. És végül jöhetnek szavak, 
-            ez egy kicsit trükkös, a lényeg, hogy betűvel kell kezdődnie, és utána következnie kell
-            vagy betűnek, vagy számnak, a harmadik karakter pedig lehet bármi.
+            végrehajt. Ez a regex azokra a bemenetekre illeszkedik, amelyek számmal kezdődnek, és a * jelöli, hogy többször is előfordulhat.
+            Majd a zárójelben lévő csoportból valamelyik tag 0-szor, vagy 1-szer fordul elő. Ezt jelöli a ?-jel. Az <function>atof()</function> függvény pedig az argumentumként kapott stringet double-lé
+            alakítja.
             Vessünk egy pillantást a harmadik részre:
             <programlisting language="c"><![CDATA[
 int
 main ()
 {
-	yylex ();
-	printf("%d betu %d szo %d szam %d sor", betuk_szama, szavak_szama, szamok_szama, sorok_szama);
-
-	return 0;
+    yylex ();
+    printf("The number of real numbers is %d\n", realnumbers);
+    return 0;
 }
             ]]>    
             </programlisting>
@@ -164,8 +154,8 @@ main ()
                 $ lex -o lexikalis.c lexikalis.l
                 $ gcc lexikalis.c -o lexikalis
                 $ ./lexikalis
-                alma
-                4 betu 1 szo 0 szam 1 sor
+                12 34 54 12
+                The number of real numbers is 4
             </programlisting>
             A bevitelt a Ctrl+D paranccsal lehet megállítani. Szöveges fájlt beleirányítani
             pedig a <programlisting><![CDATA[./lexikalis <fajl_nev]]></programlisting> paranccsal lehet.
