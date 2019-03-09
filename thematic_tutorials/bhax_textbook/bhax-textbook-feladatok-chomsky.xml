@@ -178,14 +178,107 @@ main ()
             Lexelj össze egy l33t ciphert!
         </para>
         <para>
-            Megoldás videó: 
+            Megoldás videó: <link xlink:href="https://youtu.be/06C_PqDpD_k">itt</link>
         </para>
         <para>
-            Megoldás forrása:  
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/L33t">itt</link>
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Elsőnek nézzük meg, hogy mi is az a leet nyelv. Ennek a nyelvnek az a lényege, hogy a 
+            szavakban lévő bizonyos betűket, számokkal, vagy egyéb más karakterekkel helyettesítjük. Az egyes
+            betűket közmegállapodás szerinti karakterekre cserélhetjük. Erről a teljes listát <link xlink:href=
+            "https://qntm.org/l33t">itt</link> találod. Természetesen a linkelt programunk is ebből indul ki, de
+            nem minden opciót vettünk bele.
+        </para>
+        <para>
+           Az előző feladatban már ismertettem veled a lexer felépítését, és ugyan ezt használjuk
+            itt is. Természetesen az első részben most is importálva vannak különböző header fájlok, de ami
+            érdekesebb az utána jön.
+            <programlisting language="c"><![CDATA[
+  #define L337SIZE (sizeof l337d1c7 / sizeof (struct cipher))
+    
+  struct cipher {
+    char c;
+    char *leet[4];
+  } l337d1c7 [] = {
+
+  {'a', {"4", "4", "@", "/-\\"}},
+  {'b', {"b", "8", "|3", "|}"}},
+  {'c', {"c", "(", "<", "{"}},
+                ...
+  };
+]]>                
+            </programlisting>
+            A <function>#define</function> segítségével lényegében egy makróhelyettesítést
+            hajtunk végre, ezt úgy kell elképzelni, hogy ha a programban valahol hivatkozunk az
+            <function>L337SIZE</function>-ra akkor a mellette található értékkel fogja helyettesíteni.
+            Ezután létrehozzuk a <function>cipher</function> struktúrát, mely egy <function>char c</function>-ből, és
+            egy 4 elemű karakterekből álló tömbre mutató <function>char *</function> típusú mutatóból áll.
+            Ez alapján a struktúra alapján létrehozzuk az <function>l337d1c7 []</function> tömböt. Ez a tömb
+            tartalmazza az egyes betűket, és a hozzájuk tartozó lehetséges helyettesítő karaktereket. Tehát a 
+            a tömb minden eleme áll egy <function>char c</function>-ből, és egy <function>char *leet[4]</function>-ből.
+        </para>
+        <para>
+            A második részben ezúttal nem használunk különféle regex-eket, tehát minden karakter esetén
+            végrehajtjuk a C utasítást.
+            <programlisting language = "c"><![CDATA[
+      .	{
+	  
+	  int found = 0;
+	  for(int i=0; i<L337SIZE; ++i)
+	  {
+	  
+	    if(l337d1c7[i].c == tolower(*yytext))
+	    {
+	    
+	      int r = 1+(int) (100.0*rand()/(RAND_MAX+1.0)); //random szám generálás
+	    
+                if(r<91)
+                    printf("%s", l337d1c7[i].leet[0]);
+                else if(r<95)
+                    printf("%s", l337d1c7[i].leet[1]);
+	        else if(r<98)
+                    printf("%s", l337d1c7[i].leet[2]);
+                else 
+                    printf("%s", l337d1c7[i].leet[3]);
+
+	      found = 1;
+	      break;
+	    }
+	    
+	  }
+	  
+	  if(!found)
+	     printf("%c", *yytext);	  
+	  
+	}
+]]>                
+            </programlisting>
+        Tehát a .-t használjuk, ami minden karakterre illeszkedik. A <function>for</function> ciklus fejében lekérjük a L337SIZE konstans értékét,
+        ami a l337d1c7[] tömbnek és a cipher struktúra méretének a hányadosa. Mivel a l337d1c7[] egy struktúrált tömb, ezért a <function>l337d1c7[i].c</function> tudunk
+        hivatkozni a tömb i-dik elemének a <function>char c</function> részére. A <function>tolower()</function> függvény segítségével az esetleges nagybetűket
+        kicsivé változtatjuk. Majd ezután képzünk egy random számot 1-100 között. Ha 91-nél kisebb számot "dob" a gép, akkor a <function>char *leet[4]</function> tömb első
+        elemét printeljük, és így tovább, ahogy a forrásban látod. A <function>int found</function> változót azért vezettük be, hogy jelezzük, benne van-e tömbünkbe a beolvasott karakter.
+        Ha nincs, akkor visszadjuk az eredeti karaktert, módosítás nélkül.
+        </para>
+        <para>
+            Ezután megint a C forrás jön, melyben elindítjuk a lexelést.
+            <programlisting language = "c">
+int 
+main()
+{
+  srand(time(NULL)+getpid());
+  yylex();
+  return 0;
+}
+            </programlisting>
+            Itt található egy érdekesség, az <function>srand()</function> függvény adja meg a kiindulási értéket a <function>rand()</function> függvény számára. Jelen esetben az aktuális időt és 
+            a szülő folyamat PID-jának összegét adja át.
+        </para>
+        
     </section>                     
 
 
