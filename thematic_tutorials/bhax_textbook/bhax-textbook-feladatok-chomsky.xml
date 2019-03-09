@@ -14,10 +14,42 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/blob/master/attention_raising/Source/Decim%C3%A1lisb%C3%B3l%20Un%C3%A1risba/unaris.cpp">itt</link>               
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            <figure>
+                <title>Decimálisból unárisba</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Decimálisból Unárisba/turing.gif" format="JPG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A unáris számrendszer a létező legegyszerűbb az összes számrendszer közül. Lényegében megfelel annak, amikor az ujjaink segítségével számolunk, tehát a
+            számokat vonalakkal reprezentáljuk. A szám ábrázolása pont annyi vonalból áll, amennyi a szám. A könnyebb olvashatóság éredekében minden ötödik után rakhatunk
+            helyközt, vagy az ötödik vonalat lényegében rakhatjuk keresztbe az őt megelőző 4-re.
+        </para>
+        <para>
+            Az ábrán látható Turing gép az egyes számrendszerbe való átváltást végzi, de itt a | helyett 1-eseket írunk. A gép működése abból áll, hogy beolvassa a szalag celláiban tárolt számokat,
+            ha a talál egyenlőség jelet, akkor az előtte lévő számból kivon 1-et. Ezt egészen addig teszi, ameddig az előtte lévő szám le nem nullázódik. Jelen esetben ez pont 0, de mivel előtte áll
+            egy 1-es, ezért itt a 0-ból 9 lesz, és az 1-esből 0. Miközben folyamatosan vonja ki a egyeseket a számból, a kivont egyeseket kiírja a tárolóra. Így a végén egy 1-esekból álló sorozatot kapunk,
+            melyek száma megyegyezik a kiindulási szám értékével.
+        </para>
+        <para>
+            A forrásként megadott program lényegében egy átváltó, mely függőleges vonalakat ír ki a bemenettől függően. Mivel ez egy C++ program, ezért ennek a fordításához a g++-t
+            érdemes használni, a szintaxisa teljesen megegyezik a gcc-nél megszokottakkal.
+            Ha lefuttatod, akkor a következőt fogod látni:
+            <programlisting>
+                $ g++ unaris.cpp -o unaris
+                $ ./unaris
+                Adj meg egy számot decimálisan!
+                10
+                Unárisan:
+                ||||| |||||
+            </programlisting>
         </para>
     </section>        
         
