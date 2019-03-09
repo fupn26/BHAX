@@ -101,7 +101,74 @@
             Megoldás forrása:  
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ehhez a feladathoz a lex programot kell használni, melyel egy lexikális lemezőt lehet készíteni.
+            Szövegfájlokból olvassa be a lexikális szabályokat, és egy C forráskódot készít, melyet a gcc-vel
+            tudunk fordítani. A lex forráskód 3 részből áll, az első a definíciós rész, amely lényegében bármilyen
+            C forrást tartalmazhat, itt lehet include-álni a header fájlokat. A második rész a szabályoknak van
+            fennttartva. Ez 2 részből áll, reguláris kifejezésekből, és az azokhoz tartozó C utasításokból.
+            Tehát, ha a program futása során a bemenetként kapott string illeszkedik valamelyik reguláris kifejezésre,
+            akkor végrehajtja a hozzá tartozó utasítást. A harmadik rész pedig egy C-kód, amely lényegében a
+            a lexikális elemzőt hívja meg. Ez a rész, és az első, teljes mértékben átmásolódik a lex által generált
+            C forrásba. A részeket %%-jellel különítjük el.
+        </para>
+        <para>
+            Most hogy már tudod mi is az a lexer, itt az idő végig futni a belinkelt forráson.
+            Az első rész a következő:
+            <programlisting language = "c"><![CDATA[
+ %{
+  #include <stdio.h>
+  #include <string.h>
+  int betuk_szama = 0, szavak_szama = 0, szamok_szama = 0, sorok_szama = 0;
+ %}]]>
+            </programlisting>
+            Ahogy említettem, itt importáljuk a header fájlokat, és a szükésges változókat is itt
+            deklaráljuk. Ezután következik a második rész:
+            <programlisting language="c"><![CDATA[
+.						++betuk_szama;
+\n						++sorok_szama;
+[0-9]+					{++szavak_szama; ++szamok_szama,
+						  printf("szam=[%s]", yytext);
+						  betuk_szama += strlen(yytext);}
+[a-zA-Z][a-zA-Z0-9]*	{++szavak_szama; betuk_szama += strlen(yytext);}
+                ]]>
+            </programlisting>
+            Itt a bal oldalon vannak a reguláris kifejezések, jobb oldalon pedig az, amit a C program
+            végrehajt. Az első sorban egy .-t látsz, az lényegében minden karakterre illeszkedik, ezért
+            ezzel számoljuk a betűk számát. A második sorban láthatjátok a sortörést, mint regexp
+            kifejezést. Tehát ezzel meg tudjuk számolni, hogy hány sorból áll a bemenet. A harmadik sor
+            azt láthatod, hogy oylan bemenetet keresünk, ami számmal kezdődik, és azt további számok
+            követik. Ezzel számoljuk meg a bemenetben található számokat. És végül jöhetnek szavak, 
+            ez egy kicsit trükkös, a lényeg, hogy betűvel kell kezdődnie, és utána következnie kell
+            vagy betűnek, vagy számnak, a harmadik karakter pedig lehet bármi.
+            Vessünk egy pillantást a harmadik részre:
+            <programlisting language="c"><![CDATA[
+int
+main ()
+{
+	yylex ();
+	printf("%d betu %d szo %d szam %d sor", betuk_szama, szavak_szama, szamok_szama, sorok_szama);
+
+	return 0;
+}
+            ]]>    
+            </programlisting>
+            Ez tartalmazza a <function>yylex()</function> lexikálsi elemző függvény hívását, és itt íratjuk ki
+            az eredményt is.
+        </para>
+        <para>
+            Most, hogy láttad, hogyan épül fel a lexer, akkor már csak ki kéne próbálni.
+            <programlisting>
+                $ lex -o lexikalis.c lexikalis.l
+                $ gcc lexikalis.c -o lexikalis
+                $ ./lexikalis
+                alma
+                4 betu 1 szo 0 szam 1 sor
+            </programlisting>
+            A bevitelt a Ctrl+D paranccsal lehet megállítani. Szöveges fájlt beleirányítani
+            pedig a <programlisting><![CDATA[./lexikalis <fajl_nev]]></programlisting> paranccsal lehet.
         </para>
     </section>                     
 
