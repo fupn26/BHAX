@@ -334,7 +334,53 @@ main()
         </para>
 
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Programozó pályafutásunk során rengetegszer kell mások kódjában tájékozódni, ez a feladat ebben nyújt segítséget, hogyan
+            értelmezzükk helyesen a kódokat.
+            Lássuk is az elsőt. A bevezetőben már láthattad, hogy melyik manuál oldalakat kell átnézni ehhez a kódcsipethez, szóval ezzel most
+            nem rabolnám az időt.
+            <programlisting><![CDATA[if(signal(SIGINT, SIG_IGN)!=SIG_IGN)
+    signal(SIGINT, jelkezelo);]]></programlisting> Ez azt jelenti, hogyha eddig nem volt figyelmen kívül hagyva a SIGINT jel, akkor a jelkezelő
+            függvény kezelje. Ellenkező esetben hagyjuk fiygelmen kívül.
+            <programlisting><![CDATA[for(i=0; i<5; ++i)]]></programlisting> Ez egy for ciklus, amelynél az első iterációban az i nulla, majd
+            megnézzük, hogy kisebb-e, mint 5, és minden iterációban növeljük 1-el.
+            <programlisting><![CDATA[for(i=0; i<5; i++)]]></programlisting> Ez ebben az esetben megegyezik az előzővel, ugyan úgy 0,1,2,3 majd 4
+            lesz az i étéke. Viszont ez nem mindig van így.
+            <programlisting language="c"><![CDATA[
+    int a = 5;
+    int b = a++; //itt a b értéke 5 lesz, majd növeljük az a étékét 1-el
+    int c = ++a; //c értéke már nem 6 lesz, hanem 7, mivel itt előbb növelünk
+            ]]></programlisting>
+            <programlisting><![CDATA[for(i=0; i<5; tomb[i] = i++)]]></programlisting> Ez már viszont egy bugos program, mivel egyszerre inkrementáljuk
+            az i-t, és hivatkozunk a tomb i. elemére. Az a baj, hogy nem ismerjük a végrahajtás sorrendjét, emiatt nem kiszámítható az eredmény.
+            <figure>
+                <title>1. Splint kép</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Bugok/splint.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <programlisting><![CDATA[for(i=0; i<n && (*d++ = *s++); ++i)]]></programlisting> Ez a kódcsipet szintén bugos, a probléma az, hogy az
+            értékadó operátort használjuk, az összehasonlító operátor helyett, ennek következtében a <function><![CDATA[&&]]></function> operátor
+            jobb oldalán nem egy logikai operandus áll.
+            <figure>
+                <title>2. Splint kép</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Bugok/splint2.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <programlisting><![CDATA[printf("%d %d", f(a, ++a), f(++a, a));]]></programlisting> Ez is hibás kód, mivel az f függvény két int-et kap, de azok
+            kiértékelésének sorrendje nincs meghatározva.
+            <programlisting><![CDATA[printf("%d %d", f(a), a);]]></programlisting> Ennél a kódcsipetnél nincs probléma, kiírjuk az
+            <function>a</function> értékét és az <function>a</function> függvény által módosított értékét.
+            <programlisting><![CDATA[printf("%d %d", f(&a), a);]]></programlisting>  Ennek a kódnak szintén a kiértékelés sorrendjével van baja,
+            mivel az f() függvény módosítja az <function>a</function> értékét, emiatt nem tudhatjuk, hogy az önmagában kiprintelt <function>a</function>
+            az eredeti értékét, vagy a módosított értékét fogja kiírni.
         </para>
 
     </section>                     
@@ -465,6 +511,7 @@ gedit1. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím.
         </para>
         <para>
             Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Deklar%C3%A1ci%C3%B3">itt</link>
+            ,
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
