@@ -452,7 +452,7 @@ gedit1. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím.
                 <programlisting><![CDATA[int *(*l) ();]]></programlisting>            
             </listitem>
             <listitem>
-                <programlisting><![CDATA[int (*v (int c)) (int a, int b)]]></programlisting>            
+                <programlisting><![CDATA[int (*v (int c)) (int a, int b);]]></programlisting>            
             </listitem>            
             <listitem>
                 <programlisting><![CDATA[int (*(*z) (int)) (int, int);]]></programlisting>            
@@ -467,7 +467,28 @@ gedit1. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím.
             Megoldás forrása:  
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            <programlisting><![CDATA[int a;]]></programlisting> egy egész vezet be a programba.
+            <programlisting><![CDATA[int *b = &a;]]></programlisting> egy egészre mutató mutatót vezet be. A mutató, vagy elterjedtebb nevén pointer lényegében egy olyan változó, ami egy változó, 
+            egy tömbre esetleg egy függvényre
+            memóriacímére mutat. Érdemes megfigyelni, hogy a <function><![CDATA[&a]]></function> vagyunk
+            képesek átadni az <function>a</function> változó memóriacímét.
+            <programlisting><![CDATA[int &r = a;]]></programlisting> egy egésznek a referenciáját vezeti be. Láthatod, hogy a mutatót a <function>*</function> operátor segítségével deklarálunk, míg a referenciát
+            a <function><![CDATA[&]]></function> jellel. A kettő közti különbség az, a referencia, lényegében egy alias egy másik változóhoz. Nem foglal külön helyet a memóriában, mint a pointer, hanem
+            osztozik a területen a referált változóval.
+            <programlisting><![CDATA[int c[5];]]></programlisting> egy egészekből álló, 5 elemű tömböt deklarál.
+            <programlisting><![CDATA[int (&tr)[5] = c;]]></programlisting>  az egészek tömbjének referenciáját vezeti be a programba. Fontos látni, hogy ez nem az első elemnek a referenciája, hanem az
+            összes elemnek.
+            <programlisting><![CDATA[<int *d[5];]]></programlisting> egészre mutató mutatók tömbje.
+            <programlisting><![CDATA[int *h ();]]></programlisting> egészre mutató mutatót visszadó függvény.
+            <programlisting><![CDATA[int *(*l) ();]]></programlisting> egészre mutató mutatót visszaadó függvényre mutató mutató.
+            <programlisting><![CDATA[int (*v (int c)) (int a, int b)]]></programlisting> egészet visszaadó és két egészet kapó függvényre mutató mutatót visszaadó, egészet kapó függvény
+            <programlisting><![CDATA[int (*(*z) (int)) (int, int);]]></programlisting> függvénymutató egy egészet visszaadó és két egészet kapó függvényre mutató mutatót visszaadó, egészet kapó függvényre
+            
+            
+            
         </para>
     </section>                     
 
