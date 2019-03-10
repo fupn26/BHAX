@@ -486,9 +486,6 @@ gedit1. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím.
             <programlisting><![CDATA[int *(*l) ();]]></programlisting> egészre mutató mutatót visszaadó függvényre mutató mutató.
             <programlisting><![CDATA[int (*v (int c)) (int a, int b)]]></programlisting> egészet visszaadó és két egészet kapó függvényre mutató mutatót visszaadó, egészet kapó függvény
             <programlisting><![CDATA[int (*(*z) (int)) (int, int);]]></programlisting> függvénymutató egy egészet visszaadó és két egészet kapó függvényre mutató mutatót visszaadó, egészet kapó függvényre
-            
-            
-            
         </para>
     </section>                     
 
