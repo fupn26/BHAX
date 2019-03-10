@@ -361,7 +361,24 @@ $(\exists y \forall x (y<x) \supset \neg (x \text{ prím}))$
         </para>
 
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Az aritmetika nyelve a logikai nyelvek közül az elsörendűek közé tartozik. A legalapabb logikai nyelv a nulladrendű logika, ez csak ítéletváltozókat tartalmaz, és 3 műveletet: a konjunkciót,
+            diszjunkciót és implikációt. Erre épül rá az elsőrendű logika, kiegészülve függvényszimbólumokkal, változókkal, kvantorokkal. Ha részletesebb tájékozódnál, akkor a forrásban több könyv is meg
+            van nevzeve, ami a feladathoz szükséges ismereteket tartalmazza.  
+        </para>
+        <para>
+            Akkor térjünk rá a feladatra. Elsőnek elmondom, hogy melyik kifejezés mit jelent. A <function>foreall</function> fogja jelölni az univerzális kvantort, és az <function>exist</function> pedig
+            az egzisztenciális kvantort. A <function>wedge</function> alatt az implikációt értjük, és a <function>supset</function> pedig a konjunkciót. Ehhez a feladathoz érdemes még ismerni az Ar nyelv
+            rákövetkező függvényét, amit <function>S</function>-el jelölünk.
+            Most, hogy ezeket tudjuk, már csak le kell fordítani a emberi nyelvre a fentebb látható formulákat.
+            <programlisting>
+gedit1. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím.
+2. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím, és ha y prím, akkor annak második rákövetkezője is prím.
+3. Létezik olyan y, amelyhez minden x esetén az x prím ,és x kisebb, mint y.
+4. Létezik olyan y, amelyhez minden x esetén az x nagyobb, és x nem prím.
+            </programlisting>   
         </para>
     </section>                                                                                                                                                                            
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
