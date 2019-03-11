@@ -197,8 +197,87 @@ A szabályokat követve:
             Megoldás forrása:  
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            A Backus-Naur-forma(vagyis BNF) segítségével környezetfüggetlen grammatikákat
+            tudunk leírni. Széleskörben alkalmazzák a programozási nyelvek szintaxisának
+            leírására. Ahogy a neve is mutatja, a jelölés rendszer John Backus nevéhez fűződik,
+            aki 1959-ben a párizsi WCC-n mutatta be. Majd Peter Naur egyszerűsített a jelöléseken,
+            csökkentette a felhasznált karakterek számát. Tevékenységéért kiérdemelte, hogy az ő
+            neve is szerepeljen a forma nevében.
+        </para>
+        <para>
+            Ahhoz, hogy lássuk hogyan is néz ki egy BNF leírás, vegyünk egy egyszerű példát:
+            <programlisting><![CDATA[
+<postai_cím> ::= <név_rész> "," <irányítószám_rész> " " <cím_rész>
+<név_rész> ::= <személyi_rész> <keresztnév> | <név_rész> <keresztnév>
+<személyi_rész> ::= <titulus> "."" "<vezetéknév>|<vezetéknév>" "
+<cím_rész> ::= <kerület> <elnevezés> <közterület_tipus> <szám> <EOL>
+<közterület_tipus> ::= "utca"|"tér"|"körút"|"lépcső"|"u."|"krt."
+<irányítószám_rész> ::= <ország_kód>"-"<irányítószám_belső>| <irányítószám_belső>
+<irányítószám_belső> ::= <irányítószám>" "<városnév> ","
+]]>
+            </programlisting>
+        </para>
+        <para>
+            Forrás: <link xlink:href="https://hu.wikipedia.org/wiki/Backus%E2%80%93Naur-forma">wiki</link>.
+        </para>
+        <para>
+            Nézzük például az első sort. Itt a postai címet határozzuk meg, ami áll egy név részből,
+            irányítószámból és címből. Közéjük vesszőt rakunk, vagy csak szóközt.
+            A második rész már egy kicsit érdekesebb, mert ebből kiderül, hogy a BNF jelölések rekurzívak is lehetnek. 
+            A név_részben hivatkozunk a személyi_részre, és önmagára is. A | jel vagy-ot fejez ki, az értékadás pedig a ::= operátorral történik.
+        </para>
+        <para>
+            Mostmár van fogalmunk arról, mi is az a BNF, hát akkor próbáljuk meg átültetni ezt a tudást a C utasítás leírására. Mielőtt tovább haladnál a könyv olvasásával
+            érdemes elolvasni a feladatban említett részletet a <function><![CDATA[K&R]]></function> könyvből.
+            <programlisting><![CDATA[
+<utasítás> ::= <kifejezés_utasítás>|<öszetett_utasítás>|
+                <feltételes_utasítás>|<while_utasítás>|
+                <do_utasítás>|<for_utasítás>|<switch_utasítás>|
+                <break_utasítás>|<continue_utasítás>|<return_utasítás>|
+                <goto_utasítás>|<címkézett_utasítás>|<nulla_utasítás>
+<kifejezés_utasítás> ::= <kifejezés>";"
+<összetett_utasítás> ::="{"<deklarációlistaopc>" "<utasításlistaopc>"}"
+<feltételes_utasítás> ::= <if>" ("<kifejezés>")"<utasítás>|<feltételes_utasítás> <else> <utasítás>
+<while_utasítás> ::= <while> "("<kifejezés>")" <utasítás>
+<do_utasítás> ::= <do> <utasítás> <while> "("<kifejezés>");"
+<for_utasítás> ::= <for> "("<1._kifejopc>";"<2._kifejopc>";"<3._kifejopc>")" <utasítás>
+<switch_utasitas> ::= <switch> "("<kifejezés>")" <utasítás>| <switch_utasítás> <case>
+                <állandó_kifejezés>":"|<switch_utasítás> <default>":"
+<break_utasítás> ::= <break>";"
+<continue_utasítás> ::= <continue>";"
+<return_utasítás> ::= <return>";" | <return_utasítás> <kifejezés>";"
+<goto_utasítás> ::= <goto> <azonosító>";"
+<címkézett_utasítás> ::= <azonosító>":"
+<nulla_utasítás> ::=";" 
+                
+
+         ]]></programlisting>
+        </para>
+        <para>
+            A C programnyelvet az 1970-es években alkották meg, mely azóta 3 főbb verziót
+            ért meg. Az első volt a C89, ez a klasszikus C nyelv, amit a <![CDATA[K&R]]>
+            könyvből ismerhetünk meg. Ezután jött a C99, mely újdonságai között szerepelt
+            többek között az inline függvéynek támogatása, új adattípusok jelentek meg, mint
+            a long long int, vagy a complex. Egészen eddig nem volt támogatott az egysoros komment
+            // jelölése, és a dinamikus tömb sem. Egy újabb verziója pedig 2011-ben jelent meg C11
+            néven, mind a mai napig ez a legfrissebb sztenderd. Ez főleg a C99-es sztenderd
+            továbbfejlesztésének tekinthető.
+        </para>
+        <para>
+            Fontos megjegyezni, hogy a gcc lap esetben a C89-es szabváynt használja, tehát, ha
+            ezen módosítanál, akkor a -std=c99 kapcsolót kell használnod.
+            <programlisting language="C"><![CDATA[
+                    int main()
+                    {
+                        int a = 10; //C99-ben ezt szabad
+                        return 0;
+                    }
+]]></programlisting>
+        </para>
+        
     </section>                     
 
     <section>
