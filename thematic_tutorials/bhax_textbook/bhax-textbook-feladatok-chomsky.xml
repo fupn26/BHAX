@@ -65,7 +65,121 @@
             Megoldás forrása:                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+           Generatív nyelvtan jelsorozatok átalakítási szabályait tartalmazza. A nyelvnek
+           megfelelő szavak létrehozásához szükség van egy kezdő értékre, és ezután már
+            csak a szabályokat kell alkalmazni az átalakítások elvégzéshez. Tehát a kezdő
+            szimbólumot más szimbólumokkal helyettesítjük a nyelvtani szabályok
+            figyelembevételével. 
+        </para>
+        <para>
+            Noam Chomsky, XX. századi amerikai nyelvész volt az, aki elsőnek javasolta a generatív
+            nyelvtanok formalizálását. Az 1950-es években publikálta munkásságát, mely alapján egy
+            nyelvtannak a következő elemekből kell állnia:
+            <orderedlist numeration="lowerroman">
+                <listitem>
+                    <para>nem-terminális szimbólumokból</para>
+                </listitem>
+                <listitem>
+                    <para>terminális szimbólumokból</para>
+                </listitem>
+                <listitem>
+                    <para>produkciós szabályokból</para>
+                </listitem>
+                <listitem>
+                    <para>előállítási szabályokból</para>
+                </listitem>
+                <listitem>
+                    <para>kezdő szimbólumból</para>
+                </listitem>
+            </orderedlist>
+            Chomsky nevéhez fűződik még a generatív nyelvtanok csoportosítása. Négy osztályba sorolta őket
+            ezek a következők:
+            <itemizedlist>
+                <listitem>
+                    <para>0. típus (rekurzíve felsorolható nyelvtanok)</para>
+                </listitem>
+                <listitem>
+                    <para>1. típus (környezetfüggő nyelvtanok)</para>
+                </listitem>
+                <listitem>
+                    <para>2. típus (környezetfüggetlen nyelvtanok)</para>
+                </listitem>
+                <listitem>
+                    <para>3. típus (reguláris nyelvtanok)</para>
+                </listitem>
+            </itemizedlist>
+            Ebben a feladatban az 1. típussal foglalkozunk. Az környezetfüggő nyelvtanok
+            szabályait kétféle képpen lehet felírni. Itt a képzési szabály mind a két oldalán
+            szerepelhetnek terminális szimbólumok, ellentétben a környezetfüggetlen nyelvtanokkal
+            ahol a produkciós szabályok bal oldalán csak nemterminális szimbólum állhat.
+        </para>
+        <para>
+            Most hogy tudjuk, miből épül fel egy generatív nyelvtan lássuk a feladat megoldását.
+        </para>
+        <para>
+            <programlisting>
+S, X, Y „változók” - nemterminálisok
+a, b, c „konstansok” -terminálisok
+S → abc, S → aXbc, Xb → bX, Xc → Ybcc, bY → Yb, aY -> aaX, aY → aa -képzési szabályok
+Jelen esetben a kezdő szimbólumunk az S lesz.
+A képzési szabáylokat alkalmazva a következőket kapjuk:
+                S (S → aXbc)
+                aXbc (Xb → bX)
+                abXc (Xc → Ybcc)
+                abYbcc (bY → Yb)
+                aYbbcc (aY -> aaX)
+                aaXbbcc (Xb → bX)
+                aabXbcc (Xb → bX)
+                aabbXcc (Xc → Ybcc)
+                aabbYbccc (bY → Yb)
+                aabYbbccc (bY → Yb)
+                aaYbbbccc (aY → aa)
+                aaabbbccc 
+            </programlisting>
+            Tehát meg kell határozni változókat, terminálisokat és szabályokat. Amint látod
+            a képzési szabályt formailag a nyíl operátorral jelöljük, tehát miből mi lesz.
+            Ugyanennek a nyelvnek egy rövidebb reprezentációja a következő:
+            <programlisting>
+S (S → aXbc)
+aXbc (Xb → bX)
+abXc (Xc → Ybcc)
+abYbcc (bY → Yb)
+aYbbcc (aY → aa)
+aabbcc 
+            </programlisting>
+            Fentebb említettem, hogy mi is teszi környezetfüggővé a nyelvtant, erre kiváló példa
+            több is a képzési szabályokból. Például <function>bY → Yb</function>, ahol
+            tisztán látszik, hogy a nyíl bal oldalán is van terminális szimbólum, ez egy
+            környezetfüggetlen nyelvben nem lenne lehetséges.
+        </para>
+        <para>
+            Egy másik nyelvtan, amely a feladatban szereplő nyelvet generálja a következőképpen néz ki:
+            <programlisting>
+A, B, C „változók”
+a, b, c „konstansok”
+A → aAB, A → aC, CB → bCc, cB → Bc, C → bc
+A-ból indulunk ki, ez lesz a kezdőszimbólum.
+A szabályokat követve:
+                A (A → aAB)
+                aAB ( A → aAB)
+                aaABB ( A → aAB)
+                aaaABBB ( A → aC)
+                aaaaCBBB (CB → bCc)
+                aaaabCcBB (cB → Bc)
+                aaaabCBcB (cB → Bc)
+                aaaabCBBc (CB → bCc)
+                aaaabbCcBc (cB → Bc)
+                aaaabbCBcc (CB → bCc)
+                aaaabbbCccc (C → bc)
+                aaaabbbbcccc 
+            </programlisting>
+            Amint láthatod nem sokat változtattunk, elég volt csak a változókat átírni, és a szabályokat,
+            ezzel meg is kaptunk egy másik generatív nyelvtant, mely szintén az 
+            a<superscript>n</superscript>b<superscript>n</superscript>c<superscript>n</superscript> nyelvet
+            generálja.
         </para>
     </section>        
                 
@@ -420,7 +534,7 @@ $(\exists y \forall x (y<x) \supset \neg (x \text{ prím}))$
             rákövetkező függvényét, amit <function>S</function>-el jelölünk.
             Most, hogy ezeket tudjuk, már csak le kell fordítani a emberi nyelvre a fentebb látható formulákat.
             <programlisting>
-gedit1. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím.
+1. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím.
 2. Minden x-hez létezik olyan y, amelynél ha x kisebb, akkor y prím, és ha y prím, akkor annak második rákövetkezője is prím.
 3. Létezik olyan y, amelyhez minden x esetén az x prím ,és x kisebb, mint y.
 4. Létezik olyan y, amelyhez minden x esetén az x nagyobb, és x nem prím.
