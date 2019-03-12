@@ -212,67 +212,103 @@
             Érdekességként meg lehet említeni a felsorolás típust vagy a sorszámozott
             típust, de ezek kevésbé elterjedtek, csak néhány nyelvben fordulnak elő.
         </para>
+        <para>
+            Az <emphasis role="strong">összetett típusok</emphasis> közül a két
+            legfontosabb a tömb és a rekord. A tömb homogén, statikus összett típus,
+            meghatározzák a dimenzóinak száma, az indexkészletének típusa és tartománya,
+            és az eleminek a típusa. Léteznek több dimenziós tömbök, melyeket
+            lehet oszlopfolytonosan vagy sorfolytonosan ábrázolni. A tömb elemeit
+            indexek segítségével tudjuk bejárni.
+        </para>
+        <para>
+            A rekord típus heterogén, tartományában különböző típusok szereplehetnek.
+            Az egyes elemeket mezőknek nevezzük, melyeknek van saját neve és típusa.
+            A mezőneveket minősített nevekkel tudjuk ellátni, ezzel segítve az azonos 
+            nevű mezők megkülönböztetését.
+        </para>
+        <para>
+            A <emphasis role = "strong">mutató típus</emphasis> egyszerű típus,
+            de érdekessége az, hogy tartomány tárcímekből áll. Segítségével indirekt
+            módon el tudjuk érni a mutatott elem értékét. Fontos a szerepe az
+            absztrakt adatszerkezetek szétszórt reprezentációjában.
+        </para>
+        <para>
+            <emphasis role="strong">Nevesített konstans</emphasis>
+        </para>
+        <para>
+            3 komponensből áll: név, típus, érték.
+            Mindig deklarálni kell, mely során megkapja az értékét, és azt 
+            nem lehet módosítani a futás folyamán. A nevével tudunk hivatkozni az
+            értékkomponensére. Ennek köszönhetően, elég a deklarációnál
+            ,módosítani az értéket, és nem kell minden egyes előfordulásnál.
+            C-ben ezt a következőképpen használjuk:
+            <programlisting language="c"># define név literál</programlisting>
+            Ez az előfordítónak szól, és a név minden előfordulását helyettesíti
+            a literállal.
+        </para>
+        <para>
+            <emphasis role="strong">Változó</emphasis>
+        </para>
+        <para>
+            4 komponensből áll: név, attríbútum, cím, érték. A név egy azonosító, a
+            programban a változó mindig a nevével jelenik meg. Attribútumnak olyan
+            jellemzőket nevezünk, amik befolyásolják a változó viselkedést. Attribútum
+            például a változó típusa, mely a deklaráció során rendelődik a változóhoz.
+        </para>
+        <para>
+            Létezik explicit deklaráció, implicit deklaráció és automatikus deklaráció.
+            Az explicit deklaráció a véltozó nevéhez rendel attribútumot, míg az implicit
+            betűkhöz. Pl. megoldható, hogy az azonos kezdőbetűvel rendelkező 
+            változók azonos attribútumúak lesznek. Az automatikus pedig azt jelenti,
+            hogy a fordítóprogram rendel attribútumot a változóhoz, ha az még nem volt
+            deklarálva.
+        </para>
+        <para>
+            A változó címkomponense határozza meg a változó helyét a tárban. Egy változó
+            élettartamának a futási idő zon részét nevezzük, ameddig a változó rendelkezik
+            címkomponenssel. A címet lehet statikus vagy dinamikus tárkiosztással rendelni
+            változóhoz. Létezik még programozó által vezérelt tárkiosztás is, a futási
+            időben a programozó rendel címkomponenst a változóhoz.
+        </para>
+        <para>
+            A változó értékkomponense bitkombinációként jelenik meg a címen, melynek
+            felépítését a típus határozza meg. A változónak értéket értékadó utasítással
+            tudunk adni, mely a C-ben így néz ki:
+            <programlisting language="c">változónév = kifejezés;</programlisting>
+        </para>
+        <para>
+            <emphasis role="strong">Alapelemek C-ben</emphasis>
+        </para>
+        <para>
+            A C tipusrendszere 3 részre bontható, vannak az aritmetikai típusok,
+            a származtatott típusok és a void típus. Az aritmetikai típusok közé tartoznak az
+            egészek, a karakter, a felsorolás, a valósok. A származtatott típusok a tömb, a függvény
+            mutató, struktúra, union.
+        </para>
+        <para>
+            <emphasis role="strong">Az aritmetikai típusok egyszerű, mig a származtatottak
+            összetett típusok.</emphasis>. Az előbbivel aritmetikai műveletek végezhetőek.
+            Logikai típus nincs, az <function>int 0</function> felel meg hamisnak, az összes
+            többi érték igaz értékkel rendelkezik. A logikai műveletek <function>int 1</function>-et
+            adnak  vissza igaz esetén. A egsészek és karakterek előtt használható 
+            <function>unsigned/signed</function> típusminősítők segítségével
+            tudjuk beállítani vagy letiltani az előjeles ábrázolást. A struktúra fix
+            szerkezetű rekord, ezzel szemben a union, csak változó részt tartalmazó rekord.
+            A void típus tartomány üres, tehát nincs reprezentációja, sem műveletei.    
+        </para>
     </section>        
     <section>
-        <title>Java EXOR titkosító</title>
+        <title></title>
         <para>
-            Írj egy EXOR titkosítót Java-ban!
+            
         </para>
-        <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
-        </para>
-        <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
-    </section>        
-    <section>
-        <title>C EXOR törő</title>
-        <para>
-            Írj egy olyan C programot, amely megtöri az első feladatban előállított titkos szövegeket!
-        </para>
-        <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
-        </para>
-        <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
-    </section>        
-    <section>
-        <title>Neurális OR, AND és EXOR kapu</title>
-        <para>
-            R
-        </para>
-        <para>
-            Megoldás videó: <link xlink:href="https://youtu.be/Koyw6IH5ScQ">https://youtu.be/Koyw6IH5ScQ</link>
-        </para>
-        <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R</link>               
-        </para>
-        <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
-    </section>        
-    <section>
-        <title>Hiba-visszaterjesztéses perceptron</title>
-        <para>
-            C++
-        </para>
-        <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
-        </para>
-        <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
-    </section>        
         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                
+    </section>        
+    <section>
+        <title></title>
+        <para>
+            
+        </para>
+    </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
