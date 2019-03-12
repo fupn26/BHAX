@@ -194,7 +194,7 @@ A szabályokat követve:
             Megoldás videó: 
         </para>
         <para>
-            Megoldás forrása:  
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/BNF">itt</link>
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -238,19 +238,19 @@ A szabályokat követve:
                 <do_utasítás>|<for_utasítás>|<switch_utasítás>|
                 <break_utasítás>|<continue_utasítás>|<return_utasítás>|
                 <goto_utasítás>|<címkézett_utasítás>|<nulla_utasítás>
-<kifejezés_utasítás> ::= <kifejezés>";"
-<összetett_utasítás> ::="{"<deklarációlistaopc>" "<utasításlistaopc>"}"
-<feltételes_utasítás> ::= <if>" ("<kifejezés>")"<utasítás>|<feltételes_utasítás> <else> <utasítás>
-<while_utasítás> ::= <while> "("<kifejezés>")" <utasítás>
-<do_utasítás> ::= <do> <utasítás> <while> "("<kifejezés>");"
-<for_utasítás> ::= <for> "("<1._kifejopc>";"<2._kifejopc>";"<3._kifejopc>")" <utasítás>
-<switch_utasitas> ::= <switch> "("<kifejezés>")" <utasítás>| <switch_utasítás> <case>
-                <állandó_kifejezés>":"|<switch_utasítás> <default>":"
-<break_utasítás> ::= <break>";"
-<continue_utasítás> ::= <continue>";"
-<return_utasítás> ::= <return>";" | <return_utasítás> <kifejezés>";"
-<goto_utasítás> ::= <goto> <azonosító>";"
-<címkézett_utasítás> ::= <azonosító>":"
+<kifejezés_utasítás> ::= <kifejezés>;
+<összetett_utasítás> ::={<deklarációlistaopc> <utasításlistaopc>}
+<feltételes_utasítás> ::= if (<kifejezés>)<utasítás>|<feltételes_utasítás> else <utasítás>
+<while_utasítás> ::= while (<kifejezés>) <utasítás>
+<do_utasítás> ::= do <utasítás> while (<kifejezés>)
+<for_utasítás> ::= for (<1._kifejopc>;<2._kifejopc>;<3._kifejopc>) <utasítás>
+<switch_utasitas> ::= switch (<kifejezés>) <utasítás>| <switch_utasítás> case
+                <állandó_kifejezés>:|<switch_utasítás> default:
+<break_utasítás> ::= break;
+<continue_utasítás> ::= continue;
+<return_utasítás> ::= return; | <return_utasítás> <kifejezés>
+<goto_utasítás> ::= goto <azonosító>;
+<címkézett_utasítás> ::= <azonosító>:
 <nulla_utasítás> ::=";" 
                 
 
@@ -276,6 +276,26 @@ A szabályokat követve:
                         return 0;
                     }
 ]]></programlisting>
+            Ránézésre semmi probléma nem lehetne vele, de a gcc-t a -std=c89 kapcsolóval használva hibát fog kiírni.
+            <figure>
+                <title>1. Splint kép</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/BNF/kód.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Igen, jól látod, az egysoros komment jelölésére használt // a C99 előtt, csak a C++ támogatta. Ennek a támogatásának bevezetése a C nyelvbe, a C99-es sztenderd
+            egy nagy újdonsága volt.
+            Ha C89-es szabvány szerint szeretnél kommentelni, akkor az előző példa, így módosul:
+            <programlisting language="c"><![CDATA[
+                int main()
+                {
+                    int a = 10 /*ez már lefordul -std=c89-el*/
+                    return 0;
+                }
+]]></programlisting>
+            Ennek a kommentelésnek az előnye, hogy lehetőséget biztosít a többsoros komment létrehozására. 
         </para>
         
     </section>                     
