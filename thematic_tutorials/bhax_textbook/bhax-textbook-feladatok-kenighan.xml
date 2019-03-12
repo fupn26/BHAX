@@ -1,0 +1,278 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Kenigen!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+    <section>
+        <title>A Pici könyv 11-27. oldal feldolgozása</title>
+        <para>
+            <emphasis role="strong">Alapfogalmak</emphasis>
+        </para>
+        <para>
+            Ha a számítógépek programozási nyelveiről beszélünk, akkor
+            fontos említést tenni róla, hogy milyen szintekre tudjuk őket
+            osztani. Az első a gépi nyelv, mely lényegében 0-kból és 1-kből
+            álló bináris kód. Ezt követi az assembly szintű nyelv, amely már egy
+            kicsit közelebb van az emberi nyelvekhez, de még alacsony szintű
+            programozási nyelvnek minősül. Legvégül pedig tegyünk említést a
+            könyv fő témájáról a magas szintű programozási nyelvekről. Ezek
+            már közel állnak az emberek által is értelmezhető nyelvekhez, főleg
+            az angolra épülneké. 
+        </para>
+        <para>
+            A magas szintű programozási nyelven írt programot forrásprogramnak
+            nevezzük. Ennek az előállításához be kell tartani bizonyos az 
+            adott nyelvre jellemző formai,szintaktikai szabályokat és a tartalmi,
+            szemantikai szabályokat.
+        </para>
+        <para>
+            A processzorok saját gépi nyelvvel rendelkeznek, és csak az ezen a
+            nyelven írt programokat képesek végrehajtani. Tehát a forráskódokat
+            át kell alakítani a gép által értelmezhető gépi kódra. Erre két
+            analógia létezik, az egyik a fordítóprogramos megoldás, a másik
+            az interpreteres.
+        </para> 
+        <para>
+            A fordítóprogram egyetlen egységként kezeli a
+            forrást, és lexikai, szintaktikai, szemantikai elemzést hajt
+            végre, majd legenerálja a gépi kódot. Ez még nem futtatható, ebből
+            a kapcsolatszerkesztő állít elé futtaható programot, melyet a betöltő
+            behelyez a tárba, és a futtató rendszer felügyeli a futását. Bizonyos
+            esetekben lehetőség van arra, hogy nem nyelvi elemeket használjunk
+            egy forrásprogramban, de ilyenkor szükség van egy előfordítóra is.  
+        </para>
+        <para>
+            Az interpreteres megoldás nem készít tárgykódot, viszont a fentebb
+            említett 3 elemzést végrehajtja. Utasításonként sorra veszi a
+            forrásprogramot, értelmezi, és végrehajtja. tehát rögtön kapjuk meg
+            eredményt. Bizoynos nyelvek esetén mind az interpreteres, mind a
+            fordítóprogramos megoldást alkalmazzák.
+        </para>
+        <para>
+            Minden programozási nyelvhez tartozik egy hivatkozási nyelv, mely a
+            szemantikai és szintaktikai szabályokat határozza meg. Emellett
+            léteznek még implementációk. Az egyes rendszereken több fordítóprogram
+            és iterpreter létezik, és ennek következtében az implementációk
+            nem kompatiblisek egymással, ez pedig meggátolja a programok tökéletes
+            hordozását a platformok között.
+        </para>
+        <para>
+            A programozó dolgának megkönnyítése érdekében létrejöttek az 
+            integrált grafikus felületek(IDE), melyek egy csomagban tartalmaznak
+            minden szükséges eszközt a programok megírásához, és futtatásához.
+        </para>
+        <para>
+            <emphasis role="strong">A programnyelvek osztályozása</emphasis>
+        </para>
+        <para>
+            Összeségében 2 fő csoportra oszthatjuk a programozási nyelveket:az 
+            imperatív nyelvekre és a deklaratív nyelvekre.
+        </para>
+        <para>
+            Az imperatív nyelvek algoritmikus nyelvek, tehát a programozó maga 
+            kódolja le az algoritmust, amit a processzor majd végrehajt. A program
+            utasításokból épül fel. Legfőbb eszköz a változó, mely segítségével
+            el tudunk érni tárterületet, és tudjuk módosítani annak tartalmát.
+            Jelen esetben az algoritmusok teszik ezt. Az imperatív nyelveknek
+            2 alcsoportja van: az Eljárásorientált nyelvek és az Objektumorientált
+            nyelvek. 
+        </para>
+        <para>
+            Ezzel szemben a deklaratív nyelvek nem algoritmikusak, a programozó
+            csak felvázolja a problémát, és a nyelvi implementációkban be van 
+            építve a megoldás megkeresésének módja. Memóriaműveltekre
+            nincs lehetőség, vagy nagyon korlátozott módon. Ennek is 2 alcsoportja
+            van: a Funkcionális nyelvek és a Logikai nyelvek.
+        </para>
+        <para>
+            Léteznek olyan nyelvek is, amelyek nem sorolhatóak be egyik osztályba
+            sem, nincs egységes jellemzőjük. Általában az imperatív nyelv valamelyik
+            tulajdonságát tagadják.
+        </para>
+        <para>
+            <emphasis role="strong">Karakterkészlet</emphasis>
+        </para>
+        <para>
+            A programok legkisebb épitőelemei a karakterek. A forrásszöveg
+            írásakor alapvető a karakterkészlet ismerete, mivel csak ezek
+            jelenhetnek meg a kódban, és belőlük állítható elő összetett
+            nyelvi elem. Az eljárásorientált nyelvek lexikális, szintaktikai 
+            egységek, utasítások, programegységek, fordítási egységek
+            és végül maga a program épül fel a nyelvi elemekből.
+        </para>
+        <para>
+            Minden nyelv definiálja a saját karakterkészletét, de a lgetöbb
+            programnyelv a karaktereket 3 kategóriába sorolja: betűk, számok,
+            egyéb karakterek. A legtöbb nyelvben a betűk az angol ABC 26 betűjét
+            tartalmazzák, viszont az már nyelv függő, hogy értelmezve van-e a nagy
+            és kis betű, vagy különbséget tezs a kettő között. Egyes újabb nyelvek
+            már nemzetisági betűket is tartalmaznak, ennek következtében
+            "magyarul" is programozhatunk. A számokat nagyjából mindegyik
+            nyelv hasonlóan kezeli, a decimális számjegyeket veszik számokjegy
+            karakternek. Egyéb karakterek közé soroljuka műveleti jeleket(+,-,*,/),
+            elhatároló jeleket([,],., {, },;), írásjeleket és speciális
+            karaktereket. A hivatkozási nyelv és az implementáció karakterkészlete
+            egyes esetekben eltérő lehet.
+        </para>
+        <para>
+            <emphasis role="strong">Lexikális egységek</emphasis>
+        </para>
+        <para>
+            A lexikális egységek azok, amelyeket a fordítóprogram felismer, és 
+            tokenizál. Lehetnek többkarakteres szimbólumok, szimbolikus nevek,
+            cimkék, megjegyzések, literálok.
+        </para>
+        <para>
+            Többkarakteres szimbólumoknak a nyelv tulajdonít jelentést, gyakran
+            operátorok vagy elhatárolók, mint C-ben a ++,--,<![CDATA[&&]]>.
+        </para>
+        <para>
+            Szimbolikus neveket 3 csoportra bontjuk, az azonosítókra, a
+            kulcsszóra és a standard azonosítóra.
+            Az azonosító betűvel kezdődik és betűvel vagy számmal folytatódik, 
+            segítségével programozói eszközöket nevezünk meg, és ezzel a névvel
+            tudunk rájuk hivatkozni a programon belül.
+            A kulcsszónak az adott nyelv tulajdonít jelentést, ez nem
+            változtatható meg. C-ben iylenek az if, for, case, break.
+            A standard azonosító pedi egy kicsit mind a kettő, mivel ezt is az 
+            adott nyelv látja el jelentéssel, de a programozó megváltoztathatja.
+            C-ben sztenderd azonisítónak számit a NULL.
+        </para>
+        <para>
+            A címkéknek főleg az eljárásorientált nyelvekben van nagy jelentősége
+            ,mivel a segítségével képesek vagyunk megjelölni a végrehajtó
+            utasításokat, így tudunk rájuk hivatkozni a program más részein.
+        </para>
+        <para>
+            A megjegyzések szerepe az évek során eléggé megkopott, de természetesen
+            minden nyelv biztosít lehetőséget kommentek hozzáadásához. A komment
+            lényegében egy karaktersorozat, amelyet a fordító ignorál. Több 
+            implementáció létezik a kommentek alakalmazására, lehet teljes
+            komment sorokat elhelyezni, vagy sor végi kommenteket, de lehetőség
+            van több soros, egybefüggő kommentek elhelyezésére is. A C-ben mind
+            a 3-ra van lehetőség. (Egysoros komment://, többsoros: /* */) 
+        </para>
+        <para>
+            Végezetül tegyünk említést a literálokról is, mely programozási eszközök
+            segítségével fix értékek építhetők be a programba. A literáloknak van
+            típusuk és értékük. A literálrendszerek egyes programozási nyelvekben
+            eltérő lehet.
+        </para>
+    </section>        
+    <section>
+        <title>A Pici könv 28-45. oldal feldolgozása</title>
+        <para>
+            <emphasis role="strong">Adattípusok</emphasis>
+        </para>
+        <para>
+            Az adattípus egy absztrakt programozási eszköz,mely kronkrét eszközök
+            komponenseként jelenik meg. Mindig rendelkezik egy névvel, ami azonosító.
+            Nem minden nyelv ismeri ezt, azt eszközt, főleg az eljárásorientált
+            nyelvekben van fontos szerepe. Az adattípust a tartomány, a műveletek
+            és a reprezentáció határoz meg.
+        </para>
+        <para>
+            A tartomány az adattípus által felvehető értékek halmazát adja meg.
+            Mindegyikhez hozzátartoznak műveletek, amit az adott típussal végre
+            tudunk hajtani. A reprezentáció pedig a beslő ábrázolást írja le,
+            vagyis a tárban a típus hány bájtra képződik.
+        </para>
+        <para>
+            Bizonyos nyelvek lehetőséget biztosítanak arra, hogy a programozó
+            saját adattípusokat adjon meg, mindezt általában a beépített 
+            típusok segítségével. Meg tudjuk adni a tartományt, a műveleteket, és
+            a reprezentációt is. Viszont ezt nagyon kevés nyelv támogatja.
+        </para>
+        <para>
+            Az adattípusokat 2 nagy csoportra osztjuk: skalár adattípus és
+            összetett adattípus.
+        </para>
+        <para>
+            A <emphasis role="strong">saklár</emphasis> típus tartománya atomi
+            értékeket tartmaz. Skalár típus a 
+            minden nyelvben létező egész, melynek belső ábrázolása fixpontos.
+            Vannak még a valós típusok, ezek reprezentációja lebegőpontos,
+            tartománya implementációfüggő. Ezt a két típust együtt numerikus
+            típusoknak nevezzük, melyeken numerikus és összehasonlító műveletek
+            hajthatók végre.
+        </para>
+        <para>
+            A karakteres típus elemei karakterek, míg 
+            karakterlánc típuséi karaktersorozatok. Ezeken szöveges és hasonlító
+            műveleteket hajthatunk végre. Ábrázolásuk karakteres.
+        </para>
+        <para>
+            Bizonyos nyelvek támogatják a logikia típusokat is, melyek értéke igaz
+            vagy hamis lehet, logikai és hasonlító műveleteket tudunk velük
+            végrehajtani.
+        </para>
+        <para>
+            Érdekességként meg lehet említeni a felsorolás típust vagy a sorszámozott
+            típust, de ezek kevésbé elterjedtek, csak néhány nyelvben fordulnak elő.
+        </para>
+    </section>        
+    <section>
+        <title>Java EXOR titkosító</title>
+        <para>
+            Írj egy EXOR titkosítót Java-ban!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Tanulságok, tapasztalatok, magyarázat...
+        </para>            
+    </section>        
+    <section>
+        <title>C EXOR törő</title>
+        <para>
+            Írj egy olyan C programot, amely megtöri az első feladatban előállított titkos szövegeket!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Tanulságok, tapasztalatok, magyarázat...
+        </para>            
+    </section>        
+    <section>
+        <title>Neurális OR, AND és EXOR kapu</title>
+        <para>
+            R
+        </para>
+        <para>
+            Megoldás videó: <link xlink:href="https://youtu.be/Koyw6IH5ScQ">https://youtu.be/Koyw6IH5ScQ</link>
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R</link>               
+        </para>
+        <para>
+            Tanulságok, tapasztalatok, magyarázat...
+        </para>            
+    </section>        
+    <section>
+        <title>Hiba-visszaterjesztéses perceptron</title>
+        <para>
+            C++
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Tanulságok, tapasztalatok, magyarázat...
+        </para>            
+    </section>        
+        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                
