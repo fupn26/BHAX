@@ -226,7 +226,7 @@ false]]></screen>
                 a = a-b;
             ]]></programlisting>
             Ez szín tiszta matematika, viszont ennél egy sokkal érdekesebb dolog ugyan ennek a feladatnak EXOR-ral való megvalósítása. A lényeg annyi, hogy a számítógép a változó értékét 2-es számrendszerben tárolja
-            ennek következtében a szám 0-kból és 1-kből áll. A XOR (kizáró vagy) minden esetben 1-et ad vissza kivéve, azaz igaz értéket, kivéve ha a művelet jobb és bal oldalán azonos érték van,
+            ennek következtében a szám 0-kból és 1-kből áll. A XOR (kizáró vagy) minden esetben 1-et ad vissza, azaz igaz értéket, kivéve ha a művelet jobb és bal oldalán azonos érték van,
             mert ilyenkor 0-t ad vissza. Ezt használjuk most ki a következő példában:
             <programlisting language = "c"><![CDATA[
                 int a = 4; //2-es számrendszerben: 0100
