@@ -166,7 +166,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása:<link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/EXOR">itt</link>                
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -271,8 +271,12 @@
             Megoldás forrása:                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Az előző feladatát kell most java-ban megoldani.
+            
+        </para>
     </section>        
     <section>
         <title>C EXOR törő</title>
@@ -283,11 +287,162 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/EXOR">itt</link>                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role = "strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Az előbbi feéadatokban láthattad, hogy hogyan lehet tikosított szövegeket készíteni az EXOR titkosítás segítségéval. Most ennek
+            az ellentétét kell megcsinálnunk, ami egy kicsit trükkösebb, és talán nem is tökéletes, de az előző feladatban generált
+            titkos szöveg feltörésére alkalmas lesz.
+        </para>
+        <para>
+            <programlisting>
+                #define MAX_TITKOS 4096
+                #define OLVASAS_BUFFER 256
+                #define KULCS_MERET 8
+            </programlisting>
+            Ezúttal is meghatározunk bizonyos konstansokat, ebből a kulcs_meret érdekes, mert feltételezzük, hogy a kulcs 8 elemből áll, már
+            itt látni, hogy ez nem lenne túl hatékony a való életben.
+            <programlisting><![CDATA[
+                double
+                atlagos_szohossz (const char *titkos, int titkos_meret)
+                {
+                    int sz = 0;
+                    for (int i = 0; i < titkos_meret; ++i)
+                        if (titkos[i] == ' ')
+                            ++sz;
+
+                    return (double) titkos_meret / sz;
+                }]]>
+            </programlisting>
+            Az <function>atlagos_szohossz</function> függvénnyel kiszámítjuk a bemenet átlagos szóhosszát, argumentumként átadjuk egy tömböt, és annak a méretét. Majd egy <function>for</function>
+            ciklussal bejárjuk, és minden elem után hozzáadunk 1-et az <function>sz</function> változóhoz. Visszatérési értékként pedig a tömb méretének és a számlálónka a hányadosát
+            adjuk.
+            <programlisting language="c"><![CDATA[
+                int
+                tiszta_lehet (const char *titkos, int titkos_meret)
+                {
+                    // a tiszta szoveg valszeg tartalmazza a gyakori magyar szavakat
+                    // illetve az átlagos szóhossz vizsgálatával csökkentjük a
+                    // potenciális töréseket
+
+                    double szohossz = atlagos_szohossz (titkos, titkos_meret);
+
+                    return szohossz > 6.0 && szohossz < 9.0
+                        && strcasestr (titkos, "hogy") && strcasestr (titkos, "nem")
+                        && strcasestr (titkos, "az") && strcasestr (titkos, "ha");
+
+                }]]>
+            </programlisting>
+            A <function>tiszta_lehet</function> függvény az átlagos szóhossz segítségével vizsgálja, hogy a fejtésben lévő kód tiszta-e már. Itt meg kell felelni az átlagos magyar szóhossznak,
+            és a leggyakoribb szavakat tartalmaznia kell. Felmerül a kérdés, hogy mi történik akkor, ha ezeknek nem felel meg a törni kívánt szöveg? Sajnos akkor nem tudjuk feltörni, tehát
+            ez egy újabb gyengesége a programunknak.
+            <programlisting language="c"><![CDATA[
+            void
+            exor (const char kulcs[], int kulcs_meret, char titkos[], int titkos_meret)
+            {
+
+                int kulcs_index = 0;
+
+                for (int i = 0; i < titkos_meret; ++i)
+                {
+
+                    titkos[i] = titkos[i] ^ kulcs[kulcs_index];
+                    kulcs_index = (kulcs_index + 1) % kulcs_meret;
+
+                }
+
+            }]]>
+            </programlisting>
+            Az <function>exor</function> függvény uygan azt csinálja, mint az EXOR titkosító, mivel ha valamit kétszer EXOR-ozunk, akkor visszakapjuk önmagát. Lényegében ezzel
+            állítjuk vissza a tiszta szöveget. Ez argumentumként megkap egy lehetséges kulcsot, annak méretét, és magát a titkosított szöveget, annak méretével együtt.
+            <programlisting language = "c">
+                int
+                exor_tores (const char kulcs[], int kulcs_meret, char titkos[],
+                        int titkos_meret)
+                {
+
+                    exor (kulcs, kulcs_meret, titkos, titkos_meret);
+
+                   return tiszta_lehet (titkos, titkos_meret);
+
+                }
+            </programlisting>
+            Az <function>exor_tores</function> hívja a korábban definiált függvényeket, és 0-át vagy 1-et ad vissza, attól függően, hogy tiszta-e már a szöveg.
+            <programlisting language="c">
+                char kulcs[KULCS_MERET];
+                char titkos[MAX_TITKOS];
+                char *p = titkos;
+                int olvasott_bajtok;
+            </programlisting>
+            Mostmár áttérhetünk a <function>main</function> belüli deklarációkra, definíciókra. Elsőnek deklarálunk egy kulcs[] tömböt, és egy titkos[] tömböt. Ezek mérete a fentebb
+            már rögzített értékekkel lesz azonos.  Majd definiálunk egy mutatót, mely a titkos[] tömbre mutat, és deklaráljuk a beolvasott bájtok számlálóját.
+            <programlisting language="c"><![CDATA[
+                while ((olvasott_bajtok =
+                        read (0, (void *) p,
+                        (p - titkos + OLVASAS_BUFFER <
+                        MAX_TITKOS) ? OLVASAS_BUFFER : titkos + MAX_TITKOS - p)))
+                        p += olvasott_bajtok;]]>
+            </programlisting>
+            A <function>while</function> ciklussal addig olvassuk a bájtokat, ameddig a buffer be nem telik, vagy a bemenet végére nem érünk.
+            <programlisting language = "c"><![CDATA[
+                for (int i = 0; i < MAX_TITKOS - (p - titkos); ++i)
+                        titkos[p - titkos + i] = '\0';]]>
+            </programlisting>
+            Ezzel a <function>for</function> ciklussal kinullázzuk a buffer megmaradt helyeit, és utána pedig előállítjuk az összes lehetséges kulcsot:
+            <programlisting language="c"><![CDATA[
+   for (int ii = '0'; ii <= '9'; ++ii)
+    for (int ji = '0'; ji <= '9'; ++ji)
+      for (int ki = '0'; ki <= '9'; ++ki)
+	for (int li = '0'; li <= '9'; ++li)
+	  for (int mi = '0'; mi <= '9'; ++mi)
+	    for (int ni = '0'; ni <= '9'; ++ni)
+	      for (int oi = '0'; oi <= '9'; ++oi)
+		for (int pi = '0'; pi <= '9'; ++pi)
+		  {
+		    kulcs[0] = ii;
+		    kulcs[1] = ji;
+		    kulcs[2] = ki;
+		    kulcs[3] = li;
+		    kulcs[4] = mi;
+		    kulcs[5] = ni;
+		    kulcs[6] = oi;
+		    kulcs[7] = pi;
+
+		    if (exor_tores (kulcs, KULCS_MERET, titkos, p - titkos))
+		      printf
+			("Kulcs: [%c%c%c%c%c%c%c%c]\nTiszta szoveg: [%s]\n",
+			 ii, ji, ki, li, mi, ni, oi, pi, titkos);
+
+		    // ujra EXOR-ozunk, igy nem kell egy masodik buffer  
+		    exor (kulcs, KULCS_MERET, titkos, p - titkos);
+		  }]]>
+            </programlisting>
+            Végig futatjuk az összes lehetőségen a <function>for</function> ciklust, majd meghívjuk az <function>exor_tores</function> függvényt. Ha ez igazat ad, tehát a
+            visszatérési érték 1, akkor kiíratjuk az aktuális kulcsot és a feltört szöveget. Ahogy látod ez csak olyan kódokat tud feltörni, amit számokkal
+            kódoltunk. Az előző feladatban én a betűket és számokat is használtam, ezt is ki lehetne bővíteni, hogy fel tudjuk törni azt a kódot, de az a baj, hogy
+            nagyon sokáig tartana. Tehát ennél a megoldásnál maradva újratitkosítottam az tiszta.txt-t  
+            <figure>
+                <title>Törés</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/EXOR/törés.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A <filename>t.c</filename> fordítva és futtatva a képen látható módon folyamatosan kapjuk a lehetséges megfejtéseket, fontos hogy nem kell végig
+            várni a folyamatot, mert az sokáig tart, Ctrl+c-vel meg tudod állítani. Jelen esetben láthatod, hogy sikerült megtalálnia a megfelelő kódot.
+            <figure>
+                <title>Törés</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/EXOR/eredmény.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
     </section>        
     <section>
         <title>Neurális OR, AND és EXOR kapu</title>
