@@ -6,7 +6,7 @@
         </keywordset>
     </info>
     <section>
-        <title><type>int ***</type> háromszögmátrix</title>
+        <title><type>int **</type> háromszögmátrix</title>
         <para>
            
         </para>
@@ -14,11 +14,148 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Haromszogmatrix">itt</link>               
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ebben a feladatban a pointerek használatával fogunk egy kicsit
+            jobban megismerkedni. De mielőtt rátérnénk a forrásra, előtte
+            tisztázzuk mi is az a háromszögmátrix. Ez 2 tulajdonsággal rendelkezik,
+            az első, hogy négyzetes, tehát sorai és oszlopai száma
+            megegyezik, a másik pedig az, hogy a főátlója alatt(a mi programunkban felett) csupa
+            nulla szerepel.
+            A program ezt a mátrixot fogja elkészíteni:
+            <figure>
+                <title>Háromszögmátrix</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Haromszogmatrix/matrix.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
+        <para>
+            Most, hogy tudjuk, mit várunk el a programtól, nézzük meg, hogyan lehet ezt megvalósítani. Ahogy a feladat kiírásában is láthatjátok,
+            ezt egy egészre mutató mutatatónak a mutatójával fogjuk létrehozni. Gondolom ez most egy kicsit
+            bonyolultnak hangzik, de itt egy ábra a program egyszerű megértéséhez:
+            <figure>
+                <title>Pointerek a memóriában</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Haromszogmatrix/pointer.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A könnyebb megértés érdekében vegyük sorra, hogy mi is van az ábrán. Legfelül látjuk az <function><![CDATA[int **tm]]></function> mutatót, ez a deklaráció. Azért áll 4 négyzetből, mert az
+            int típusú változók 4 bájtosak. És ez a mutató egy <function><![CDATA[int*]]></function>-ra mutat, vagyis annak a memóriacímére, a memóriacím kerül be a kék oválisba.
+            Ezután láthatod a <function>tm+1</function>-et, ez azt jelenti, hogy a <function>tm</function> mutató "eggyel" arrébb mutat, vagyis 4 bájttal árrébb. 
+            A <function><![CDATA[*(tm+1)]]></function>-el pedig a benne lévő értéket kaojuk meg. Ezzel ekvivalens jelölés, mely talán jobban érthető, ha úgy képzeljük el ezt,
+            mintha egy tömb lenne. Tehát a <function>tm+1</function> értelmezhető így: <function><![CDATA[&tm[1]]]></function>, vagyis a <function>tm</function> tömb második elemének
+            memóriacímeként. Ebből következik, hogy a <function><![CDATA[*(tm+1)]]></function> pedig a <function><![CDATA[tm[1]]]></function>, mely nem más, mint a <function>tm</function> tömb második elemének
+            az értéke. Mivel még mindig a pointereknél tartunk, ezért ez az érték szintén egy memóriacím lesz, mégpedig egy int típusú változójé. És ezzel megérkeztünk a 
+            változók szintjére, ahol már nincsenek pointerek. Ha azt akarod tudni, hogy mi a <function><![CDATA[*(tm+1)]]></function> által mutatott int értéke, akkor egyszerű a dolgunk,
+            csak elé rakunk még egy csillagot, tehát <function><![CDATA[*(*(tm+1))]]></function>. Értelem szerűen, itt úgy tudsz a következő elemre mutatni, hogy +1-et hozzáadsz, vagyis
+            <function><![CDATA[*(tm+1)+1]]></function>, ennek az értékét pedig <function><![CDATA[*(*(tm+1)+1)]]></function>. Ebben az esetben is használhatod a tömbös analógiát. Mivel a mátrix lényegében
+            egy két dimenziós tömb, ezért ábrázolhatod így is <function><![CDATA[&tm[1][1]]]></function> a memóriacímet, és <function>tm[1][1]</function>-el az értékét.
+            Összességében rajtad áll, hogy melyiket szeretnéd használni, kezdetben talán a tömbös megoldás érthetőbb, de érdemes hozzászokni a másikhoz, mert az az elterjedtebb. 
+        </para>
+        <para>
+            Most elemezzük a programot sorról sorra.
+            <programlisting language="c"><![CDATA[
+                #include <stdio.h>
+                #include <stdlib.h>
+
+                int
+                main ()
+                {               
+                    int nr = 5;
+                    int **tm;]]>
+            </programlisting>
+            Az elején, ahogy már megszoktad includálj a megfelelő header fájlokat, az stdio.h ismerős
+            lehet, ez kell a <function>printf</function> használatához, és most megismerkedünk
+            az stdlib.h-val, mely a <function>malloc</function> utasítás használatához lesz szükséges.
+            Az <function>nr</function> tartalmazza az oszlopok számát, ls itt deklarájuk a
+            <function><![CDATA[**tm]]></function> pointert is.
+            <programlisting language="c"><![CDATA[
+                printf("%p\n", &tm);
+    
+                if ((tm = (int **) malloc (nr * sizeof (int *))) == NULL)
+                {
+                    return -1;
+                }
+
+                printf("%p\n", tm);]]>
+            </programlisting>
+            Ebben a részben a <function>printf</function> kiírja a tm memóriacímét, majd az if feltételén belül, a <function>tm</function>-et ráállítjuk a malloc által
+            foglalt 5*8 bájtnyi táterületre. A malloc egy pointert ad vissza, ami a lefoglalt tárra mutat, <function>void *</function> típusút, tehát bármely típust
+            vissza tud adni típuskényszerítéssel. Jelen esetben ez <function>**int</function> visszaadására kényszerítjük. Majd az if feltételeként megvizsgáljuk, hogy
+            tudott-e lefoglalni területet a malloc, ha nem, akkor visszatérünk hibával. Ha a tárfoglalás sikerült, akkor kíírjuk a lefoglalt tár címét.
+            Ha az ábrát visszanézed, most tartunk a második sorban.
+            <programlisting language="c"><![CDATA[
+                 for (int i = 0; i < nr; ++i)
+                 {
+                       if ((tm[i] = (int *) malloc ((i + 1) * sizeof (int))) == NULL)
+                       {
+                            return -1;
+                        }
+
+                }]]>
+            </programlisting>
+            A <function>for</function> cikluson belül "létrehozzuk" az ábra szerinti második sor elemeit, melyek <function>int *</function> típusúak. A ciklusban 0-tól megyünk 4-ig, egyesével
+            lépkedve. A <function>tm</function> mutatót itt úgy kezeljük, mint egy tömböt, és a tm által mutatott mutatókahoz foglalunk tártetületet, és ráállítjuk őket. Éredemes megfigyelni,
+            hogy mindegyikhez i+1-szer 4 bájtot foglalunk le, és a malloc <function>int *</function>-ot ad vissza. Itt is megvizsgáljuk, hogy sikerült-e a foglalás, hanem hibával
+            térünk vissza. Most kész a másdik sor, és mindegyik <function>int *</function> egy harmadik sorban lévő <function>int</function>-ek csopoortjának első elemére mutat, mindegyik más
+            csoportra.
+            <programlisting language="c"><![CDATA[
+                printf("%p\n", tm[0]);    
+    
+                for (int i = 0; i < nr; ++i)
+                    for (int j = 0; j < i + 1; ++j)
+                        tm[i][j] = i * (i + 1) / 2 + j;
+
+                for (int i = 0; i < nr; ++i)
+                {
+                    for (int j = 0; j < i + 1; ++j)
+                        printf ("%d, ", tm[i][j]);
+                    printf ("\n");
+                }]]>
+            </programlisting>
+            Kiíratjuk a harmadik sor első int csoportjának első elemének a memóriacímét. Majd a for cikluson belül értéket adunk a harmadik sori <function>int</function>-eknek. Az
+            <function>i</function>-vel megyünk a 4-ig, vagyis <function>nr-1</function>-ig, <function>j</function>-vel pedig mindig 0-tól i-ig. Az i jelöli a sorok számét, a j pedig
+            az oszlopokét. Mártix minden eleméhez a sorszám*(szorszám+1)/2+oszlopszám, és ezzel megkapjuk a feladat legelején felvázolt mátrixot, amit a következő <function>for</function>
+            -ban már csak elemenként kiíratunk.
+         </para>
+         <para>
+             Hogy egy kicsit szokja a szemed a többféle jelölést, nézzük meg az előbb megadott mátrix néhány elemének módosítását.
+             <programlisting language="c">
+                  tm[3][0] = 42;
+                  (*(tm + 3))[1] = 43;	// mi van, ha itt hiányzik a külső ()
+                  *(tm[3] + 2) = 44;
+                  *(*(tm + 3) + 3) = 45;
+             </programlisting>
+             Az elsőt már láttad a gyakorlatban, hogy működik, mivel a programban eddig ezt használtuk, tehát a tm 3. sorának első elemének értékét 42-re módosítjuk. Utána a harmadik sor második
+             elemének az értékét változtatjuk, majd a harmadik sor harmadik elemét, végül pedig a harmadik sor negyedik elemét. Itt is láthatod, hogy az első verzió sokkal egyszerűbb a többinél, 
+             főleg azoknak, akik már sokat hasznátak tömböket C-ben. A második lehetőségnél felmerül a kérdés, hogy elhagyható-e a külső zárójel. Elhagyható viszont, így nem a harmadik
+             sorba lesz a módosítás, hanem a 4. sor első eleménél, mivel <function>*(tm + 3)[1]</function> azzal ekvivalens, hogy <function>*(tm+4)</function>. 
+             <figure>
+                <title>(*(tm + 3))[1] = 43</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Haromszogmatrix/jo.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>*(tm + 3)[1] = 43</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Haromszogmatrix/mas.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+         </para>
     </section>        
     <section>
         <title>C EXOR titkosító</title>
@@ -32,8 +169,95 @@
             Megoldás forrása:                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Az EXOR titkosító lényegében a logikai vagyra, azaz a XOR műveletre utal, mely bitenként összeshasonlítja a két operandust, és mindig 1-et ad vissza, kivéve, amikor
+            az összehasonlított 2 Bit megegyezik, mert akkor nullát. Tehát 2 operandusra van szükségünk, ez jelen esetben a titkosítandó bemenet, és a titkosításhoz használt kulcs.
+            Ideális esetben a ketté mérete megyegyezik, így garantálható, hogy szinte feltörhetetlen kódot kapunk, mivel túl sokáig tart annak megfejtése. A mi pédánkban természetesen
+            nem lesz ilyen hosszú a kulcs, mivel ki is szeretnénk próbálni a programot. Viszont ha a kulcs rövidebb, mint a titkosítandó szöveg, akkor a kulcs elkezd ismétlődni, ami
+            biztonsági kockázatot rejt magában.
+        </para>
+        <para>
+            Nézzük is meg ennek a titkosító algoritmusnak a C-beli implementációját, melynek majd a törő verzióját is elkészítjük a későbbiekben.
+            <programlisting language="c">
+                #define MAX_KULCS 100
+                #define BUFFER_MERET 256
+            </programlisting>
+            Elsőnek a kulcs méret és a buffer méretének maximumát konstansban tároljuk el, ezek nem módosíthatóak. A szintaxisa is másabb, mint egy változó definiálásánal, itt
+            lényegében azt adjuk meg, hogy mivel helyettesítse a megadott nevet a program a forrásban. Az előre definiált konstansok nevét általában nagy betűvel írjuk, ezzel
+            is elkülönítve a vátozóktól. Nem csak számokat használhatunk konstansként, hanme stringeket, és kifejezéseket is. Érdekessége még, hogy nem program futtatásakor
+            történik meg a behelyettesítés, hanem a már a fordítás alatt, tehát a gépi kód már behelyettesített értékeket tartalmazza.
+            <programlisting language="C">
+                int
+                main (int argc, char **argv)
+            </programlisting>
+            Újabb érdekesség, hogy a <function>main()</function> definiálása itt egy kicsit másképp zajlik, mivel jelen esetben argumentumokat adunk át neki, az argumentumokat általában a 
+            terminálon keresztül adjuk át, amikor futtatjuk. Az <function>argc</function>-vel adjuk át az argumentumok számát, és az argumentumokra mutató mutatókat pedig az
+            <function>argv</function> tömbben tároljuk el.
+            <programlisting language="c">
+                char kulcs[MAX_KULCS];
+                char buffer[BUFFER_MERET];
+            </programlisting>
+            A <function>main()</function> belül deklarálunk két tömböt, egyikbe a kulcsot tároljuk, a másikban pedig a beolvasott karaktereket, mind a kettőnek a mérete korlátozott,
+            melyet még a #define segítségével adtunk meg.
+            <programlisting language="c">
+                int kulcs_index = 0;
+                int olvasott_bajtok = 0;
+
+                int kulcs_meret = strlen (argv[1]);
+                strncpy (kulcs, argv[1], MAX_KULCS);
+            </programlisting>
+            Definiálunk számlálókat, melyek segítségével bejárjuk majd a kulcs tömböt, és számoljuk a beolvasott bájtokat. A kulcs méretét a <function>strlen()</function> függvénnyel kapjuk meg,
+            mely jelen esetben visszadja a második parancssori argumentum hosszát. Ezután a <function>strncpy()</function> függvénnyel átmásoljuk az <function>argv[1]</function>-ben tárolt 
+            sztringet karakterenként a kulcs tömbe "másolja", lényegében mindegyikhez visszaad egy pointert. A MAX_KULCS-csal pedig meghatározzuk, hogy mennyi karaktert msáoljon át.
+            <programlisting><![CDATA[
+                while ((olvasott_bajtok = read (0, (void *) buffer, BUFFER_MERET)))
+                {
+
+                    for (int i = 0; i < olvasott_bajtok; ++i)
+                    {
+
+                        buffer[i] = buffer[i] ^ kulcs[kulcs_index];
+                        kulcs_index = (kulcs_index + 1) % kulcs_meret;
+
+                    }
+
+                write (1, buffer, olvasott_bajtok);
+
+                }]]>
+            </programlisting>
+            A <function>while</function> cikluson feltétele addig lesz igaz, ameddig a <function>read</function> parancs beolvassa a megadott mennyiségű bájtokat. A <function>read</function> 
+            3 argumentumot kap, az egyik a file descriptor, ami megadná, hogy honna szeretnénk beolvasni a bájtokat, jelen esetben a standard inputról olvasunk, a bájtokat a buffer-ben tároljuk
+            egészen addig, ameddig el nem érjük a megadott mennyiséget, amit BUFFER_MERET definiál. A beolvasott bájtok számát adja vissza. Ezután pedig végigmegyünk elemenként a bufferben
+            eltárolt karaktereken és össze EXOR-ozzuk a kulcs tömb megfelelő elemével, majd inkrementáljuk a <function>kulcs_index</function>-et 1-el, mely egésezn addig nő, ameddig el nem érjük
+            a <function>kulcs_meret</function>-et, ekkor lenullázódik.
+            Végezetül pedig kiírjuk a buffer tartalmát a stabdard outputra.
+            <figure>
+                <title>Titkosítandó szöveg</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/EXOR/tiszta.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Fordítás és futtatás</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/EXOR/exor.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Titkosított szöveg</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/EXOR/titkos.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
     </section>        
     <section>
         <title>Java EXOR titkosító</title>
