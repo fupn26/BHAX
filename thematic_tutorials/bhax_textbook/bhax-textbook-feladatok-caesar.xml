@@ -292,6 +292,12 @@
         <para>
             <emphasis role = "strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>
+                Ebben a feladatban tutorként és tutoráltként részt vett: Imre Dalma, György Dóra.
+            </para>
+        </caution>
         <para>
             Az előbbi feéadatokban láthattad, hogy hogyan lehet tikosított szövegeket készíteni az EXOR titkosítás segítségéval. Most ennek
             az ellentétét kell megcsinálnunk, ami egy kicsit trükkösebb, és talán nem is tökéletes, de az előző feladatban generált
@@ -456,8 +462,154 @@
             Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R</link>               
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ebben a feladatban újra visszatérünk a Monty Hall problémánál megismert R nyelvhez. Segítségével
+            neurális hálózatot fogunk létrehozni, mely képes "tanulni", és megközelíteni az átalunk megadott
+            megfelelő értékeket. A hálózat a nevét a neuronról kapta, mely gyunk egy sejtje. Feladata az elektromos 
+            jelek összegyűjtése, feldolgozás és szétterjesztése. Az a feltételezés, hogy az agyunk információfeldolgozási
+            képességét ezen sejtek  hálózata adja. Éppen emiatt a mesterséges intelligencia kutatások során ennek a szimulálást
+            tűzték ki célul. A neuron matematikai modeljét McCulloch és Pitts alkotta meg 1943. Ezt mutatja a következő ábra:
+            <figure>
+                <title>Neuron</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Neurális/neuron.png" format="PNG" scale="700"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A lényeg, hogy a neuron akkor fog tüzelni, ha a bemenetek súlyozott
+            összege meghaladnak egy küszöböt. Az aktivációs függvény adja meg a kimenet értékét.
+        </para>
+        <para>
+            Ezt a modellt fogjuk implementálni egy R programba. Az első részben a logikai
+            vagyot tanítjuk meg a neurális hálózatnak, mely 1-et ad vissza, kivéve, ha mind a két
+            operandusa 0, mert akkor 0-át.
+            <programlisting><![CDATA[
+library(neuralnet)
+
+a1    <- c(0,1,0,1)
+a2    <- c(0,0,1,1)
+OR    <- c(0,1,1,1)
+
+or.data <- data.frame(a1, a2, OR)
+
+nn.or <- neuralnet(OR~a1+a2, or.data, hidden=0, linear.output=FALSE, stepmax = 1e+07, threshold = 0.000001)
+
+plot(nn.or)
+
+compute(nn.or, or.data[,1:2])]]>
+            </programlisting>
+            A neurarnet könyvtárat kell használni a feladat megoldásához. Az a1, a2, OR
+            változókhoz hozzárndeljük a megfelelő értékeket, amit szeretnénk betanítani
+            a programnak. Majd az or.data-ban tároljuk el ezeket a változókat, melyek
+            a betanítás alapjául fognak szolgálni. Az nn.or változó értékéül pedig a 
+            <function>neuralnet</function> függvény visszatérési értékét adjuk. Ennek 
+            a függvénynek több argumentuma van, ezeket vegyük gyorsan sorra. Az első elem
+            maga a formula, amit meg kell tanulni a programnak, majd jön egy minta, mely
+            alapján a tanulást végzi, a harmadik argumentum a rejtett neuronok számát adja meg.
+            A <function>linear.output</function> egy logikai változó, melynek értékét TRUE-ra
+            kell állítani, ha azt szeretnénk, hogy az aktuvációs függvény ne fusson le a 
+            kimeneti neuronokra. A stepmax adja meg a maximum lépésszámát a neuron háló tanulásának,
+            mely befejeződik, ha elérjük ezt az értéket. A <function>threshold</function>
+            pedig számérték, mely meghatározza a hiba részleges deriváltjainak küszöbértékét, 
+            a tanulás megállási kritériumaként funkcionál. Ezután pedig <function>plot</function>
+            kirajzoltatjuk a neurális háló tanulási folyamatának egy állapotát. A neuralnet
+            minden bementhez kiszámol egy súlyozást, amellyel megszorozza a bemenet értékét.Majd pedig
+            kiszámítjuk a logikai művelet neurális háló szerinti értékét, és összevetjük
+            a referencia értékkekkel.
+            <figure>
+                <title>OR</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/NN_R/or.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
+        <para>
+        A jobb oldali kis ablakban láthatod, hogy egészen jó közelítéssel sikerült
+        visszaadnia a megfeleő értékeket a programnak. Ugyan ezt megismételjük az AND logikai
+        operátorral is, mely akkor lesz igaz, azaz 1, ha mind a 2 operandusa 1, amúgy hamis.
+        <programlisting><![CDATA[
+ a1    <- c(0,1,0,1)
+a2    <- c(0,0,1,1)
+AND   <- c(0,0,0,1)
+
+and.data <- data.frame(a1, a2, OR, AND)
+
+nn.and <- neuralnet(AND~a1+a2, orand.data, hidden=0, linear.output=FALSE, stepmax = 1e+07, threshold = 0.000001)
+
+plot(nn.and)
+
+compute(nn.and, and.data[,1:2])]]>
+        </programlisting>
+        <figure>
+                <title>AND</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/NN_R/and.png" format="PNG" scale="140"/>
+                        </imageobject>
+                    </mediaobject>
+        </figure>
+        </para>
+        <para>
+            Ezután pedig jönne az EXOR, viszont ez már nem annyira egyszerű. Amikor régen
+            ezt a technológiát kitalálták, és az EXOR nem működött, sokan elpártoltak tőle.
+            Majd a kor nagy matematikusai megfejtették, hogy nem lehetetlen feladat, csak egy
+            apróságra van szükség, létre kell hozni a rejtett neuronokat, melyek segítik a tanulást.
+            <programlisting><![CDATA[
+a1      <- c(0,1,0,1)
+a2      <- c(0,0,1,1)
+EXOR    <- c(0,1,1,0)
+
+exor.data <- data.frame(a1, a2, EXOR)
+
+nn.exor <- neuralnet(EXOR~a1+a2, exor.data, hidden=0, linear.output=FALSE, stepmax = 1e+07, threshold = 0.000001)
+
+plot(nn.exor)
+
+compute(nn.exor, exor.data[,1:2])]]>
+            </programlisting>
+            <figure>
+                <title>EXOR első próba</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/NN_R/exor_1.png" format="PNG" scale="140"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Látható, hogy nagyon nagy a hibaarány, és még az eredmények is tévesek lettek,
+            mindegyik 0,5 körüli lett, az 1 és a 0 helyett. A <function>neuralnet</function>
+            <function>hidden</function> argumentuma 0-ra volt állítva ebben az esetben, tehát
+            nem használtunk rejtett neuronokat. Ha ezt átállítjuk, akkor a következőt kapjuk:
+            <programlisting><![CDATA[
+a1      <- c(0,1,0,1)
+a2      <- c(0,0,1,1)
+EXOR    <- c(0,1,1,0)
+
+exor.data <- data.frame(a1, a2, EXOR)
+
+nn.exor <- neuralnet(EXOR~a1+a2, exor.data, hidden=c(6, 4, 6), linear.output=FALSE, stepmax = 1e+07, threshold = 0.000001)
+
+plot(nn.exor)
+
+compute(nn.exor, exor.data[,1:2])]]>
+            </programlisting>
+            Módosítottuk a rejtett neutronok számát, elsőnek 6, majd 4 és végül
+            megint 6 neuront hozunk létre. Lássuk az eredményt:
+            <figure>
+                <title>EXOR második próba</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/NN_R/exor_2.png" format="PNG" scale="140"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Láthatod, hogy sikerült, megkaptuk a helyes eredményeket, bár az ábra jóval
+            boynolultabb lett a rejtett neuronok miatt.
+        </para>
     </section>        
     <section>
         <title>Hiba-visszaterjesztéses perceptron</title>
