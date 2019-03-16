@@ -475,7 +475,7 @@
                 <title>Neuron</title>
                     <mediaobject>
                         <imageobject>
-                            <imagedata fileref="../../attention_raising/Source/Neurális/neuron.png" format="PNG" scale="700"/>
+                            <imagedata fileref="../../attention_raising/NN_R/neuron.png" format="PNG" scale="700"/>
                         </imageobject>
                     </mediaobject>
             </figure>
