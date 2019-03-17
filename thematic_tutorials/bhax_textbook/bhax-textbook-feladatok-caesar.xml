@@ -705,7 +705,7 @@ compute(nn.exor, exor.data[,1:2])]]>
                     </mediaobject>
             </figure>
             Láthatod, hogy sikerült, megkaptuk a helyes eredményeket, bár az ábra jóval
-            boynolultabb lett a rejtett neuronok miatt.
+            bonyolultabb lett a rejtett neuronok miatt.
         </para>
     </section>        
     <section>
@@ -720,8 +720,125 @@ compute(nn.exor, exor.data[,1:2])]]>
             Megoldás forrása: <link xlink:href="https://github.com/nbatfai/nahshon/blob/master/ql.hpp#L64">https://github.com/nbatfai/nahshon/blob/master/ql.hpp#L64</link>                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ebben a feladatban folytatjuk a elmélkedést a neuron hálózatokra, ezen belül
+            perceptronokról lesz szó. Ez egy algoritmus amely a számítógépnek "megtanítja"
+            a bináris osztályozást. Ide is berakhatnám az előző fejezetben lévő képet
+            a neuronról, ami egy bemenetet kap, és egy bizonyos pontot elérve "tüzel", ad
+            egy kimenetet. Itt is hasonló dologról van szó:
+            <figure>
+                <title>Perceptron bemenet</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Perceptron/percepron.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Tehát van egy halmaz amiben vannak piros és fekete pontok, a fekete pontok a vonal
+            felett vannak, a pirosak pedig alatta. Adok a perceptronnak bemenetként egyet-egyet
+            mind a kettőből, és a képes lesz megmondani a többite, hogy a vonal felett van-e,
+            vagy alatta. Ezért nevezzük bináris osztáylozásnak, mert van a vonal felettiek osztálya
+            és az alattiaké, ez a kapcsolat könnyen reprezentálható eggyel és nullával.
+        </para>
+        <para>
+            Akkor lássuk magát a programot. Most C++-ban fogunk dolgozni, melyről tettem már
+            említést a Java-s feladatban, szóval annyit már tudsz, hogy ez is egy
+            objektum-orientált nyelv, szóval a class-okat képtelenség lesz elkerülni. 3 fájlre lesz
+            szükség, abból az egyikkel, <filename>mandelpng.cpp</filename>-vel most nem
+            foglalkoznék, hiszen a következő fejezetben pont erről lesz szó. Egyelőre legyen
+            elég annyi, hogy ezzel tudunk készíteni egy képet, ami a Mandelbrot halmazt
+            ábrázolja.
+            <figure>
+                <title>mandelpng.cpp fordítása és futtatása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Perceptron/fordit.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Mivel a program tartalmazza a png.hpp header fájlt, ezért van szükség a -lpng
+            kapcsolóra. A png.hpp-t a <emphasis role="strong">sudo apt-get install libpng++-dev tudod telepíteni.</emphasis>
+            <figure>
+                <title>Mandelbrot-halmaz</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Perceptron/mandel.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Ez a kép lesz a bemenete a perceptron algoritmust szimuláló programunknak. Az első dolog
+            amit nagyon fontos, hogy most 2 fájlból áll a programunk. A <filename>ml.hpp</filename> és
+            <filename>main.cpp</filename>-re lesz szükségünk. Az <filename>ml.hpp</filename>
+            tartalmazza a Perceptron class-t, ezzel a <filename>main.cpp</filename> sokkal
+            átláthatóbb. Ezt technikát gyakran használják, szóval érdemes megtanulni. Magát a 
+            class-t most nem vesézzük ki, helyette vessünk egy pillantást a main-re.
+            <programlisting language="c++"><![CDATA[
+#include <iostream>
+#include "ml.hpp"
+#include <png++/png.hpp>
+
+int main (int argc, char **argv)
+{
+                ...
+}]]>
+            </programlisting>
+            Itt láthatod, hogyan kell az ml.hpp-t includálni, maga a main fejrésze pedig
+            az EXOR-nál már jól megszokott felépítést követi.
+            <programlisting language="c++"><![CDATA[
+                png::image <png::rgb_pixel> png_image (argv[1]);]]>
+            </programlisting> 
+            Ezzel létrehozzunk egy üres png-t, melynek mérete megegyezik a bemenetként kapott
+            fájl méretével. Ehhez van szükség a png.hpp headerre. Egy fontos dolog még, hogy
+            miért van szükség a dupla kettőpontra. A C++-ban létezik egy olyan fogalom, hogy
+            névterek. Erről még fogunk szót ejteni, de gyelőre annyi elég lesz róla, hogy a
+            png.hpp-ben használt függvények, változók elé oda kell rakni a png:: -ot. Ugyan
+            így van ez az iostream-ben lévő <function>cout</function>-tal is, mely a standard
+            kimenetre írja ki azt amit szeretnénk. Előtte az std:: prefixet használjuk. Lényegében
+            ez azért hasznos, mert ha lenne a png.hpp-ben és az iostream-ben is <function>cout</function>
+            , akkor ezzel meg tudjuk őket különböztetni. Persze kicsit hosszú mindegyik
+            elé odaírni, és lesz is rá majd megoldás, de ennek használatát egyelőre kerüljük.
+            <programlisting language="c++"><![CDATA[
+    int size = png_image.get_width() * png_image.get_height();
+    
+    Perceptron* p = new Perceptron (3, size, 256, 1);
+    
+    double* image = new double[size];]]>
+            </programlisting>
+            A kép méretét eltároljuk egy változóban, majd létrehozunk felhasználó által
+            definiált típust, ez a <function>Perceptron</function>, melyet a <filename>ml.hpp</filename>
+            Perceptron osztályában találunk. Lényegében itt adjuk meg a rétegek számát, jelen esetben
+            ez 3, majd azt adjuk meg, hogy hány darab neuront szeretnénk az egyes rétegekben. Az utolsóba
+            csak 1-et rakunk, mely az eredményt adja majd. Definiálunk még egy double* pointert,
+            melyet size-zal megyegyező memóriaterületre állítunk rá.
+            <programlisting language = "c++"><![CDATA[
+      for (int i = 0; i<png_image.get_width(); ++i)
+        for (int j = 0; j<png_image.get_height(); ++j)
+            image[i*png_image.get_width() + j] = png_image[i][j].red;]]>
+            </programlisting> 
+            Az egymásba ágyazott for cilusok segítségével az újonan lefogllat tárba másoljuk
+            bele a beolvasott kép pixeleinek piros komponensét.
+            <programlisting language = "c++">
+                double value = (*p) (image);
+            </programlisting>
+            Itt meghívjuk a Perceptron class () operátorát, mely vissza fogja adni az nekünk
+            szükséges eredményt. Végezetül ezt már csak kiíratjuk a <function>cout</function>-tal.
+            <programlisting language="c++"><![CDATA[
+                std::cout << value << std::endl;]]>
+            </programlisting>
+            Futassuk:
+            <figure>
+                <title>Fordítás és futtatás</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Perceptron/fordit_2.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Fontos figyelembe venned, hogy nem mindig fogja ugyan azt az értéket adni, szóval
+            nem kell kétségbe esni, ha nem ugyan az jön ki, mint a képen.
+        </para>
     </section>        
         
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
