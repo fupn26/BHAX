@@ -274,7 +274,104 @@
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
         <para>
-            Az előző feladatát kell most java-ban megoldani.
+            Az előző feladatát kell most java-ban megoldani. Mivel a Java a C és a C++
+            alapján készült, ezért az előző kód implementációja nem nehéz feldata, de
+            tarmészetesen vannak különbségek, melyeket érdemes megemlíteni.
+        </para>
+        <para>
+            Az első és legfontosabb dolog, hogy a Java a C-vel ellentétben Objektum-orietált
+            programozási nyelv, azaz létretudunk hozni objektumokat, úgynevezett class-okat
+            melyekkel bizonyos utasításokat tudunk végrehajtani. A C++-ban kicsit arra hasonlít,
+            mintha egy változót hoznank létre, csak nem egy típust írunk elé, hanem a class nevét.
+            De ott a class elkülönül a <function>main()</function> függvénytől, míg a Java-ban 
+            szerves részét képezi a classnak, tehát az egész program egy nagy class-ból áll.
+            <programlisting language="java"><![CDATA[
+                public class ExorTitkosító {
+                    ...
+                    ...
+                }]]>
+            </programlisting> 
+            Tehát ezen belül kell mindent deklarálni és definiálni. A class-nak lehet public és private
+            elemei, ezt a függvény deklaráció elé írjuk, jelen esetben nem alkalmazzunk private
+            elemeket, de a lényeg az, hogy azokhoz nem férünk hozza közvetlenül a classon kívül, csak
+            akkor ha a class tartalmaz egy public függvényt, amivel ki tudjuk nyerni az értéket.
+        </para>
+        <para>
+            Elsőnek nézzük meg a <function>main</function> tartalmát:
+            <programlisting language="java"><![CDATA[
+     public static void main(String[] args) {
+        
+        try {
+            
+            new ExorTitkosító(args[0], System.in, System.out);
+            
+        } catch(java.io.IOException e) {
+            
+            e.printStackTrace();
+            
+        }]]>
+            </programlisting>
+            Az main fejléce egy kicsit furán néz ki, mivel egy kicsit bonyolultabb, mint
+            azt C-ben megszoktuk. A <function>public</function> annyit tesz, hogy elérhető
+            a class-on kívül is. A <function>static</function> azt jelenti, hogy a
+            a <function>main</function> része a class-nak, de egy külön álló objektum,
+            nem része egyik beágyazott objektumnak sem. A void-ot már ismerjük, tehát ennek
+            a <function>main</function>-nek nincs visszatérési értéke. Ráadásul itt is képesek
+            vagyunk parancssori argumentumokat átadni a programnak a <function>String[] args</function>
+            segítségével. Egy másik újdonság a <function>try</function> és a <function>catch</function>
+            használata, mely lényegében a Java-ban és a C++-ban a kivételkezéshez
+            nélkülözhetetlen. A <function>try</function> blokk tartalmazza az utasításokat,
+            ha valami hiba történik, akkor dobu k egy hibát, a <function>catch</function>
+            "elkapja" és visszaad egy hibaüzenetet a terminálba. Jelen esetben ha nem adunk meg
+            kulcsot, akkor kapunk hibát. A <function>try</function>-ban tárhelyet foglalunk az
+            ExorTitkosító függvénynek, melynek átadjuk a kulcsot, a bemenetet és a kimenetet.
+            <programlisting language="java"><![CDATA[
+    public ExorTitkosító(String kulcsSzöveg,
+            java.io.InputStream bejövőCsatorna,
+            java.io.OutputStream kimenőCsatorna)
+            throws java.io.IOException {
+        
+        byte [] kulcs = kulcsSzöveg.getBytes();
+        byte [] buffer = new byte[256];
+        int kulcsIndex = 0;
+        int olvasottBájtok = 0;
+
+        while((olvasottBájtok =
+                bejövőCsatorna.read(buffer)) != -1) {
+            
+            for(int i=0; i<olvasottBájtok; ++i) {
+                
+                buffer[i] = (byte)(buffer[i] ^ kulcs[kulcsIndex]);
+                kulcsIndex = (kulcsIndex+1) % kulcs.length;
+                
+            }
+            
+            kimenőCsatorna.write(buffer, 0, olvasottBájtok);
+            
+        }
+        
+    }]]>
+            </programlisting>
+            Az <function>ExorTitkosító</function> függvény a már említett argumentumokat kéri, és dobja
+            <function>throws</function> a hibát, ha ez nem teljesül. A
+            függvényen belül pedig a C kódban megismert utasításokat hajtjuk végre. Itt látható egy primitív adattípus, a <function>byte</function>, mely 8-bit-ből áll. Jelen esetben egy 
+            <function>byte</function>-okból álló tömböt hozunk létre kulcs és buffer néven. Az első argumentumból a <function>getBytes()</function> függvény segítségével olvassuk be a
+            kulcsot a kulcs tömbbe. A buffer tömbnek pedig foglalunk egy 256 bájt-ból álló területet a memóriában. Majd a definiáljuk a már jól ismert változókat a kulcs tömb bejárásához, és a 
+            beolvasott bájtok számlálására. A <function>while</function> ciklus addig megy, ameddig be nem olvasunk a buffer méretű karaktersorozatot, vagy már nem tudunk többet beolvasni. Majd
+            a beágyazott <function>for</function> ciklussal elemenként összeexorozzuk a buffer tartalmát a kulccsal, és növeljük a kulcsindexet a már megszokott módon a % operátorral, mely a
+            maradékos osztást jelenti. Ennek következtében ha eléjük a kulcs tömb hosszát, akkor lenullázódik. 
+        </para>
+        <para>
+            Végezetül lássuk, hogy hogyan kell futtatni ezt a programot:
+            (A képeken létható parancsok futttaása előtt telepíteni kell ezt: sudo apt-get install openjdk-8-jdk)
+            <figure>
+                <title>Titkosított szöveg</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/EXOR/java_exor.png" format="PNG" scale="220"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
             
         </para>
     </section>        
@@ -428,7 +525,7 @@
             </programlisting>
             Végig futatjuk az összes lehetőségen a <function>for</function> ciklust, majd meghívjuk az <function>exor_tores</function> függvényt. Ha ez igazat ad, tehát a
             visszatérési érték 1, akkor kiíratjuk az aktuális kulcsot és a feltört szöveget. Ahogy látod ez csak olyan kódokat tud feltörni, amit számokkal
-            kódoltunk. Az előző feladatban én a betűket és számokat is használtam, ezt is ki lehetne bővíteni, hogy fel tudjuk törni azt a kódot, de az a baj, hogy
+            kódoltunk. Ezután pedig újra meghívjuk az <function>exor</function> függvényt, ezzel elkerülve a második buffer létrehozását. Az előző feladatban én a betűket és számokat is használtam, ezt is ki lehetne bővíteni, hogy fel tudjuk törni azt a kódot, de az a baj, hogy
             nagyon sokáig tartana. Tehát ennél a megoldásnál maradva újratitkosítottam az tiszta.txt-t  
             <figure>
                 <title>Törés</title>
@@ -617,10 +714,10 @@ compute(nn.exor, exor.data[,1:2])]]>
             C++
         </para>
         <para>
-            Megoldás videó:
+            Megoldás videó: <link xlink:href="https://youtu.be/XpBnR31BRJY">https://youtu.be/XpBnR31BRJY</link>
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/nbatfai/nahshon/blob/master/ql.hpp#L64">https://github.com/nbatfai/nahshon/blob/master/ql.hpp#L64</link>                
         </para>
         <para>
             Tanulságok, tapasztalatok, magyarázat...
