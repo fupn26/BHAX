@@ -1,6 +1,6 @@
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
     <info>
-        <title>Helló, Kenigen!</title>
+        <title>Helló, Kernighan!</title>
         <keywordset>
             <keyword/>
         </keywordset>
@@ -306,9 +306,93 @@
                 
     </section>        
     <section>
-        <title></title>
+        <title>BME C++ könyv 1-16. oldal feldolgozás</title>
         <para>
-            
+            <emphasis role="strong">C++ nem objektum-orientált újdonságai</emphasis>
+        </para>
+        <para>
+            A C++ lényegében a C programozási nyelv objektum-orientált változata, melynek első változata 1983-ban jelent meg. A nyelv atyjának
+            Bjarne Stroustrup-ot tekintjük, aki <![CDATA[AT&T Bell]]> Laboratories-nak dolgozott. Első verzió neve C with class, ezzel utalva
+            az objektum-orientáltságra. A C++ 1998-ban lett szabványosítva, azóta szabványt is kiadtak, a 2003-ast és a 2011-est. A C++ programok
+            érdekessége, hogy többségük lefordul a C frodítókkal, sőt kezdetben az első C++ fordítók C kódot generáltak. Tehát minden C program C++ program, de
+            nem minden C++ program C program.   
+        </para>
+        <para>
+            Ebben a fejezetben pont azokat a különbségeket fogjuk sorra venni, amik C++-ban használhatóak, de a C-ben nem. Itt olyan funkciókra kell gondolni, amik
+            segítettek kijavítani a C nyelv esetleges gyengeségeit.  
+        </para>
+        <para>
+            Az első lényegi különbség a függvényparaméterekben és  a visszatérési értékben rejlik. A C-ben, ha nem írtunk paramétert, akkor korlátlan számú
+            paramétert használhattunk, ezzel szemben a C++-ban ez annyit jelent, hogy nincs paraméter, vagyis mintha a paraméternek void típust adtunk volna meg.
+            Ahhoz, hogy a korlátlan számú paramétermegadást engedélyezzük C++-ban, a paraméterlistéba <function>...</function>-t kell beírni.
+            <programlisting language="c">
+                //C-ben
+                void f()
+                {
+                }
+                
+                //C++-ban
+                void f(...)
+            </programlisting>
+            Egy másik különbség, hogy a C nyelvben kihagyhatjuk a visszatérési érték típusának meghatározását, azt int-nek értelmezi. Ezzel szemben C++-ban fordítási hibát
+            kapunk, nem szabad kihagyni a visszatérési érték típusának meghatározását.
+            <programlisting language="c++">
+                void f(void); //nincs hiba
+                g(void); //fordítási hiba
+            </programlisting>
+        </para>
+        <para>
+            A másik különbség a main függvényben keresendő. Az argmentum listát hagyhatjuk üresen, vagy használhatjuk az argc, argv[] argumentumokat, mellyel a parancssori argumentumok számát
+            és tömbjét adja át a main-nek. Ez eddig hasióonló a C-hez, de a main végére nem szükséges oda írni a <function>return</function>-t, azt a fordító automatikusan hozzáilleszti a kódhoz.
+        </para>
+        <para>
+            Sokáig a C++ nyelv sajátja volt a <function>bool</function> típus, mellyel logikai változókat deklarálhatunk, értéke <function>true</function>
+            és <function>false</function> lehet. Ez mát a C-ben is elérhető, de előtte csak az int vagy az enum típusokkal fejezhettük ezt ki. Int esetén 0 számít 
+            hamisnak és minden más érték igaz.  
+        </para>
+        <para>
+            A C++-ban megjelet  a <function>wchar_t</function>, mint beépített típus, mely segítségével Unicode karakter stringeket tudunk reprezentálni. Ez a C-ben
+            is használható, viszont ehhez #include-olni kellett a bizonyos header fájlokat.  Az iylen típusú változókat a következőképpen definiálhatjuk:
+            <programlisting language="c++">
+                wchar_t = L 's';
+                wchar_t* = L "sss";
+            </programlisting>
+        </para>
+        <para>
+            C++-ban a változókat olyan helyeken is deklarálhatjuk, ahova utasításokat is írhatunk. Ilyen például, hogy a <function>for</function> ciklus-ban tudjuk definiálni az indexet, nem kell
+            azt előtte deklarálni. Ettől függetlenül elmondható, hogy a változókat érdemes pont ott deklarálni, ahol a szeretnénk használni, ezzel áttekinthetőbb kódot kapunk. A változó csak a 
+            deklarációja után érhető el. A <function>for</function> cilus fejlécében deklarált változókat nem tudjuk használni a cikluson kívül.
+        </para>
+        <para>
+            A C nyelvben nem tudunk azonos nevű függvényket megadni, mivel azonosításként a linker csak a függvény nevét használta. Ennek következtében a programpzóknak rengetegszer kellett
+            erőltett függvényneveket kitalálni. Ezt a problémát oldja meg  a C++ függvény túlterhelés funkciója, mely annyit tesz, hogy a linker a  függvényt a neve és az argumentum listája alapján
+            azonosítja. Tehát létre tudunk hozni azonos nevű függvényeket, ha azok argumentumlistája eltér. Ezt a technikát név felderítésnek nevezzük. Mivel ez a C-ben nem értelmezett ez a funkció,
+            kitaláltak egy módszert arra, hogy a C és C++ közötti kompataiblitást megoldjuk, ehhez a függvény deklaráció elé kell írni, hogy <function>extern int</function>. Ezzel letiltjuk a 
+            név felderítő mechanizmust. 
+        </para>
+        <para>
+            A függvényekkel kapcsolatos másik különbség, hogy a C++ kódban lehetőségünk van alapértelmezett értéket adni az argumentumoknak. Ezzel ki tudjuk küszöbölni azt, hogyha 
+            nem adunk meg elég argumentumot a függvényhívásnál.
+            <programlisting language="c++">
+                int f( int a, int b = 100, int c = 200){
+                    return a*b-c;
+                }
+                int main()
+                {
+                    int egyik = 10;
+                    int masik = 20;
+                    int harmadik = 30;
+                    f(egyik, masik, harmadik); //érték = 10*20*30
+                    f(egyik) // érték = 10*100*200
+                    f() // hiba: nincs elég argumentum
+                }
+            </programlisting>
+        </para>
+        <para>
+            A C++ egyik legnyagobb újdonsága pedig a referencia típus bevezetése. A C-ből tudjuk, hogy ha egy függvénynek paraméterül adunk egy változót, akkor a azt lemásolja a függvény, és nem 
+            módosítja a változó értékét. Ha azt szeretnénk, hogy a függvény módosítson az értéken, ahhoz kell használni a pointert, ami a változó memóriacímére mutat. Ennek segítségével 
+            közvetlenül tudjuk átadni a függvénynek a változót, nem másoljuk az  értékét. Ennek használata elég nehezen érthetővé teszi a kódot, és rengeteg hibázási lehetőséget rejt  magában.
+            Hogy ezt orvosolják, bevezették a referencia típust.
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
