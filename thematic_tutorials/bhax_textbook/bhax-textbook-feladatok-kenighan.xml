@@ -6,7 +6,7 @@
         </keywordset>
     </info>
     <section>
-        <title>A Pici könyv 11-27. oldal feldolgozása</title>
+        <title>Pici könyv</title>
         <para>
             <emphasis role="strong">Alapfogalmak</emphasis>
         </para>
@@ -160,9 +160,6 @@
             típusuk és értékük. A literálrendszerek egyes programozási nyelvekben
             eltérő lehet.
         </para>
-    </section>        
-    <section>
-        <title>A Pici könv 28-45. oldal feldolgozása</title>
         <para>
             <emphasis role="strong">Adattípusok</emphasis>
         </para>
@@ -298,12 +295,222 @@
         </para>
     </section>        
     <section>
-        <title></title>
+        <title><![CDATA[K&R könyv]]></title>
         <para>
-            
+            <emphasis role="strong">Vezérlési szerkezetek</emphasis>
         </para>
-        
+        <para>
+            A C nyelvben létező vezérlésátadó utasítások segítségével vagyunk képesek
+            meghatározni a számítások sorrendjét. Lássuk a C leggyakoribb vezérlésátadó
+            utasításait.
+        </para>
+        <para>
+            Elsőként említsük a <emphasis role="strong">utasításokat és blokkokat</emphasis>.
+            Az egyes kifejezések akkor válnak utasítássá, ha utánuk rakunk egy pontosvesszőt,
+            ezzel jelezzük az utasítás végét. Képesek vagyunk az utasításokat blokkba foglalni,
+            melyet a <function>{}</function>-jel segítségével tudjuk megtenni. Ezt a 
+            jelülést használjuk a függvénye definíciójánál, a <function>for</function>,
+            <function>while</function>, <function>if</function> utasítás által
+            végrehajtott utasítsákok csoportosításra. Fontos, hogy ha kapcsoszárójelet
+            használunk, akkor utána tilos pontovesszőt rakni.
+            <programlisting><![CDATA[
+                int a;
+                for (a = 0; a < 5; a++)
+                {
+                    /*utasítások*/
+                 }]]>
+            </programlisting>
+        </para>
+        <para>
+            Ha valamit el szeretnénk dönteni a programunkban, akkor jön nagyon jól
+            az <emphasis role = "strong">if-else</emphasis> utasítás. A fejlécben 
+            mindig megadunk egy kifejezést, mely alapján eldöntjük, hogy egy utasítás végre
+            legyen-e hajtva, vagy sem. Az else ágra nem feltétlenül van szükség, az akkor
+            hajtódik végre, ha nem teljesül az if feltétele. Az if numerikus értéket viszgál
+            ezért lehetőségünk van rövídíteni a kifejezést. Pl.:
+            <programlisting>
+                if (kifejezés)
+                if (kifejezés != 0)
+            </programlisting>
+            A két leírás ekvivalens egymással, az első használata viszont néha nehezen
+            érthetővé teszi a kódot. Az else ággal is lehetnek értelmezésbeli
+            nehézségek, mivel nem mindig könnyű az egymásba skatulyázott if-ek közül
+            eldönteni, hogy melyikhez tartozik az else ág. C nyelben ez úgy van megoldva, hogy
+            mindig a hozzá legközelebbi if-hez tartozik. Az esetleges kétértelműségek
+            elkerülése érdekében érdemes használnoi a kapcsos zárójeleket, melyel egyértelműen
+            meghatározható az utasítás vége. De ha az if/else csak egy utasítást hajt végre, akkor
+            nincs szükség a kapcsos zárójelre, elég a ; használta.
+            <programlisting>
+                if (kifejezés)
+                {
+                    /*több utasítás*/
+                }
+                if (kifejezés)
+                    utasítás;
+            </programlisting>
+        </para>
+        <para>
+            Az if-else utasítás szorosan összefügg az 
+            <emphasis role="strong">else-if utasítás</emphasis> haszbnálatával.
+            Ennek a segítségével több elágazásos if utasítássorozatot hozhatunk
+            létre. Ha az egyik if teljesül a sorozat többi tagja már nem, ha egyik
+            se teljeül, akkor itt is az else ágra kerül a vezérlés, ami akár
+            el is hagyható, ha a maradék esetben semmit sem kell csinálni.
+            <programlisting>
+                if (1.kifejezés)
+                    1. utasítás;
+                else if (2.kifejezés)
+                    2. utasítás;
+                else
+                    3. utasítás;
+            </programlisting>
+        </para>
+        <para>
+            Az else-if utasítás kiváló arra, hogy pár esetet elkülönítsünk, de
+            mi van akkor, ha több tíz darab eset van. Erre találták ki a
+            <emphasis role = "strong">switch</emphasis> utzasítást, amely
+            megvizsgálja, hogy a kifejezés megegyezik-e valamelyik esettel, és
+            ahhoz az esethez továbbítja a vezérlést.
+            <programlisting>
+                switch(kifejezés){
+                case '1.lehetőség':
+                case '2.lehetőség':
+                        1. utasítás;
+                case '3.lehetőség':
+                case '4.lehetőség':
+                case '5.lehetőség':
+                        2. utasítás;
+                }
+            </programlisting>
+            Amint látod, nem muszály mindegyik esethez külön megadni az
+            utasítást, lehet őket csoportosan megadni, ezzel megkönnyítve a 
+            programozó dolgát. A switch magját pedig {} jellel határoljuk.
+            A <function>case</function>-en kívül használhatunk
+            <function>default</function> címkét is, amivel egy alapértelmezett
+            utasítást adhatunk meg, arra az esetre ha egyik eset se teljesülne.
+            Fontos a <function>case</function>-ek között nem fordulhat elő azonos.
+            Ha egy <function>case</function> utasítása végrehajtódik
+            akkor a vezérlés a következőre ugrik. Ez viszont nem mindig szerencsés,
+            ezért <function>break</function>-et kell használni mindegyikesetén, de
+            ha nem is rakunk mindegyikhez, akkor is az utolsó eset után érdemes 
+            rakni egy <function>break</function>-et, ezzel biztosítva, hogy a
+            vezérlés nem fog szétesni.  
+        </para>
+        <para>
+            Ha a programozási nyelvek ciklusairól beszélünk van 2 alapvető,
+            amelyik mindegyikben megjelenik, így C-ben is, ezek a
+            <emphasis role = "strong">for és a while</emphasis> utasítások.
+            Arra használjuk őket, hogy bizonyos utasításokat ismételjünk, egészen
+            addig, ameddig a fejrészükben lévő kifejezés teljesül.
+            <programlisting>
+                while(kifejezés)
+                    utasítás
+            </programlisting>
+            A while így néz ki zsintaktikailag, egészen addig hajtja végre az
+            utasítást, ameddig a kifejezés nem nulla. Itt egy kifejezés van,
+            ezzel szemben a for ciklus nyelvtanilag 3 kifejezésből áll.
+            <programlisting>
+                for(kif1;kif2;kif3)
+                    utsítás
                 
+                /*ennek a while átírata*/
+                
+                kif1;
+                while (kif2)
+                    utasítás
+                    kif3
+            </programlisting>
+            Amint látod, a két fajta ciklus átírható egymásba, de bizonyos esetkben
+            az egyik könyebben használható mint a másik. A for ciklusnál nem muszály
+            mindegyik kifejezést kiírni, sőt el is hahatóak, ekkor végtelen ciklushoz
+            jutunk, amelyből vagy <function>break</function>, vagy
+            <function>return</function> utsítással tudunk kiugrani. A fentebbi pédában
+            láthattad, hogy a for kifejezései közé ; kellett rakni, de ez nem feltétlenül
+            kötelező, csak akkor más értelemmel rendelkezik.
+            <programlisting>
+                int i, j;
+                for (i = 0, j = 10; i!=j; ++i, --j)
+                    pritnf("Még nem egyenlő");
+            </programlisting>
+            Ilyen esetben az i-t és az j-t is léptejük egyszerre. Az i és a j
+            definiálása és az értékük változtatása is egy-egy kifejéznek
+            felel meg.
+        </para>
+        <para>
+            A for és a while cilusok a kiugrási feltétel teljesülését a 
+            cilus elején viszgálja, de bizsinyis esetkben jól jöhet a 
+            <emphasis role="strong">do-while</emphasis> utasítás. Lényege
+            az, hogy legalább 1-szer biztos, hogy belépünk a ciklusba, ezután pedig
+            a gép kiértékeli a kifejezést.
+            <programlisting>
+                do
+                    utasítás
+                while (kifejezés)
+            </programlisting>
+        </para>
+        <para>
+            Már többször szó esett a ciklusokból való kilépés módjáról, ezt 
+            valósítja meg a <emphasis role ="strong">break</emphasis> utasítás.
+            Az utasítás hatására a vezérlés kiugrik a legbelsőbb ciklusból 
+            még az előtt, hogy a kifejezést kiértékeltük volna
+            az újabb iterációban. 
+        </para>
+        <para>
+            Ha van olyan utasítás, ami megállítja a ciklust, akkor lennie kell
+            olaynnak a folytatja azt. Na nem pont ilyen értelemben, de hasonlót
+            csinál a <emphasis role="strong">continue</emphasis> utasítás. Ez 
+            azt jelenti, hogy a vezérélés visszatér a ciklus fejéhez, tehát 
+            abban az iterációbn nem csinálunk semmit, csak továbblépünk. Ezt 
+            általában valamilyen feltételhez szokták kötni.
+            <programlisting><![CDATA[
+                int i
+                for (i = 0; i < 20; ++i)
+                {
+                    if (i%2 != 0) continue;
+                    printf("%d", i);
+                }]]>
+            </programlisting>
+            Ebben az esetben csak a páros számokat írjuk ki, a többi számot kihagyjuk.
+        </para>
+        <para>
+            A függvények esetén a break-hez hasonló a <emphasis role="strong">
+                return</emphasis> utasítás. Ez a függvény hívójához tér vissza,
+                áltatlában valmilyen értékkel, de előfordulhat, például void
+                típusú függvények esetén, hogy nem ad vissza semmilyen értéket.
+                <programlisting>
+                    return;
+                    return kifejezés;
+                </programlisting>
+        </para>
+        <para>
+            Ahogy említettem a break utasítással mindig csak a legbelső 
+            ciklusból tudunk kilépni, de mi van akkor, ha mi az egymásba
+            skatulyázott ciklusokból, ekkor kerül előtérbe a
+            <emphasis role="strong">goto</emphasis> utasítás.
+            Szintaxisát tekintve:
+            <programlisting>
+                for (...)
+                    for (...)
+                        if (kifejezés)
+                            goto megoldás;
+                
+                megoldás:
+                    tedd hamissá a kifejezést
+            </programlisting>
+            Tehát egy címkére ugrunk, amit a goto utasítás után megnevezünk, és
+            a címkének megadjuk, hogy milyen utasítást hajtson végre. A goto
+            használata viszont abszolút nélkülözhető, és használata nem is javasolt.
+        </para>
+        <para>
+            Az előző paragrafusban látott <function>megoldás</function> egy
+            <emphasis role = "strong>címkézett utasítás</emphasis>, mely a goto
+            célpontja. Érvényessége arra a függvényre szól, amelyben előfordul.
+        </para>
+        <para>
+            A létezik még a <emphasis role="strong">nulla</emphasis> utasítás.
+            Ezt a használhatjuk címkék hordozására öszzetett utasításokat 
+            lezáró } előtt, vagy jelölhet üres ciklusmagot is.
+        </para>
     </section>        
     <section>
         <title>BME C++ könyv 1-16. oldal feldolgozás</title>
@@ -392,7 +599,22 @@
             A C++ egyik legnyagobb újdonsága pedig a referencia típus bevezetése. A C-ből tudjuk, hogy ha egy függvénynek paraméterül adunk egy változót, akkor a azt lemásolja a függvény, és nem 
             módosítja a változó értékét. Ha azt szeretnénk, hogy a függvény módosítson az értéken, ahhoz kell használni a pointert, ami a változó memóriacímére mutat. Ennek segítségével 
             közvetlenül tudjuk átadni a függvénynek a változót, nem másoljuk az  értékét. Ennek használata elég nehezen érthetővé teszi a kódot, és rengeteg hibázási lehetőséget rejt  magában.
-            Hogy ezt orvosolják, bevezették a referencia típust.
+            Hogy ezt orvosolják, bevezették a referencia típust. A referncia típusú változót <![CDATA[&]]> jellel jelöljük. Ez a jel a C-ben egyoperandusú operátor, ami a változó memóriacímét
+            adja vissza. A pointer és a referencia közötti különbség:
+            <programlisting><![CDATA[
+                int x = 5;
+                int* a = &x;
+                int& b = x;
+                ]]>
+            </programlisting>
+            Míg a pointernek egy memóriacímet kell értékül adni, addig a refernciánál csak meg kell adni, hogy melyik változóra referáljon. Ezután mindegy, hogy a b-t vagy az x-et módosítjuk,
+            mind a kettőn végrehajtódik a változtatás. Érdekesség még, hogy a referencia és a változó memóriacíme megyegyezik, tehát a referencia nem foglal a memóriában területet, ellentétben
+            a mutatóval.  A programokban nagyon ritkán használjuk a referenciákat a fentebb látott módon, mivel nehéz lenne olvasni egy olyan kódot, ahol uygan arra 2 változó is hivatkozik. Ezért
+            ennek a fő használati értéke a cím szerinti paraméterátadásban rejlik, ezt szokták referencia szerinti paraméterátadás. A cím szerinti paraméterátadást általában akkor szoktuk 
+            használni, ha változtatni akarunk az értéken, ezért a refenciának csak olyan változót adhatunk értékül, ami módosítható.(Létezik konstans típusú referncia is, de ez speciális.)
+            Egy fontos dolog még ebben a témakörben az, hogy lehet-e egy függvény visszatérési értéke pointer vagy referncia. A válasz igen, lehet, de csak korlátozott esetekben, főleg cím szerinti
+            paraméterátadás esetén. Összességében elmondható, hogy nem szabad visszaadni pointert és refernciát lokális változókra, vagy érték szerinti paraméterekre, mivel előfordulhat, hogy érvénytelen
+            memóriacímre fognak hivatkozni.
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
