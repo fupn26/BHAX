@@ -8,13 +8,155 @@
     <section>
         <title>A Mandelbrot halmaz</title>
         <para>
-                
+            Írj olyan C++ programot, amely kiszámolja a Mandelbrot halmazt!
         </para>
         <para>
             Megoldás videó:
         </para>
         <para>
             Megoldás forrása:                
+        </para>
+        <para>
+            Mielőtt a Mandelbrot halmazzal foglalkoznánk, elsőnek tisztázzuk, hogy
+            mik is a fraktálok, és mi a kapcsolatuk a MAndelbrot-halmazzal. A
+            fraktálok lényegében olyan alakzatok, melyek végtelenül komplexek.
+            Két fő tulajdonságuk van, az egyik, hogy a legtöbb geometria alakzattal
+            ellentétben a fraktálok szélei "szakadozottak", nem egyenletesek. A 
+            másik tulajdonságuk pedig, hogy nagyon hasonlítanak egymásra. Ha egy 
+            kör határfelületét folyamatosan nagyítjuk, egy idő után kisimul(a
+            csúcsokat leszámítva), megkülönböztethetetlenné válik egy egyenestől.
+            Ezzel szemben a fraktálok első tulajdonsága, mi szerint határfelöletük
+            szakadozott, megmarad, függetlenül a nagyítás mértékétől.
+            A Mandelbrot halmaz is a fraktálok közé tartozik. Ezt és a hozzá 
+            tartozó szabályt Benoit Mandelbrot fedezte fel 1979-ben. A halmaz
+            komplex számokból áll, melyek az alábbi sorozat elemei:
+            <emphasis role="strong">x<subscript>1</subscript>:=c,
+            x<subscript>n+1</subscript>:=(x<subscript>n</subscript>)<superscript>2</superscript>
+            +c</emphasis>, és ez a sorozat konvergens, azaz korlátos. Ezeket a 
+            számokat ábrázolva a komplex számsíkon kapjuk meg a Mandelbrot-halmaz
+            híres farktálját.
+            <figure>
+                <title>Mandelbrot halmaz</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/mandelbrot.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
+        <para>
+            Ezt az ábrát fogjuk mi megalkotni a C++ programunkkal. Ehhez a png++ header
+            fájlra lesz szükségünk, mely nincs alapból telepítve. 
+            A <function>sudo apt-get install libpng++-dev</function> paranccsal tudjuk
+            feltelepíteni, és a g++ fordító használatánál szükségünk lesz a 
+            <function>-lpng</function> kapcsolóra. Most vegyük szépen végig a programot.
+        </para>
+        <para>
+            <programlisting language="c++"><![CDATA[
+#include <iostream>
+#include <png++/png.hpp>
+
+int main (int argc, char *argv[])
+{
+    ...
+}]]>
+            </programlisting>
+            Tehát, ahogy már említettem, szükségünk lesz a <function>p++/png.hpp</function>
+            header-re. Parancssori algumentum segítségével adjuk meg, hogy melyik
+            fájlba szeretnénk elmenteni a képet.
+            <programlisting language="c++"><![CDATA[
+    if (argc != 2) {
+        std::cout << "Hasznalat: ./mandelpng fajlnev";
+        return -1;
+    }]]>
+            </programlisting>
+            Ha nem adjuk meg az argumentumot, akkor dobunk egy hibaüzenetet, amely
+            tartalmazza, a helyes használat leírását. Ha megadtuk az argumentumot,
+            akkor elkezdődik a lényeg.
+            <programlisting language="c++">
+    double a = -2.0, b = .7,  c = -1.35, d = 1.35;
+    int szelesseg = 600, magassag = 600, iteraciosHatar = 1000;
+            </programlisting>
+            Első lépésként megadjuk a függvény értékkészletét és
+            értelmezésitartományát. Majd meghatározzuk a létrehozandó
+            kép méretét, és az iterációs határt.
+            <programlisting language="c++"><![CDATA[
+                png::image <png::rgb_pixel> kep (szelesseg, magassag);]]>
+            </programlisting>
+            Ezzel az utasítással létrehozunk egy üres png-t, melybe majd 
+            betöltjük a Mandelbrot halmaz ábráját.
+            <programlisting language="c++">
+    double dx = (b-a)/szelesseg;
+    double dy = (d-c)/magassag;
+    double reC, imC, reZ, imZ, ujreZ, ujimZ;
+            </programlisting>
+            Megadjuk a lépésközt, amellyel majd végig megyünk a koordináta-rendszer
+            rácspontjain. Deklaráljuk a változókat, amikben a c és a z komplex 
+            számok valós és imaginárius részét fogjuk tárolni. Ezután pedig 
+            végigmegyünk a rácson 2 egymásba ágyazott for ciklus segítségével.
+            <programlisting language="c++"><![CDATA[
+    for (int j=0; j<magassag; ++j) {
+        for (int k=0; k<szelesseg; ++k) {
+            reC = a+k*dx;
+            imC = d-j*dy;
+            reZ = 0;
+            imZ = 0;
+            iteracio = 0;
+            while (reZ*reZ + imZ*imZ < 4 && iteracio < iteraciosHatar) {
+                // z_{n+1} = z_n * z_n + c
+                ujreZ = reZ*reZ - imZ*imZ + reC;
+                ujimZ = 2*reZ*imZ + imC;
+                reZ = ujreZ;
+                imZ = ujimZ;
+                
+                ++iteracio;
+                
+            }
+            
+            kep.set_pixel(k, j, png::rgb_pixel(255-iteracio%256,
+                                               255-iteracio%256, 255-iteracio%256));
+        }
+        std::cout << "." << std::flush;
+    }]]>
+            </programlisting>
+            A valós számokat képesek vagyunk egy számegyenesen ábrázolni, de 
+            a komplex számokat már nem, szükségünk van ugyanis egy másik tengelyre
+            amelyen a képzetes részeket ábrázoljuk. Így lényegében egy 
+            koordináta rendszert kapunk, ahol minden számnak van egy x és
+            egy y koordinátája, jelen esetben egy valós és egy képzetes rész.
+            Tehát elkezdünk végig lépkedni az értelmezési tartományon, és minden
+            iterációban megadjuk a c számot, melyhez kiszámoljuk a z értékeket.
+            Ehhez van szükség egy while ciklusra, melyben egészen addig számoljuk
+            a halmaz következő elemeit, ameddig a z komplex szám négyzete kisebb, mint
+            4 és még nem értük el az iterációs határt. Ha elértük az iterációs határt,
+            az iteráció konvergens, tehát a c eleme a Mandelbrot halmaznak.
+            <programlisting language = "c++">
+                kep.set_pixel(k, j, png::rgb_pixel(255-iteracio%256,
+                                               255-iteracio%256, 255-iteracio%256));
+            </programlisting> 
+            Megadjuk létehozott png képünk egyes pixeleinek a 
+            megfelelőt színt, ezzel kirajzolódik a Mandelbrot-halmaz ábrája.
+            <programlisting language="c++">
+                kep.write (argv[1])
+            </programlisting>
+            Végezetül pedig a létrehozott képünk tartalmát beleírjük abba fájlba, amit
+            a felhasználó megad argumentumként.
+            <figure>
+                <title>Program fordítás, futtatása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/futtatas.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Mandelbrot halmaz</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/abra.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
         </para>
     </section>        
         
@@ -51,7 +193,7 @@
         <para>
         </para>
         <para>
-            Megoldás videó: 
+            Megoldás videó: <link xlink:href="https://youtu.be/gvaqijHlRUs">https://youtu.be/gvaqijHlRUs</link>
         </para>
         <para>
             Megoldás forrása:  
@@ -79,6 +221,9 @@
                                                                                                                                                                             
     <section>
         <title>Mandelbrot nagyító és utazó Java nyelven</title>
+        <para>
+            Megoldás forrása:  
+        </para>
         <para>
         </para>
     </section>
