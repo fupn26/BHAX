@@ -503,7 +503,7 @@
         </para>
         <para>
             Az előző paragrafusban látott <function>megoldás</function> egy
-            <emphasis role = "strong>címkézett utasítás</emphasis>, mely a goto
+            <emphasis role = "strong">címkézett utasítás</emphasis>, mely a goto
             célpontja. Érvényessége arra a függvényre szól, amelyben előfordul.
         </para>
         <para>
