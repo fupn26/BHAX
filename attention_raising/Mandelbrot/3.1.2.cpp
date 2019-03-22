@@ -36,7 +36,7 @@ main ( int argc, char *argv[] )
 
   int szelesseg = 1920;
   int magassag = 1080;
-  int iteraciosHatar = 255;
+  int iteraciosHatar = 1000000000;
   double a = -1.9;
   double b = 0.7;
   double c = -1.3;
@@ -51,11 +51,6 @@ main ( int argc, char *argv[] )
       b = atof ( argv[6] );
       c = atof ( argv[7] );
       d = atof ( argv[8] );
-    }
-  else
-    {
-      std::cout << "Hasznalat: ./3.1.2 fajlnev szelesseg magassag n a b c d" << std::endl;
-      return -1;
     }
 
   png::image < png::rgb_pixel > kep ( szelesseg, magassag );
