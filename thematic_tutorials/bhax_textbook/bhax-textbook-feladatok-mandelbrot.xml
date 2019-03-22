@@ -14,7 +14,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Mandelbrot">itt</link>               
         </para>
         <para>
             Mielőtt a Mandelbrot halmazzal foglalkoznánk, elsőnek tisztázzuk, hogy
@@ -163,14 +163,128 @@ int main (int argc, char *argv[])
     <section>
         <title>A Mandelbrot halmaz a <filename>std::complex</filename> osztállyal</title>
         <para>
-                
-        </para>
-        <para>
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Mandelbrot">itt</link>               
         </para>
+        <para>
+            Az előző feladatot fogjuk megoldani, csak most egy kicsit másképpen. Ahogy láttad,
+            az előbb a komplex számokat két változóban tároltuk, egyikben a valós, ,másikban
+            pedig a képzetes részét. De az infromatikusok lusták, mindek használnánk 2
+            változót, ha lehet egyet is. Ezt teszi számunkra lehetőve a <function>complex</function>
+            library, melynek segítségével a gép képes kezelni ezeket a számokat.
+        </para>
+        <para>
+            Ahogy az előbb, most is végigfutunk a forráson. Az első különbség ott van, hogy
+            a felhasználó adhatja meg a létrehozandó kép attribútumait, de ezt ki is hagyhatjuk,
+            akkor az alapértelmezett értékeket használja a program.  
+            <programlisting language="c++">
+  int szelesseg = 1920;
+  intmagassag = 1080;
+  intiteraciosHatar = 255;
+  double a = -1.9;
+  double b = 0.7;
+  double c = -1.3;
+  double d = 1.3;
+
+  if ( argc == 9 )
+    {
+      szelesseg = atoi ( argv[2] );
+      magassag =  atoi ( argv[3] );
+      iteraciosHatar =  atoi ( argv[4] );
+      a = atof ( argv[5] );
+      b = atof ( argv[6] );
+      c = atof ( argv[7] );
+      d = atof ( argv[8] );
+    }
+            </programlisting>
+            Az <function>atoi</function> és <function>atof</function> segítségével
+            tudjuk átalakítani a parancssori argumentum stringet
+            <function>int</function> és <function>double</function> típusra.
+            Ezután létrehozzuk az üres png-t, mint legutóbb, majd a szükséges 
+            változókat.
+            <programlisting language = "c++"><![CDATA[
+  png::image < png::rgb_pixel > kep ( szelesseg, magassag );
+
+  double dx = ( b - a ) / szelesseg;
+  double dy = ( d - c ) / magassag;
+  double reC, imC, reZ, imZ;
+  int iteracio = 0;]]>
+            </programlisting>
+            A két egymásba ágyazott for ciklus segítségével bejárjuk a rácsot,és
+            beállítjuk a kép pixeleit a megfelelő értékre, mely most eltér az 
+            előzőhöz képest. Itt egy színesebb ábrát fogunk kapni, az 
+            előzőhöz képest.
+            <programlisting><![CDATA[
+ for ( int j = 0; j < magassag; ++j )
+    {
+      // k megy az oszlopokon
+
+      for ( int k = 0; k < szelesseg; ++k )
+        {
+
+          // c = (reC, imC) a halo racspontjainak
+          // megfelelo komplex szam
+          reC = a + k * dx;
+          imC = d - j * dy;
+          std::complex<double> c ( reC, imC );
+
+          std::complex<double> z_n ( 0, 0 );
+          iteracio = 0;
+
+          while ( std::abs ( z_n ) < 4 && iteracio < iteraciosHatar )
+            {
+              z_n = z_n * z_n + c;
+
+              ++iteracio;
+            }
+
+          kep.set_pixel ( k, j,
+                          png::rgb_pixel ( iteracio%255, (iteracio*iteracio)%255, 0 ) );
+        }
+
+      int szazalek = ( double ) j / ( double ) magassag * 100.0; 
+      //kiírja, hogy hány százaléknél tart a képgenerálás
+      std::cout << "\r" << szazalek << "%" << std::flush;
+    }]]>
+            </programlisting>
+        
+        Na itt néhány dolog eltér az előző feladathoz képest. Itt használjuk elsőnek
+        a complex típust, ami <function>double</function>-ket tartalmaz, és két
+        részből áll, a valós és az imaginárius részből. Ennek a segítségével
+        definiáljuk a c és a z_n változókat. Majd, innen már ismerős lehet, 
+        kiszámoljuk minden c esetén a z_n-eket, és ha elérjük az iterációs határt
+        akkor, tudhatjuk, hogy az iteráció konvergens.
+        Ebből következik, hogy
+        a c eleme a Mandelbrot halmaznak.  A while fejrészében 
+        látható <function>abs()</function> függvény az abszolút értékét adja meg
+        az bemenetként kapott argumentumának. A halmazt lértehozó sorozat
+        képzési szabálya egy az egyben beírható a programba, nincs szükség
+        semmilyen szétbontásra, mint az előző programnál volt, köszönhetően
+        annak, hogy képesek vagyunk kezelni a komplex számokat. 
+        Pusz dolog, hogy a a program a futása 
+        azt is látjuk, hogy hány százalékát végezte el a számításoknak a gép. 
+        Végezetül pedig itt is kiírjuk a png fájlt a parancssori argumnetumként 
+        megadott fájlba a <function>write</function> segítségével.
+            <figure>
+                <title>Program fordítása és futtatása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/futtatas_c.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Mandelbrot halmaz</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/abra_2.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
+        
     </section>        
                 
     <section>
