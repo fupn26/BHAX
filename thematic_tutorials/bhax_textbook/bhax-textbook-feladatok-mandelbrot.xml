@@ -298,8 +298,162 @@ int main (int argc, char *argv[])
             Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf</link>
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>                        
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Tovább folytatjuk a Mandelbrot-os témakört. Ezzel a feladattal nem egészen 
+            direkt a kapcsolata a Mandelbrot halmaznak, inkább a Julia halmazokkal
+            lesz szoros rokonságban. A Mandelbrot halmaz tartalmazza az összes Julia
+            halmazt. Ez abból következik, hogy a Julia halmaz esetén a c konstans, és
+            a rácsot a z-vel járjuk be, viszont a Mandelbrot halmazban a c változóként
+            szerepel, melyhez kiszámoljuk a z értékeket. Szóval mindig újabb és újabb 
+            Julia halmazt számolunk ki vele. 
+        </para>
+        <para>
+            A Biomorfokra Clifford Pickover talált rá, méghozzá egy Julia halmazt rajzoló
+            prgramjának írása közben. A programja rejtett egy bugot, és emiatt egészen
+            furcsa dolgokat produkált a program, melyre azt hitte, hogy valami természeti
+            csodára lelt rá. Magáról a Biomorfokról, és a Pickover történetéről
+            részletesebben olvashatsz
+            <link xlink:href="https://bit.ly/2HCbCYs">itt</link>.
+            Mi is ez alapján készítettük el a biomorf rajzoló programunkat, mely
+            a Mandelbrot-os programra alapul, annak egy továbbfejlesztett verziója.
+        </para> 
+        <para>
+            A program eleje teljesen megegyezik a Mandelbrot halmazos programunkkal, azzal
+            a kivétellel, hogy most a felhasználótól kérjük be a cc konstans érékét, és a 
+            küszöbszámot. Ezek az adatok megtalálhatóak a cikkben, minden biomorfhoz 
+            külön-külön.
+            <programlisting language = "c++"><![CDATA[
+#include <iostream>
+#include "png++/png.hpp"
+#include <complex>
+
+int
+main ( int argc, char *argv[] )
+{
+
+    int szelesseg = 1920;
+    int magassag = 1080;
+    int iteraciosHatar = 255;
+    double xmin = -1.9;
+    double xmax = 0.7;
+    double ymin = -1.3;
+    double ymax = 1.3;
+    double reC = .285, imC = 0;
+    double R = 10.0;
+
+    if ( argc == 12 )
+    {
+        szelesseg = atoi ( argv[2] );
+        magassag =  atoi ( argv[3] );
+        iteraciosHatar =  atoi ( argv[4] );
+        xmin = atof ( argv[5] );
+        xmax = atof ( argv[6] );
+        ymin = atof ( argv[7] );
+        ymax = atof ( argv[8] );
+        reC = atof ( argv[9] );
+        imC = atof ( argv[10] );
+        R = atof ( argv[11] );
+
+    }]]>
+            </programlisting>
+            Ahogy látható a parancssori argumentumok száma 10-re nőtt, melyeket
+            nem kötelező megadni, ilyenkor az alapértelmezett értékeket használja.
+            Ezt követően létrehozzuk az üres png-t, a lépésközt a rácsok között,
+            és most a cc szám deklarációja is a cikluson kívülre kerül, mivel
+            az jelen esetben konstans.
+            <programlisting language="c++"><![CDATA[
+    png::image < png::rgb_pixel > kep ( szelesseg, magassag );
+
+    double dx = ( xmax - xmin ) / szelesseg;
+    double dy = ( ymax - ymin ) / magassag;
+
+    std::complex<double> cc ( reC, imC );]]>
+            </programlisting>
+            Egy kisebb átalakításra volt szükség a cilusok tekintetében, melyet 
+            ezen algoritmus alapján módosítottunk:
+            <programlisting><![CDATA[
+1 for x = xmin to xmax by s do
+2   for y = ymin to ymax by s do
+3       z = x + yi
+4       ic = 0
+5       for i = 1 to K do
+6           z = f(z) + c
+7           if |z| > R then
+8               ic = i
+9               break
+10      PrintDotAt(x, y) with color ic
+//forrás: https://bit.ly/2HCbCYs]]>
+            </programlisting>
+            Ennek a C++ implementációja a következő:
+            <programlisting><![CDATA[
+ for ( int y = 0; y < magassag; ++y )
+    {
+        // k megy az oszlopokon
+
+        for ( int x = 0; x < szelesseg; ++x )
+        {
+
+            double reZ = xmin + x * dx;
+            double imZ = ymax - y * dy;
+            std::complex<double> z_n ( reZ, imZ );
+
+            int iteracio = 0;
+            for (int i=0; i < iteraciosHatar; ++i)
+            {
+
+                z_n = std::pow(z_n, z_n) + std::pow(z_n,6) + cc;
+                //z_n = std::pow(z_n, 2) + std::sin(z_n) + cc;
+                if(std::real ( z_n ) > R || std::imag ( z_n ) > R)
+                {
+                    iteracio = i;
+                    break;
+                }
+            }
+
+            kep.set_pixel ( x, y,
+                            png::rgb_pixel ( (iteracio*60)%255, (iteracio*100)%255, (iteracio*40)%255 ));
+        }
+
+        int szazalek = ( double ) y / ( double ) magassag * 100.0;
+        std::cout << "\r" << szazalek << "%" << std::flush;
+    }]]>
+            </programlisting>
+            A két egymásba ágyazott for ciklus segítségével végigmegyünk a rácspontokon
+            és egy harmadik for ciklussal pedig kiszámoljuk a függvéynértékeket,
+            egészen addig, amíg el nem érjük az iterációs határt, vagy nem 
+            teljesül ez a feltétel:
+            <programlisting language="c++"><![CDATA[
+                if(std::real ( z_n ) > R || std::imag ( z_n ) > R)]]>
+            </programlisting>
+            Ez volt az a bug, amit Clifford Pickover programja tartalmazott,
+            egy sor, ami nélkül ez a feladat lehet, hogy soha nem készült
+            volna el.
+            Végezetül pedig beállítjuk az egyes pixelek színét, makd kírjuk egy fájlba
+            a tartalmát.
+            <programlisting language="c++">
+                kep.write ( argv[1] );
+            </programlisting>
+            <figure>
+                <title>Program fordítása és futtatása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Biomorf/futtat.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Biomorf</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Biomorf/biomorf.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Sajnos nem sikerült elérni ugyanazt a színt, mint a cikkben, de lényeg
+            ezen is látható.
+        </para>                       
     </section>                     
 
     <section>
