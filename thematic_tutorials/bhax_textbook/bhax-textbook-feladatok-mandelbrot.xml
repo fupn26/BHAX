@@ -464,7 +464,7 @@ main ( int argc, char *argv[] )
             Megoldás videó: <link xlink:href="https://youtu.be/gvaqijHlRUs">https://youtu.be/gvaqijHlRUs</link>
         </para>
         <para>
-            Megoldás forrása:  
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/CUDA">itt</link> 
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -719,23 +719,118 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
         </para>
             
         <para>
-            Megoldás forrása:  
+            Megoldás forrása:<link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Mandelbrot/Zoom">itt</link>  
         </para>
 
         <para>
             Megoldás videó: 
         </para>
         <para>
-            Megoldás forrása:  
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <caution>
+            <title>Használata</title>
+            <para>
+                Telepíteni: sudo apt-get install libqt4-dev
+            </para>
+        </caution>
+        <para>
+                Fordítás:
+                Az szükséges 4 fájlnak egy mappában kell lennie. A mappában futtatni
+                kell a <function>qmake -project</function> parancsot. Ez létre fog
+                hozni egy <function>*.pro</function> fájlt. Ebbe a fájlba be kell
+                írni a következőt: <function>QT += widgets</function> sort. Ezután futtatni kell
+                a <function>qmake *.pro</function>.
+                Ezután lesz a mappában
+                egy <function>Makefile</function>, ezt kell majd használni. Ki 
+                adjuk a <function>make</function> parancsot, mely létrehoz 
+                egy bináris fájlt. Ezt pedig a szokásos módon futtatjuk.
+            <figure>
+                <title>1. lépés</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom/elso.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>2. lépés</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom/szerk.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>3. lépés</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom/vege.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Rengeteg figyelmeztetést ad vissza, de ezzel most nem kell törődni, hiszan a bináris fájl
+            elkészült, melyet futtatunk, és elindul az utazásunk a végtelenbe.
+            <figure>
+                <title>4. lépés</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom/futtat.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Alapállapot</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom/kep_1.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Nagyítva</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom/kep_2.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Tovább nagyítva</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom/kep_3.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Ahhoz, hogy részletesebb képet kapj a ránagyított területről, az "n" billentyűt
+            kell lenyomnod, mely kiszámolja a z-ket a megadott területen. Itt lehet látni, hogyan
+            mosósdik össze a Mandelbrot és a Biomorfos téma. A hatmadik kép, már majdnem olyan, mint
+            egy biomorf.
         </para>
     </section>                     
                                                                                                                                                                             
     <section>
         <title>Mandelbrot nagyító és utazó Java nyelven</title>
         <para>
-            Megoldás forrása:  
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Mandelbrot/Zoom_java">itt</link> 
         </para>
         <para>
+            <emphasis role = "strong">
+                Tanulságok, tapasztalatok, magyarázat...
+            </emphasis>
+        </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>
+                Telepíteni: sudo apt-get install openjdk-8-jdk 
+            </para>
+        </caution>
+        <para>
+            Az előző feladatban készített nagyító Java implementációját
+            kell most elkészíteni. A forrás egy kicsit bugos, mivel amikor
+            nagyítasz. akkor az ablak mérete változik, és az előző állapot
+            látszik még.
         </para>
     </section>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
