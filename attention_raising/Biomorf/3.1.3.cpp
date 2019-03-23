@@ -62,12 +62,6 @@ main ( int argc, char *argv[] )
         R = atof ( argv[11] );
 
     }
-    else
-    {
-        std::cout << "Hasznalat: ./3.1.2 fajlnev szelesseg magassag n a b c d reC imC R" << std::endl;
-        return -1;
-    }
-
     png::image < png::rgb_pixel > kep ( szelesseg, magassag );
 
     double dx = ( xmax - xmin ) / szelesseg;
@@ -93,7 +87,7 @@ main ( int argc, char *argv[] )
             for (int i=0; i < iteraciosHatar; ++i)
             {
 
-                z_n = std::pow(z_n, 3) + cc;
+                z_n = std::pow(z_n, z_n) + std::pow(z_n,6) + cc;
                 //z_n = std::pow(z_n, 2) + std::sin(z_n) + cc;
                 if(std::real ( z_n ) > R || std::imag ( z_n ) > R)
                 {
@@ -101,9 +95,8 @@ main ( int argc, char *argv[] )
                     break;
                 }
             }
-
             kep.set_pixel ( x, y,
-                            png::rgb_pixel ( (iteracio*20)%255, (iteracio*40)%255, (iteracio*60)%255 ));
+                            png::rgb_pixel ((iteracio*70)%255, (iteracio*100)%255, (iteracio*200)%255));
         }
 
         int szazalek = ( double ) y / ( double ) magassag * 100.0;
