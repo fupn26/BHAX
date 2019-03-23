@@ -735,6 +735,11 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
             </para>
         </caution>
         <para>
+            A program a QT GUI-t használja, ennek segítségével tudjuk elkészíteni a 
+            Mandelbrot halmazt beutazó programunkat. Ez a GUI az egyik legertejedtebb
+            garfikus interfésze a C++-nak, rengeteg tutorial van róla fent a neten.  
+        </para>
+        <para>
                 Fordítás:
                 Az szükséges 4 fájlnak egy mappában kell lennie. A mappában futtatni
                 kell a <function>qmake -project</function> parancsot. Ez létre fog
@@ -829,8 +834,57 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
         <para>
             Az előző feladatban készített nagyító Java implementációját
             kell most elkészíteni. A forrás egy kicsit bugos, mivel amikor
-            nagyítasz. akkor az ablak mérete változik, és az előző állapot
-            látszik még.
+            nagyítasz. akkor új ablakban nyílik meg a nagyítás, melynek
+            mérete a kijelölt terület függvényében változik. Érdekesség
+            ebben a Java programban már includálva van
+            másik java program, a <filename>MandelbrotHalmaz.java</filename>.
+            Ezt a következő sorral érjük el:
+            <programlisting language="java">
+                public class MandelbrotHalmazNagyító extends MandelbrotHalmaz
+            </programlisting>
+            A Javaban nincs a már megszokott <function>#include</function>, helyette az <function>import</function>-ot
+            vagy jelen esetben az <function>extends</function>-et használjuk.
+            <figure>
+                <title>Fordítás, futtatás</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/fordit.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Fordítás, futtatás</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_1.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Fordítás, futtatás</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_2.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Fordítás, futtatás</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_3.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Fordítás, futtatás</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_4.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Az élesítést itt is az "n" billentyűvel tudod elérni.
         </para>
     </section>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
