@@ -293,6 +293,113 @@
             szerkezetű rekord, ezzel szemben a union, csak változó részt tartalmazó rekord.
             A void típus tartomány üres, tehát nincs reprezentációja, sem műveletei.    
         </para>
+        <para>
+            <emphasis role="strong">Utasítások</emphasis>
+        </para>
+        <para>
+            Az utasítások segítségével tudjuk megadni az algoritmusok egyes lépéseit,
+            és a fordítóprogramok ezek segítségével hozzák létre a tárgykódot.
+            2 csoportra oszthatjuk őket: deklarációs és végrehajtó utasítások.
+            A deklarációs utasítások kifejezetten a fordítóprogramnak szólnak,
+            mögöttük nem áll tárgykód. Összességében a tárgykódot befolyásolják, de
+            nem fordulnak le. A végrehajtó utasítások összességéből áll
+            Ezekből többféle létezik, melyeket most sorraveszünk.
+        </para>
+        <para>
+            Az <emphasis role="strong">értékadó</emphasis> utasítások beállítják
+            vagy módosítják az egyes változók értkét.
+        </para>
+        <para>
+            Az <emphasis role="strong">üres</emphasis> utasítások az eljárásorientált
+            nyelvekre jellemzőek. De vannak olyan nyelvek, ahol hasunálatuk nélkülözhetetlen.
+            Hatására a processzor egy üres gépi utasítást hajt végre.  
+        </para>
+        <para>
+            Régebbi programnyelvek előszeretettel alkazmaták az <emphasis role="strong">
+                                                                    ugró
+            </emphasis> utasítást. De ezt manapság már nem használják, mivel
+            felelőtlen alkalmazása értelmezhetetlen kódot eredeményez. 
+            Alakja: <function> GOTO címke</function>. Lényegében
+            az adott címkével ellátott utasításra/utasítás csoportra 
+            adhatjuk át a vezérlést. 
+        </para>
+        <para>
+            Az <emphasis role="strong">elágaztató</emphasis> utasítások 
+            két csoportra oszthatjuk, a kétirányú és a többirányú
+            elágaztatásra. A kétirányú alatt igaz/hamis feltételt kell érteni.
+            Van egy fejrész, abban tároljuk a feltételt, ami teljesülése
+            esetén végrehajtjuk hozzá tartozó utasításokat. Lehet még 
+            else ágat is használni, ahova akkor igrik a vezérlés, ha a 
+            feltétel nem teljesül. Ha egyszerre több utasítást kakrunk végrehajtani,
+            akkor a kapcsos zárójellel tudjuk összekapcsolni őket, mely így egy utasításnak
+            számít. Alakja: <function>if feltetel then tevekenyseg [else tevekenyseg]</function>
+            Ha van else ág is, akkor hosszú IF-utasításról beszélünk, ellenkező
+            esetben rövidről. Lehetőségünk van egymásba ágyazni több IF-utasítást
+            , de ekkor értelmezésbeli problémák adódhatnak, mivel nem egyértelmű, hogy
+            az else ág, melyik if-hez tartozik. Általában a belülről kifelé haladó
+            kiértékelés az elterjedt, szóval mindig az else-hez "legközelebbi"
+            if-hez tartozik.
+        </para>
+        <para>
+            Ezzel szemben a többirányú utasítás esetén több egymást kizáró
+            tevékenység közül egyet választunk ki, ha a fejrészben lévő
+            kifejezés megegyezik az konsatnsok valamelyikével. A konstansokhoz
+            rendelünk tevékenységeket, melyeket végrehajtuk az előbb említett esetben.
+            Ez C-ben általában a következő alakú:
+            <function>switch kifejezés case1: tevékenység default: tevekenyseg<function>
+            Több <function>case</function>-t is használhatunk, és a végére, ha egyik
+            case se teljesülne, akkor használhatunk default tevékenységet, amit
+            végrehajtunk ilyenkor.
+        </para>
+        <para>
+            Vannak még <emphasis role="strong">ciklusvezérlő</emphasis>
+            utasítások, melyek segítségével utasításokat tudunk megismételni.
+            Általános felépítése fejből, meagból és végből áll. A mag tartalmazza
+            a végrehajtandó utasításokat, a fej vagy a vég pedig a ismétlést
+            meghatározó információk helye. Két véglet az üres ciklus és a
+            végtelen ciklus. Míg az előbbi nem hajt végre semmit, addig az
+            utóbbi végtelenségig ismétlődik. Ezektől eltekintve létezik feltételes,
+            előírt lépésszámú és felsorolásos.
+        </para>
+        <para>
+            A feltételes ciklus a feltétel igaz/hamis volta alapján
+            hajt végre utasításokat. A feltétel lehet a fejrészben, vagy a végrészben.
+            Az előbbi eset C-ben a <function>while</function>, mely esetén addig oismétlődik a cilus,
+            ameddig a feltétel igaz, utána befejeződik. Utóbbi eset a <functio>do while</functio>, mely
+            egyszer mindenképpen végrahajtja a ciklusmagot, és utána teszteli a
+            feltételt, ha hamis, akkor kilépünk a cilusból.
+        </para>
+        <para>
+            Az előírt lépésszámú ciklus, lényegében a ciklus fejrészében megadott
+            számban ismétli az utasításokat. Ehhez szükség van egy ciklus változóra,
+            melyet addig léptetünk, ameddig a feltétel igaz, majd kilépünk. Egyes
+            nyelvek engedélyezik a cilusváltozó deklarálásáét a fejben, másoknál
+            (C-ben), a ciklus előtt kell deklarálni. A lépésközt is tudjuk állítnai,
+            illetve azt is, hogy csökkenően, vagy növekvően haladjunk a ciklusban.
+            Ezt a ciklusfajtát nevezzük <function>for</function> ciklusnak.
+        </para>
+        <para>
+            Felsorolásos ciklus az előbbi ciklus egy általánosítása. A ciklusváltozó
+            és az értékek megadása a fejben törrténik. A cilus minden egyes értékre lefut.
+            A ciklusváltozó típusa szabadon válaztható, viszont ez a ciklus fajta nem lehet
+            se üres, se végtelen.
+        </para>
+        <para>
+            Végtelenb ciklus esetén sem a fej, sem a vég nem tartalmaz információkat
+            arról, hogy mikor kéne befejeződnie a cilusnak. Ezeknél általában a magban
+            adunk meg valamilyen utasítást, amely kiugratja a vezérlést a ciklusból.
+            Használata eseményvezérelt alkalmazásoknál jön jól.
+        </para>
+        <para>
+            Az összetett ciklusok pedig az eddig felsorolt cilusokból épülnek fel.
+            A cilusfejükben tetszőleges mennyíségű információt tárolhatunk el
+            az ismétlődésre vonatkozóan.
+        </para>
+        <para>
+            Ahogy már a végtelen ciklusnál említettem, vannak utasítások, amik segítségével
+            a cilusok működését befolyásolhatjuk. Ezeket nevezzük
+            <emphasis role="strong">cilusszervező</emphasis> utasításoknak.
+        </para>
     </section>        
     <section>
         <title><![CDATA[K&R könyv]]></title>
