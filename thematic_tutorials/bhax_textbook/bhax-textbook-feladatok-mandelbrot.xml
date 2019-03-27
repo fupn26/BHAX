@@ -853,7 +853,7 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
                     </mediaobject>
             </figure>
             <figure>
-                <title>Fordítás, futtatás</title>
+                <title>Mandelbrot</title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_1.png" format="PNG"/>
@@ -861,7 +861,7 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
                     </mediaobject>
             </figure>
             <figure>
-                <title>Fordítás, futtatás</title>
+                <title>Mandelbrot nagyítva</title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_2.png" format="PNG"/>
@@ -869,7 +869,7 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
                     </mediaobject>
             </figure>
             <figure>
-                <title>Fordítás, futtatás</title>
+                <title>Tovább nagyítva</title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_3.png" format="PNG"/>
@@ -877,7 +877,7 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
                     </mediaobject>
             </figure>
             <figure>
-                <title>Fordítás, futtatás</title>
+                <title>Még tovább javítva</title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_4.png" format="PNG"/>
