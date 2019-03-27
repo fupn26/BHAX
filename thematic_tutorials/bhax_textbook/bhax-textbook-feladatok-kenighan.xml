@@ -346,7 +346,7 @@
             kifejezés megegyezik az konsatnsok valamelyikével. A konstansokhoz
             rendelünk tevékenységeket, melyeket végrehajtuk az előbb említett esetben.
             Ez C-ben általában a következő alakú:
-            <function>switch kifejezés case1: tevékenység default: tevekenyseg<function>
+            <function>switch kifejezés case1: tevékenység default: tevekenyseg</function>
             Több <function>case</function>-t is használhatunk, és a végére, ha egyik
             case se teljesülne, akkor használhatunk default tevékenységet, amit
             végrehajtunk ilyenkor.
@@ -365,7 +365,7 @@
             A feltételes ciklus a feltétel igaz/hamis volta alapján
             hajt végre utasításokat. A feltétel lehet a fejrészben, vagy a végrészben.
             Az előbbi eset C-ben a <function>while</function>, mely esetén addig oismétlődik a cilus,
-            ameddig a feltétel igaz, utána befejeződik. Utóbbi eset a <functio>do while</functio>, mely
+            ameddig a feltétel igaz, utána befejeződik. Utóbbi eset a <function>do while</function>, mely
             egyszer mindenképpen végrahajtja a ciklusmagot, és utána teszteli a
             feltételt, ha hamis, akkor kilépünk a cilusból.
         </para>
