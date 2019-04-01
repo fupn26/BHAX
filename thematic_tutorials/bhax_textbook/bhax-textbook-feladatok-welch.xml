@@ -22,7 +22,168 @@
         <para>
             Tanulságok, tapasztalatok, magyarázat... térj ki arra is, hogy a JDK forrásaiban a Sun programozói
             pont úgy csinálták meg ahogyan te is, azaz az OO nemhogy nem nehéz, hanem éppen természetes neked!
-        </para>                
+        </para>
+        <para>
+            A feladatban szereplő polártranszformáció segítségével random számokat tudunk
+            kiszámolni. Maga az algoritmus olyannyira eltrejedt, hogy a Java random szám
+            generátor függvénye is ezt használja.
+        </para>
+        <para>
+            Elsőnek vegyük végig a C++ forrást, majd rátérünk a java-ra, mely,
+            látni fogod, sokkal letisztultabb.
+            <programlisting language= "c++">
+class PolarGen {
+
+	public:
+
+		PolarGen(); //konstruktor
+
+		~PolarGen(){} //destruktor
+
+		double kovetkezo(); //random lekérés
+
+	private:
+
+		bool nincsTarolt;
+		double tarolt; //random értéke
+
+};
+            </programlisting>
+            Szükségünk van egy osztályra, melyben a random számokat fogjuk
+            elkészíteni. Alapvetően ez 2 részből áll, a <function>public</function>
+            és a <function>private</function> részből. A <function>public</function>
+            részben szereplő elemek elérhetőek a class-on kívül, ezzel
+            szemben a <function>private</function> csak a class-on belül. 
+            A konstruktor egy olyan "függvény", ami akkor hajtódik végre
+            amikor létre hozzuk a <function>PolarGen</function> típusú
+            objektumunkat. Fontos, hogy csak egyszer hajtódik végre, és ezt,
+            függetlenül attól, hogy a <function>public</function>
+            részben van, már nem tudjuk meghívni. Hasonló igaz a destruktorra,
+            mely a program futása végén hajtódik végre. A nevöknek meg kell egyeznie
+            a class nevével.
+            Használata olyan esetekben
+            nélkülözhetetlen a class-on belül foglaltunk tárteületet, mivel 
+            ebben tudjuk felszabadítani ezeket. A <function>kovetkezo()</function>
+            függvény segítségével pedig a random számokat fogjuk kiszámolni.
+            <programlisting language= "c++">
+PolarGen::PolarGen() { //a konstruktor kifejtése
+	nincsTarolt = false;
+	std::srand (std::time(NULL)); //random inicializálás
+};
+            </programlisting>
+            A konstruktor jelen esetben, ad egy alapértelmezett értéket a 
+            <function>nincsTarolt</function> változónak és meghívja
+            az <function>srand()</function> függvényt, ami a random számokat
+            fogja generálni.
+            <programlisting><![CDATA[
+double PolarGen::kovetkezo() { //random lekérő függvény kifejtése
+	if (nincsTarolt)
+{
+		double u1, u2, v1, v2, w;
+
+		do{
+			u1 = std::rand () / (RAND_MAX + 1.0); //innentől jön az algoritmus
+			u2 = std::rand () / (RAND_MAX + 1.0);
+			v1 = 2 * u1 - 1;
+			v2 = 2 * u2 - 1;
+			w = v1 * v1 + v2 * v2;
+		    }
+		while (w > 1);
+
+		double r = std::sqrt ((-2 * std::log (w)) / w);
+
+		tarolt = r * v2; 
+		nincsTarolt = !nincsTarolt;
+
+		return r * v1; //idáig tart az algoritmus
+	}
+	
+	else
+	{
+		nincsTarolt = !nincsTarolt; //ha van korábbi random érték, akkor azt adja vissza
+		return tarolt;
+	}
+};]]>    
+            </programlisting>
+            A <function>kovetkezo()</function> függvény pedig tartalmazza az algoritmust,
+            mellyel most részletesen nem foglalkozunk. A lényeg annyi, hogy ellenőrizzük, hogy
+            van-e tárolt random számunk, ha nincs, akkor generálunk kettőt, az egyiket visszadajuk,
+            a másikat pedig eltároljuk.
+            <programlisting language = "c++"><![CDATA[
+int main() 
+{
+
+	PolarGen rnd;
+
+	for (int i = 0; i < 10; ++i) std::cout << rnd.kovetkezo() << std::endl; //10 random szám generálása
+
+}]]>
+            </programlisting> 
+            Végezetül a <function>main</function>-ben létrehozzuk a
+            <function>PolarGen</function> típusú változónkat, és generálunk 10
+            random számot. Fentebb említést tettem a destruktorról, de, ahogy
+            feltűnt, azt nem definiáltuk, ugyanis jelen esetben arra nincs szükség.
+        </para>
+        <para>
+            A java forrás nagyon hasonló az imént elemzett C++ forráshoz. A könyebb
+            értelmezhetőség érdekében a változó és osztáylnevek azonosak.
+            <programlisting language = "java"><![CDATA[
+public class PolarGenerator
+{
+    boolean nincsTarolt = true;
+    double tarolt;
+    
+    public PolarGenerator()
+    {
+        nincsTarolt = true;
+    }
+    
+    public double kovetkezo() 
+    {
+        if(nincsTarolt)
+        {
+            double u1, u2, v1, v2, w;
+            do{
+                u1 = Math.random();
+                u2 = Math.random();
+                v1 = 2* u1 -1;
+                v2 = 2* u2 -1;
+                w = v1*v1 + v2*v2;
+            } while (w>1);
+            
+            double r = Math.sqrt((-2 * Math.log(w) / w));
+            tarolt = r * v2;
+            nincsTarolt = !nincsTarolt;
+            return r * v1;
+        }
+        else
+        {
+            nincsTarolt = !nincsTarolt;
+            return tarolt;
+        }
+    }
+    
+    public static void main(String[] args)
+    {
+        PolarGenerator g = new PolarGenerator();
+        for (int i = 0; i < 10; ++i)
+        {
+            System.out.println(g.kovetkezo());
+        }
+    }
+}]]>
+            </programlisting>
+            Láthatóan, maga a forrás is sokkal rövidebb. A Java-ban az 
+            egész forrás egy nagy class része. Ebben szerepel a main-is, de 
+            azt nem tekintjük a class részének. C++-ban tudju tömbösíteni a
+            <function>private</function> és <function>public</function>
+            elemeket, itt mindegyik elé ki kell írni. Itt is van egy konstruktorunk,
+            ami a <function>nincsTarolt</function> értékét igazzá
+            definiálja. A következő függvény pedig a már megszokott módon
+            generálja  a random számokat. Egy érdekesség, hogy a Java-ban a 
+            random szám generálás függvény szintaxisa sokkal egyszerűbb, mely 
+            a Math library része.
+        </para>
     </section>        
 
     <section>
@@ -35,6 +196,195 @@
         </para>
         <para>
             Megoldás forrása:                
+        </para>
+        <para>
+            Az LZW algoritmus egy tömörítő eljárás, melyet többek között a 
+            a gif formátuma, de sok tömörítő is, mint zip, gzip ezt 
+            használja. Az algoritmus lényege annyi, hogy a bemeneti 
+            1-ekből és 0-ákból egy bináris fát épít. Mondjuk ezt még nem neveznénk
+            tömörítésnek, tehát most jön a lényeg. Úgy építi fel a fát, hogy
+            mindig ellenőrzi, hogy van-e már 0-ás vagy 1-es gyermek, ha nincs
+            akkor létrehoz egyet, és visszaugrik a gyökérre. Ha van, akkor 
+            a 0-és vagy 1-es gyermekre lép, és addig lépked lefele a fában, ameddig
+            nem talál egy olyan részfát, ahol létre kellene hozni egy újy gyermeket,
+            a létrehozás után visszaugrik a gyökérre.
+            <figure>
+                <title>LZW algoritmus</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/LZW/algo.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Az ábrán látható, hogy a 11 bites bemenetből, a végére csak 6 bitet
+            tartottunk meg. Ezt az algoritmust használja a C programunk.
+            <programlisting language = "c">
+typedef struct binfa
+{
+  int ertek;
+  struct binfa *bal_nulla;
+  struct binfa *jobb_egy;
+
+} BINFA, *BINFA_PTR;
+            </programlisting>
+            Első lépésként létrehozunk egy struktúrát, amely 3 részből áll, egy
+            értékből, és a gyermekeire mutató mutatókból. Maga a struktúra segítségével
+            egy új típust definiálunk, mely segítségével az összetartozó adatokat
+            tudjuk együtt kezelni. A <function>typedef</function> segítségével
+            pedig meg tudunk adni más nevet, amivel hivatkozhatunk a struktúrára.
+            <programlisting language="c">
+BINFA_PTR
+uj_elem ()
+{
+  BINFA_PTR p;
+
+  if ((p = (BINFA_PTR) malloc (sizeof (BINFA))) == NULL)
+    {
+      perror ("memoria");
+      exit (EXIT_FAILURE);
+    }
+  return p;
+}
+            </programlisting>
+            Az <function>uj_elem()</function> függvény segítségével foglalunk
+            helyet a BINFA típusú változóknak, majd visszaadunk egy erre a területre
+            mutató pointert.
+            <programlisting language = "c">
+extern void kiir (BINFA_PTR elem);
+extern void ratlag (BINFA_PTR elem);
+extern void rszoras (BINFA_PTR elem);
+extern void szabadit (BINFA_PTR elem);
+            </programlisting>
+            Deklaráljuk a szükséges függvényeket, melyeket a későbbiekben majd
+            definiálunk, de most előtte jöjjön a <function>main</function>. 
+            Jelen esetben ez most elég hosszú, tehát szedjük e darabraira.
+            <programlisting language = "c"><![CDATA[
+int
+main (int argc, char **argv)
+{
+  char b;
+
+  BINFA_PTR gyoker = uj_elem ();
+  gyoker->ertek = '/';
+  gyoker->bal_nulla = gyoker->jobb_egy = NULL;
+  BINFA_PTR fa = gyoker;]]>
+            </programlisting>
+            Elsőnek létrehozzuk a gyökeret. Az értékét beállítjuk a '/' jelre,
+            ezzel fogjuk jelölni ebben a feladatban, és az elkövetkezőkben
+            a gyökeret. Mivel még nincs se bal, se jobb oldali gyermek, ezért
+            a mutatóknak NULL értéket adunk. A fa mutatót pedig a gyökérre állítjuk.
+            <programlisting><![CDATA[
+while (read (0, (void *) &b, 1))
+    {
+      if (b == '0')
+	{
+	  if (fa->bal_nulla == NULL)
+	    {
+	      fa->bal_nulla = uj_elem ();
+	      fa->bal_nulla->ertek = 0;
+	      fa->bal_nulla->bal_nulla = fa->bal_nulla->jobb_egy = NULL;
+	      fa = gyoker;
+	    }
+	  else
+	    {
+	      fa = fa->bal_nulla;
+	    }
+	}
+      else
+	{
+	  if (fa->jobb_egy == NULL)
+	    {
+	      fa->jobb_egy = uj_elem ();
+	      fa->jobb_egy->ertek = 1;
+	      fa->jobb_egy->bal_nulla = fa->jobb_egy->jobb_egy = NULL;
+	      fa = gyoker;
+	    }
+	  else
+	    {
+	      fa = fa->jobb_egy;
+	    }
+	}
+    }]]>
+            </programlisting>
+            A <function>while</function> ciklusban alkotjuk meg a binfánkat.
+            A standard inputról olvassuk a bemenetet, bitenként. Ha a bemenet
+            0, akkor ellenőrizzük, hogy van-e nullás gyermek, ha nincs létrehozunk
+            egyet, és a fa mutatót visszaállítjuk a gyökérre. Ellenkező esetben 
+            a fa mutatót a bal oldali gyermekre állítjuk. Ha a bemenet nem 0, akkor 
+            ellenőrizzük, hogy van-e jobb oldali gyermek, ha nincs, akkor létrehozunk
+            , és a fa mutatót visszaállítjuk a gyökérre. Ha viszont van, akkor a 
+            fa mutató a jobb oldali gyermekre mutat.
+            <programlisting language = "c"><![CDATA[
+   printf ("\n");
+  kiir (gyoker);
+  
+  extern int max_melyseg, atlagosszeg, melyseg, atlagdb;
+  extern double szorasosszeg, atlag;
+
+
+ 
+
+  printf ("melyseg=%d\n", max_melyseg-1);
+
+  /* Átlagos ághossz kiszámítása */
+  atlagosszeg = 0;
+  melyseg = 0;
+  atlagdb = 0;
+  ratlag (gyoker);
+  // atlag = atlagosszeg / atlagdb;
+  // (int) / (int) "elromlik", ezért casoljuk
+  // K&R tudatlansági védelem miatt a sok () :)
+  atlag = ((double)atlagosszeg) / atlagdb;
+
+  /* Ághosszak szórásának kiszámítása */
+  atlagosszeg = 0;
+  melyseg = 0;
+  atlagdb = 0;
+  szorasosszeg = 0.0;
+
+  rszoras (gyoker);
+
+  double szoras = 0.0;
+
+  if (atlagdb - 1 > 0)
+    szoras = sqrt( szorasosszeg / (atlagdb - 1));
+  else
+    szoras = sqrt (szorasosszeg);
+
+  printf ("altag=%f\nszoras=%f\n", atlag, szoras);
+
+  szabadit (gyoker);
+}]]>
+            </programlisting>
+            A <function>main</function> függvény végén íratjuk ki a binfát, és
+            számolunk ki hozzá néhány érdekes adatot. De koncentráljunk a
+            <function>kiir</function> és a <function>szabadit</function>
+            függvényekkel.
+            <programlisting language = "c"><![CDATA[
+void
+kiir (BINFA_PTR elem)
+{
+  if (elem != NULL)
+    {
+      ++melyseg;
+      if (melyseg > max_melyseg)
+	max_melyseg = melyseg;
+      kiir (elem->jobb_egy);
+      // ez a postorder bejáráshoz képest
+      // 1-el nagyobb mélység, ezért -1
+      for (int i = 0; i < melyseg; ++i)
+	printf ("---");
+      printf ("%c(%d)\n", elem->ertek < 2 ? '0' + elem->ertek : elem->ertek,
+	      melyseg-1);
+      kiir (elem->bal_nulla);
+      --melyseg;
+    }
+}]]>
+            </programlisting>
+            A <function>kiir</function> segítségével fogjuk a bináris fánkat
+            kiírni a standard outputra. Ehhez most az inorder bejárást alkalmazzuk, ahol
+            elsőnek faldolgozzuk a jobb oldali gyermekeket, majd a gyökeret, és végül
+            a bal oldali  gyermekeket .
         </para>
     </section>        
         
