@@ -4,8 +4,11 @@
 // Bátfai Norbert, nbatfai@inf.unideb.hu, nbatfai@gmail.com
 // http://progpater.blog.hu/2011/03/26/kepes_egypercesek
 //
+//Telepíteni: sudo apt-get install libpng++-dev
 // Fordítás:
-// g++ mandelpng.c++ `libpng-config --ldflags` -o mandelpng
+// g++ mandelpng.c++ -o mandelpng
+// Futtatás:
+// ./mandelpng mandel.png
 
 #include <iostream>
 #include <png++/png.hpp>
