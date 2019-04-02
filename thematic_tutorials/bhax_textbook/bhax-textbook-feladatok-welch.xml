@@ -1146,7 +1146,7 @@ LZWBinFa ()
             Mind a kettőnek hasonló a szintaktikája, ami annyit tesz, hogy a
             paraméterként átadott fa gyökerének az elemeit átadjuk az üres fának,
             majd a mozgatott fa elemeit kinullázuk.
-            <programlisting langauge = "c++"><![CDATA[
+            <programlisting language = "c++"><![CDATA[
     LZWBinFa binFa2 = std::move(binFa);
     
     kiFile << binFa2;
@@ -1154,9 +1154,9 @@ LZWBinFa ()
     kiFile << "mean = " << binFa2.getAtlag () << std::endl;
     kiFile << "var = " << binFa2.getSzoras () << std::endl;]]>
             </programlisting>
-            Végezetül a <functon>move</functon> függvénnyel átmozgatjuk az egyes
+            Végezetül a <function>move</function> függvénnyel átmozgatjuk az egyes
             elemeket, és végül kiírjuk az új fát. Fontos látni, hogy ha ezután
-            az eredeti binFa-t is kiakarnánk nyomni, akkor nem tudnánk, mert azt
+            az eredeti binFa-t is ki akarnánk nyomni, akkor nem tudnánk, mert azt
             kinulláztuk.
         </para>
     </section>                     
