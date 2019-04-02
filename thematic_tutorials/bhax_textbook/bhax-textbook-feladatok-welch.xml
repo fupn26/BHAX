@@ -1115,7 +1115,49 @@ LZWBinFa ()
             Megoldás forrása:  
         </para>
         <para>
-            
+            A feladathoz ahhoz a programhoz nyúlunk vissza, amely esetén a gyökét tag
+            volt. Ezen elvégezve az apróbb módosításokat, már készen is van a mozgatókonstruktor.
+            <programlisting language="c++"><![CDATA[
+     LZWBinFa ( LZWBinFa && regi ) {
+          std::cout << "LZWBinFa move ctor" << std::endl;
+
+          gyoker.ujEgyesGyermek ( regi.gyoker.egyesGyermek() );
+          gyoker.ujNullasGyermek ( regi.gyoker.nullasGyermek() );
+
+          regi.gyoker.ujEgyesGyermek ( nullptr );
+          regi.gyoker.ujNullasGyermek ( nullptr );
+
+     }
+     LZWBinFa& operator = (LZWBinFa && regi)
+     {
+         if (this == &regi)
+             return *this;
+         
+         gyoker.ujEgyesGyermek ( regi.gyoker.egyesGyermek() );
+         gyoker.ujNullasGyermek ( regi.gyoker.nullasGyermek() );
+
+         regi.gyoker.ujEgyesGyermek ( nullptr );
+         regi.gyoker.ujNullasGyermek ( nullptr );
+          
+         return *this;
+     }]]>
+            </programlisting>
+            Ehhez meg kell csinálnunk a mozgató konstruktort és a mozgató értékadást.
+            Mind a kettőnek hasonló a szintaktikája, ami annyit tesz, hogy a
+            paraméterként átadott fa gyökerének az elemeit átadjuk az üres fának,
+            majd a mozgatott fa elemeit kinullázuk.
+            <programlisting langauge = "c++"><![CDATA[
+    LZWBinFa binFa2 = std::move(binFa);
+    
+    kiFile << binFa2;
+    kiFile << "depth = " << binFa2.getMelyseg () << std::endl;
+    kiFile << "mean = " << binFa2.getAtlag () << std::endl;
+    kiFile << "var = " << binFa2.getSzoras () << std::endl;]]>
+            </programlisting>
+            Végezetül a <functon>move</functon> függvénnyel átmozgatjuk az egyes
+            elemeket, és végül kiírjuk az új fát. Fontos látni, hogy ha ezután
+            az eredeti binFa-t is kiakarnánk nyomni, akkor nem tudnánk, mert azt
+            kinulláztuk.
         </para>
     </section>                     
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
