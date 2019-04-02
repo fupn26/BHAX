@@ -917,33 +917,27 @@ usage (void)
 int
 main (int argc, char *argv[])
 {
-    // http://progpater.blog.hu/2011/03/12/hey_mikey_he_likes_it_ready_for_more_3
-    // alapján a parancssor argok ottani elegáns feldolgozásából kb. ennyi marad:
-    // "*((*++argv)+1)"...
-
-    // a kiírás szerint ./lzwtree in_file -o out_file alakra kell mennie, ez 4 db arg:
     if (argc != 4)
     {
-        // ha nem annyit kapott a program, akkor felhomályosítjuk erről a júzetr:
         usage ();
-        // és jelezzük az operációs rendszer felé, hogy valami gáz volt...
         return -1;
-    }
+    }]]>
+            </programlisting>
+            A main elején ellenőrizzük, hogy a felhasználó elég argumentumot
+            adott-e meg, ha nem, akkor a <function>usage</function> függvény
+            segítségével kiírjuk a program helyes használatát, végül pedig
+            hibával térünk vissza, azaz a program futása megáll.
+            <programlisting language="c++"><![CDATA[
+    char *inFile = *++argv; //argv[1]
 
-    // "Megjegyezzük" a bemenő fájl nevét
-    char *inFile = *++argv;
-
-    // a -o kapcsoló jön?
-    if (*((*++argv) + 1) != 'o')
+    if (*((*++argv) + 1) != 'o') //argv[2][1]
     {
         usage ();
         return -2;
     }
 
-    // ha igen, akkor az 5. előadásból kimásoljuk a fájlkezelés C++ változatát:
     std::fstream beFile (inFile, std::ios_base::in);
 
-    // fejlesztgetjük a forrást: http://progpater.blog.hu/2011/04/17/a_tizedik_tizenegyedik_labor
     if (!beFile)
     {
         std::cout << inFile << " nem letezik..." << std::endl;
@@ -951,13 +945,27 @@ main (int argc, char *argv[])
         return -3;
     }
 
-    std::fstream kiFile (*++argv, std::ios_base::out);
+    std::fstream kiFile (*++argv, std::ios_base::out); //argv[3]
 
-    unsigned char b;		// ide olvassik majd a bejövő fájl bájtjait
-    LZWBinFa binFa;		// s nyomjuk majd be az LZW fa objektumunkba
-
-    // a bemenetet binárisan olvassuk, de a kimenő fájlt már karakteresen írjuk, hogy meg tudjuk
-    // majd nézni... :) l. az említett 5. ea. C -> C++ gyökkettes átírási példáit
+    unsigned char b;		
+    LZWBinFa binFa;]]>
+        </programlisting>
+        Ha megbizoynosodtunk róla, hogy a felhasználó elég argumentumot
+        adott meg, akkor bemeneti fájlra ráállítunk egy pointert. Ellenőrizzük,
+        hogy az argumentum tömb harmadik elemének a második eleme 'o'-e, ha nem,
+        akkor újra kiírjuk a felhasználónak a helyes működést, és jelezzük
+        az operációs renszernek, hogy a program futása során hiba lépett fel.
+        Ezután az <function>fstream</function> osztályú <function>beFile</function>-t
+        definiáljuk, az első argumentum a bemenetre mutató pointer, míg a másodikkal
+        jelezzük, hogy beolvassuk az első argumentum tartalmát. Ha olyan
+        bemeneti fájlt adunk meg, ami nem létezik, akkor szintén kiírjuk a
+        program helyes használatát, és hibával térünk vissza. Ezt köveztően
+        definiáljuk a <function>kiFile</function> fstream osztályú
+        objektumot, első paraméterként átadjuk az argumentum tömb 4. elemét,
+        és ebbe fogja kiírni a program a bináris fát. A b változóba fogjuk
+        beolvasni bájtonként a bemenetet, és létrehozzuk az LZWBinFa
+        objektumunkat.
+        <programlisting><![CDATA[
 
     while (beFile.read ((char *) &b, sizeof (unsigned char)))
         if (b == 0x0a)
@@ -986,15 +994,11 @@ main (int argc, char *argv[])
         if (b == 0x4e)		// N betű
             continue;
 
-        // egyszerűen a korábbi d.c kódját bemásoljuk
-        // laboron többször lerajzoltuk ezt a bit-tologatást:
-        // a b-ben lévő bájt bitjeit egyenként megnézzük
+       
         for (int i = 0; i < 8; ++i)
         {
-            // maszkolunk eddig..., most már simán írjuk az if fejébe a legmagasabb helyiértékű bit vizsgálatát
-            // csupa 0 lesz benne a végén pedig a vizsgált 0 vagy 1, az if megmondja melyik:
+            
             if (b & 0x80)
-                // ha a vizsgált bit 1, akkor az '1' betűt nyomjuk az LZW fa objektumunkba
                 binFa << '1';
             else
                 // különben meg a '0' betűt:
@@ -1002,13 +1006,21 @@ main (int argc, char *argv[])
             b <<= 1;
         }
 
-    }
-
-    //std::cout << binFa.kiir (); // így rajzolt ki a fát a korábbi verziókban de, hogy izgalmasabb legyen
-    // a példa, azaz ki lehessen tolni az LZWBinFa-t kimeneti csatornára:
-
-    kiFile << binFa;		// ehhez kell a globális operator<< túlterhelése, lásd fentebb
-    // (jó ez az OO, mert mi ugye nem igazán erre gondoltunk, amikor írtuk, mégis megy, hurrá)
+    }]]></programlisting>
+        Az első <function>while</function> ciklus segítségével elkezdjük beolvasni a
+        bemenetet a <function>b</function> változóba, és ha találunk sortörést, akkor
+        megállítjuk a ciklust. A <function>kommentben</function> változó értékét
+        hamisra állítjuk, majd a második <function>while</function> ciklusban elkezdjük
+        feldolgozni a bemenetet, és felépíteni a bináris fát. Ha karaktert olvasunk
+        be, akkor a <function>kommentben</function> változó értékét igazzá tesszük,
+        ha pedig sortörést, akkor pedig hamissá. Ha a beolvasott karakter
+        nagy betű, akkor folytatjuk a ciklust, ez nem okoz problémát.
+        A <function>for</function> ciklusban a beolvasott karakter bitjein végig
+        fut a program egyesével, ha a <function>b</function> bitenként éselve
+        egyet kapunk, akkor a fába belenyomjuk az 1-es étéket, ha nem, akkor
+        0-át, végezetül pedig minden iteráció végén shifteljük a b értékét 1-el.
+        <programlisting language = "c++"><![CDATA[
+    kiFile << binFa;		
 
     kiFile << "depth = " << binFa.getMelyseg () << std::endl;
     kiFile << "mean = " << binFa.getAtlag () << std::endl;
@@ -1020,6 +1032,8 @@ main (int argc, char *argv[])
     return 0;
 }]]>
             </programlisting>
+            Az utolsó lépés pedig az, hogy a kimenetként fájlba beleshifteljük
+            a bináris fát, és a hozzá tartozó mélység, áltla és szórás értékeket.
         </para>
     </section>        
                 
@@ -1036,6 +1050,55 @@ main (int argc, char *argv[])
             Megoldás forrása:  
         </para>
         <para>
+            Az előző feladatban részletesen taglaltuk, hogy hogyan is épül fel a
+            C++-os LZW algoritmust alkalmazó program, most ezt kell módosítani, 
+            mivel az előzőben a <function>gyoker</function> tagja volt az osztálynak.
+            Ebben a feladatban pointerre fogjuk átírni, ami nem is annyira nehéz
+            feladat, csak néhány dologra oda kell figyelni.
+        </para>
+        <para>
+            Első lépésként csak át kell írni a <function>gyoker</function>-t
+            mutatóra, melyet a 316. sorban találunk.
+            <programlisting language = "c++">
+                Csomopont *gyoker;
+            </programlisting>
+            Ha most fordítjuk a forrás, akkor rengeteg hibát fog találni, de
+            ez nem baj, folytatni kell az átalakítást. A következő
+            módoítást a konstruktorban kell végrahajtani.
+            <programlisting language="c++">
+LZWBinFa ()
+    {
+        gyoker = new Csomopont ('/');
+        fa = gyoker;
+    }
+            </programlisting>
+            A <function>gyoker</function> mutatónkat ráállítjuk egy újonan
+            lefoglalt tárterületre, és a fa mutatót is erre állítjuk. Mivel
+            foglaltunk területet, ezért azt fel is kell szabadítani, tehát a 
+            destruktor a következőképpen alakul:
+            <programlisting language="c++"><![CDATA[
+~LZWBinFa ()
+    {
+        szabadit (gyoker->egyesGyermek ());
+        szabadit (gyoker->nullasGyermek ());
+        delete(gyoker);
+    }]]>
+            </programlisting>
+            Több módosítás van, egyrészt a gyökér mostmár mutató, tehát
+            a gyokér által mutatott csomópont nullás és egyes gyermekére 
+            kell meghívnunk a <function>szabadit()</function> függvényt.
+            Szemben az előző feladatban megismert forrással, ahol ezek
+            a gyokerhez tartoztak, azaz ott így írtuk:
+            <programlisting language="c++">
+                szabadit (gyoker.egyesGyermek ());
+            </programlisting>
+            A gyoker mutató által mutatott területet pedig a 
+            <function>delete()</function> függvénnyel szabadítjuk fel.
+            Ha most fordítjuk a programot, akkor már kevesebb hibűt kapunk,
+            és megtudjuk, hogy pontosan hol vannak még hibák. Ezeken a helyeken
+            annyi a feladat, hogy már nem a gyökér memóriacímét kell átadni,
+            hanem csak a gyökeret, mint mutatót. Tehát mindenhol törölni kell
+            az <![CDATA[&]]> címképző operátort a gyökér elől.
         </para>
     </section>                     
 
@@ -1050,6 +1113,9 @@ main (int argc, char *argv[])
         </para>
         <para>
             Megoldás forrása:  
+        </para>
+        <para>
+            
         </para>
     </section>                     
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
