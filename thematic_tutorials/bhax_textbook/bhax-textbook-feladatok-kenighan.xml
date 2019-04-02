@@ -400,6 +400,26 @@
             a cilusok működését befolyásolhatjuk. Ezeket nevezzük
             <emphasis role="strong">cilusszervező</emphasis> utasításoknak.
         </para>
+        <para>
+            <emphasis role="strong">Programok szerkezete</emphasis>
+        </para>
+        <para>
+            A program forrását programegységekre tudjuk osztani. Vannak nyelvek,
+            ahol ezek teljesen függetlenek egymástól, másoknál egyetlen egységként
+            kell lefordítani az egészet, de léteznek olyanok is, amelyek ezt a kettőt
+            kombinálják. Tehát bizonyos programegységek öszetettek, bizonyosak pedig szimplák.
+            Az eljárásorientált nyelvek 4 programegységből állnak. Van egy alprogram, egy blokk
+            egy csomag és egy taszk. Az alprogramnak az a lényege, hogyha egy 
+            programrész többször ismétlődik, akkor ezt külön megírjuk, és csak 
+            hivatkozunk rá. Ha az egyes programegységek újabb és újabb programegységet hívnak
+            meg, akkor alakul ki a hívási lánc. Bizonyos esetekben egy programegység önmagát
+            is hívhatja, ezt nevezzük rekurzív hívásnak. Bizoynos nyelvek támogatják a
+            törzsben szereplő alprogramokat is, ezeket másodlagos belépési ponttal oldja meg. 
+            Paraméterkiértékelésnél az alprogram hívását követően a formálisparaméterekhez
+            hozzárendeljük az
+            akruális paramétereket. A formális listából mindig csak egy van, ezzel szemben
+            az alprogram hívásának számával megegyező számú aktuális paraméterlista van.  
+        </para>
     </section>        
     <section>
         <title><![CDATA[K&R könyv]]></title>
@@ -620,7 +640,7 @@
         </para>
     </section>        
     <section>
-        <title>BME C++ könyv 1-16. oldal feldolgozás</title>
+        <title>BME C++ könyv</title>
         <para>
             <emphasis role="strong">C++ nem objektum-orientált újdonságai</emphasis>
         </para>
@@ -722,6 +742,25 @@
             Egy fontos dolog még ebben a témakörben az, hogy lehet-e egy függvény visszatérési értéke pointer vagy referncia. A válasz igen, lehet, de csak korlátozott esetekben, főleg cím szerinti
             paraméterátadás esetén. Összességében elmondható, hogy nem szabad visszaadni pointert és refernciát lokális változókra, vagy érték szerinti paraméterekre, mivel előfordulhat, hogy érvénytelen
             memóriacímre fognak hivatkozni.
+        </para>
+        <para>
+            <emphasis role = "strong">Objektumok és osztályok</emphasis>
+        </para>
+        <para>
+            Az objektumorientáltságnak 3 alapelve van. Az egyik az egységbezárás,
+            mely egységet nevezzük osztályoknak. Ezek olyan struktúrák, melyek
+            az adatokat és a velük végrehajtható műveleteket is tárolják. Minden osztálynak
+            lehet olyan eleme, amire öneálló egyedként tekinthetünk, ezeket objeltumoknak
+            nevezzük. Egy másik fontos alapelv az adatrejtés, tehát nem szabad hagyni,
+            hogy az osztályon kívülről olyan múűveleteket hajthassunk végre, mely inkonzisztenssé
+            teszi az osztályt. Ennek fontos szerepe van a komplexitás szempontjából is, 
+            mivel ha elrejtünk bizonyos elemeket, akkor csak elég az elérhető elemeket
+            ismerni az osztály használatához. Az objektum orientált programozásban 
+            lényeges tényező még az öröklés, mely lehetővé teszi, hogy egy speciálisabb
+            osztály örökölje az általánosabb osztáy tulajdonságait.Fontos említést tenni
+            az ezzel összefüggő behelyettesítésről is, mely lehetőve teszi, hogy ahol
+            speciálisabb osztályt használjunk ott ahol amúgy általánosabb osztályt
+            használtunk.
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
