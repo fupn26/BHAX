@@ -383,8 +383,89 @@ kiir (BINFA_PTR elem)
             </programlisting>
             A <function>kiir</function> segítségével fogjuk a bináris fánkat
             kiírni a standard outputra. Ehhez most az inorder bejárást alkalmazzuk, ahol
-            elsőnek faldolgozzuk a jobb oldali gyermekeket, majd a gyökeret, és végül
+            elsőnek feldolgozzuk a jobb oldali gyermekeket, majd a gyökeret, és végül
             a bal oldali  gyermekeket .
+            <programlisting language = "c"><![CDATA[
+void
+szabadit (BINFA_PTR elem)
+{
+  if (elem != NULL)
+    {
+      szabadit (elem->jobb_egy);
+      szabadit (elem->bal_nulla);
+      free (elem);
+    }
+}]]>
+            </programlisting>
+            A destruktorban meghívott rekurzív szabadító függvény pedig itt látható.
+            A lefoglalt tártelületet a <function>free()</function> fügvénnyel tudjuk
+            felszabadítani. De mielőtt felszabadítanánk az átadott elemet, előtte 
+            meghívjuk ugyan ezt a függvényt a gyerekeire is, legalábbis ha van.
+        </para>
+        <para>
+            A lényeg már elhangzott, most tegyünk egy kis említést a 
+            <function>ratlag</function> és a <function>rszoras</function>
+            függvényekről.
+            <programlisting language = "c"><![CDATA[
+void
+ratlag (BINFA_PTR fa)
+{
+
+  if (fa != NULL)
+    {
+      ++melyseg;
+      ratlag (fa->jobb_egy);
+      ratlag (fa->bal_nulla);
+      --melyseg;
+
+      if (fa->jobb_egy == NULL && fa->bal_nulla == NULL)
+	{
+
+	  ++atlagdb;
+	  atlagosszeg += melyseg;
+
+	}
+
+    }
+
+}]]>
+            </programlisting>
+            A függvény egy pointert kap, ha a pointer nem NULL, akkor növeljük
+            a melyseg nevű globáli változónkat, majd meghívjuk a pointer
+            által mutatott elem gyermekeire is a <function>ratlag</function>
+            függvényt. Ha rekurzív hívások során elérkezünk az utolsó jobb és bal
+            oladli gyermekhez,
+            akkor az <function>atlagdb</function> változót növeljük 1-el, és az
+            <function>atlagosszeg</function>-hez hozzáadjuk a <function>melyseg</function>
+            értékét.
+            <programlisting language="c"><![CDATA[
+void
+rszoras (BINFA_PTR fa)
+{
+
+  if (fa != NULL)
+    {
+      ++melyseg;
+      rszoras (fa->jobb_egy);
+      rszoras (fa->bal_nulla);
+      --melyseg;
+
+      if (fa->jobb_egy == NULL && fa->bal_nulla == NULL)
+	{
+
+	  ++atlagdb;
+	  szorasosszeg += ((melyseg - atlag) * (melyseg - atlag));
+
+	}
+
+    }
+
+}]]>
+            </programlisting>
+            Az <function>rszoras</function> függvény nagyon hasonlít az
+            <function>ratalag</function>-hoz. Lényegi különbség az if
+            utasításon belül van. Ebben a szórásösszeget adjuk meg, mely a 
+            mélység és az átlag különbségének a négyzete.
         </para>
     </section>        
         
@@ -398,6 +479,77 @@ kiir (BINFA_PTR elem)
         </para>
         <para>
             Megoldás forrása:                
+        </para>
+        <para>
+            Az előző feladatban taglalt program módosítását fogjuk ebben a 
+            részben elvégezni. Kezdjük azzal, hogy mit is jelent az inorder,
+            posztorder, preorder bejárás. Az inorder bejárásnál elsőnek 
+            dolgozzik fel a bal oldali gyermeket, majd a gyökérelemet, és 
+            legvégül pedig a jobb oldali gyermeket. Ezt használta eredetileg a 
+            programunk. A posztorder bejárásnál elsőnek a bal oldali gyermeket,
+            majd a jobb oldali gyermeket, végül pedig a gyökérelem kerül
+            feldolgozásra. A preorder bejárás pedig a gyökérelemet 
+            dolgozza fel először, majd a bal és a jobb oldali gyermeket.
+        </para>
+        <para>
+            Most, hogy ismertettem veled a fabejárásokat, kezdhetjük is megírni
+            a programot. Nézzük elsőnek a posztorder bejárást. Mivel a program
+            lényegében ugyan az, ezért csak a <function>kiir</function> függvényt
+            kell módosítani.
+            <programlisting language = "c"><![CDATA[
+void
+kiir (BINFA_PTR elem)
+{
+  if (elem != NULL)
+    {
+      ++melyseg;
+      if (melyseg > max_melyseg)
+	max_melyseg = melyseg;
+      kiir (elem->jobb_egy);
+      // ez a postorder bejáráshoz képest
+      // 1-el nagyobb mélység, ezért -1
+      kiir (elem->bal_nulla);
+      for (int i = 0; i < melyseg; ++i)
+	printf ("---");
+      printf ("%c(%d)\n", elem->ertek < 2 ? '0' + elem->ertek : elem->ertek,
+	      melyseg-1);
+      --melyseg;
+    }
+}]]>
+            </programlisting>
+            A <function>for</function> ciklustól kezdődik az függvénynek átadott
+            elem feldolgozása. Ha visszaemlékezel az előző feldatban tárgyalt
+            inorder bejárásra, ott a <function>for</function> ciklus a két gyermek
+            feldolgozása között szerepelt. Itt a postorder bejárásnak megfelelően
+            az utolsó helyre kerül, előtte pedig a bal és a jobb oldali gyermeket
+            dolgozza fel a program.
+        </para>
+        <para>
+            Természetesen nem siklunk el a preorder bejárás felett sem.
+            <programlisting language = "c"><![CDATA[
+void
+kiir (BINFA_PTR elem)
+{
+  if (elem != NULL)
+    {
+      ++melyseg;
+      if (melyseg > max_melyseg)
+	max_melyseg = melyseg;
+      for (int i = 0; i < melyseg; ++i)
+	printf ("---");
+      printf ("%c(%d)\n", elem->ertek < 2 ? '0' + elem->ertek : elem->ertek,
+	      melyseg-1);
+      kiir (elem->jobb_egy);
+      // ez a postorder bejáráshoz képest
+      // 1-el nagyobb mélység, ezért -1
+      kiir (elem->bal_nulla);
+      --melyseg;
+    }
+}]]>
+            </programlisting>
+            Itt a <function>for</function> ciklus került legelőre, tehát a
+            paraméterként átadott elemet dolgozzuk fel, és csak ezután a 
+            bal, majd a jobb oldali gyermeket.
         </para>
     </section>        
                         
@@ -413,6 +565,462 @@ kiir (BINFA_PTR elem)
         <para>
             Megoldás forrása:                
         </para>
+        <para>
+            C-ben már megismertük az LZW algoritmust, most pedig át kell azt írni
+            C++-ra. Maga az átalakítás nem nagyon bonyolult, de azért nézzük
+            végig sorról sorra.
+        </para>
+        <para>
+            Az első újdonság az osztály lesz, mely lényegében a C forrásban
+            megismert struktúrának a továbbgondolása. Az osztályban már nem
+            csak változók egy csoportját tudjuk együtt kezelni, hanem írhatunk bele
+            függvényeket is.
+            <programlisting language="c++"><![CDATA[
+class LZWBinFa
+{
+public:
+    
+    LZWBinFa ():fa (&gyoker)
+    {
+    }
+    ~LZWBinFa ()
+    {
+        szabadit (gyoker.egyesGyermek ());
+        szabadit (gyoker.nullasGyermek ());
+    }]]>
+            </programlisting>
+            Az osztályt, ahol a Polártranszormációnál, itt is a 
+            konstruktorokkal kezdünk. A konstruktor csak annyit csinál, hogy
+            a fa mutatót a gyökér elem memóriacímére állítjuk. A
+            destruktorban pedig a C-ben már megírt szabadít függvényt hívjuk.
+            <programlisting language = "c++"><![CDATA[ 
+    void operator<< (char b)
+    {
+        // Mit kell betenni éppen, '0'-t?
+        if (b == '0')
+        {
+            if (!fa->nullasGyermek ())	// ha nincs, hát akkor csinálunk
+            {
+                Csomopont *uj = new Csomopont ('0');
+                fa->ujNullasGyermek (uj);
+                fa = &gyoker;
+            }
+            else			// ha van, arra rálépünk
+            {
+                fa = fa->nullasGyermek ();
+            }
+        }
+          
+        else
+        {
+            if (!fa->egyesGyermek ())
+            {
+                Csomopont *uj = new Csomopont ('1');
+                fa->ujEgyesGyermek (uj);
+                fa = &gyoker;
+            }
+            else
+            {
+                fa = fa->egyesGyermek ();
+            }
+        }
+    }]]>
+            </programlisting>
+            A C++ egyik érdekességét láthatod itt. Ezt hívjuk operátor túlterhelésnek,
+            melynek segítségével tudjuk módosítani, hogy egy operátor mit csináljon.
+            Természetesen ezt nem úgy kell elképzelni, hogy az operátor
+            működését teljesen meg tudod változtatni, csak arra biztosít lehetőséget,
+            hogy a saját típusainkat tudja kezelni. Jelen esetben a
+            <function><![CDATA[operator <<]]></function> segítségével a bemenetként
+            kapott elemeket beleshifteljük a fába, az LZW algoritmusnak megfelelően.
+            Ha nullát kap paraméterként, és nincs még nullás gyermek, akkor létrehozzuk.
+            C++-ban ezt a <function>new</function>-val tudunk tárterületet lefoglalni.
+            Tehát a létrehozás abból áll, hogy foglalunk területet az új csomópontnak,
+            majd az <function>ujNullasGyermek()</function> függvény segítségével
+            bele fűzzük a fába, és a fa mutató a gyökérre állítjuk. Ugyan ezt az 
+            eljárást hajtjuk végre 1 esetén is, természetesen ehhez is meg van az
+            <function>ujEgyesGyermek()</function> függvény. Mind 0 és 1 esetén is
+            ha már létezik az adott csomópontnak 0-ás vagy 1-es gyermek, akkor
+            a fa mutatót az adott gyermekre állítjuk. Az <function>egyes-/nullasGyermek()</function>
+            függvényt hívjuk ilyenkor, mely az adott csomópont nullás vagy egyes gyermekére
+            muatató mutatót ad vissza. 
+            <programlisting><![CDATA[
+    void kiir (void)
+    {
+        melyseg = 0;
+        kiir (&gyoker, std::cout);
+    }]]>
+            </programlisting>
+            Ez is a C++ egy érdekessége, mely abból áll, hogy itt nem a
+            <function>kiir</function> függvényt hívjuk kétszer, hanem
+            a 2 <function>kiir</function> függvényünk van, és ezt a C++ képes
+            kezelni, mivel a fordító meg tudja őket különböztetni a paraméterlista
+            eltérése miatt. Tehát ez a <function>kiir</function> nem kap paramétert,
+            csak meghívja a másik kiír függvényt, és a <function>melyseg</function>
+            értékét 0-ra.
+            <programlisting><![CDATA[
+    int getMelyseg (void);
+    double getAtlag (void);
+    double getSzoras (void);
+
+
+    friend std::ostream & operator<< (std::ostream & os, LZWBinFa & bf)
+    {
+        bf.kiir (os);
+        return os;
+    }
+    void kiir (std::ostream & os)
+    {
+        melyseg = 0;
+        kiir (&gyoker, os);
+    }]]>
+            </programlisting>
+            A <function>get*</function> függvényekre azért lesz szükség, mert a
+            mélységet, átlagot és szórást eltároló változóink az osztály
+            privát részében találhatóak, tehát csak a függvényen belül tudjuk elérni.
+            Ezek után a globális <function><![CDATA[operator<<]]></function>-t
+            terheljük túl. Mellyel kimenetet adunk vissza, és kimenetet és egy
+            LZWBinFa objektum refernciát adunk át. Meghívjuk az objektumhoz
+            tartozó <function>kiir</function> függvényt, amelyet alatta definiálunk.
+            Ez abban különbözik az előzőtől, hogy itt megadjuk, hogy mi legyen a
+            kimenet.
+            </para>
+            <para>
+            Az eddig tárgyalt részek mind az osztály public részében szerepeltek.
+            Nézzük meg, hogy mi is van a private részben.
+            <programlisting><![CDATA[
+private:
+    class Csomopont
+    {
+    public:
+        
+        Csomopont (char b = '/'):betu (b), balNulla (0), jobbEgy (0)
+        {
+        };
+        ~Csomopont ()
+        {
+        };
+       
+        Csomopont *nullasGyermek () const
+        {
+            return balNulla;
+        }
+        
+        Csomopont *egyesGyermek () const
+        {
+            return jobbEgy;
+        }
+        
+        void ujNullasGyermek (Csomopont * gy)
+        {
+            balNulla = gy;
+        }
+        
+        void ujEgyesGyermek (Csomopont * gy)
+        {
+            jobbEgy = gy;
+        }
+        
+        char getBetu () const
+        {
+            return betu;
+        }
+
+    private:
+        
+        char betu;
+        Csomopont *balNulla;
+        Csomopont *jobbEgy;
+        Csomopont (const Csomopont &); //másoló konstruktor
+        Csomopont & operator= (const Csomopont &);
+    };]]>
+        </programlisting>
+        A Csomópont osztályt a az LZWBinFa osztályba integráltuk, annak is a
+        private részébe, tehát <function>Csomopont</function> típusú objektumot
+        nem tudunk létrehozni az <function>LZWBinFa</function> osztályon kívül.
+        A kontrsuktorban a Csomopont alapértelmezett értékét '/'-re állítjuk, a 
+        gyermekeit pedig kinullázzuk. A destruktor jelen esetben nem csinál semmit.
+        A <function>nullasGyermek()</function> és az <function>egyesGyermek()</function>
+        pointert ad vissza a bal és a jobb oldali gyerekre.
+        Az <function>ujEgyesGyermek</function> és <function>ujNullasGyermek</function>
+        pedig a gyermekek mutatóját állítja a paraméterként átadott csomópontra.
+        A <function>getBetu()</function> segítségével olvassuk be a bemenetet.
+        A másoló konstruktor, másoló értékadás letiltva, mivel helyes működésük
+        nincs megoldva, ezért raktuk privát részbe.
+        <programlisting language = "c++"><![CDATA[
+    Csomopont *fa;
+    int melyseg, atlagosszeg, atlagdb;/* A fában tagként benne van egy csomópont, ez erősen ki van tüntetve, Ő a gyökér: */
+    double szorasosszeg;
+    LZWBinFa (const LZWBinFa &);
+    LZWBinFa & operator= (const LZWBinFa &);]]>
+        </programlisting>
+        A már említett fa mutatót itt deklaráljuk, tehát a fa mutató mindig
+        egy csomópontra mutat. Az utána lévő változók már ismertek a C kódból.
+        Viszont az utolsó két elem a másoló konstruktor és másoló értékadás.
+        Ezek azért vannak privátban, mert a működésük nincs megoldva jelenleg,
+        tehát letiltjuk, hogy a felhasználó ne tudja használni.
+        <programlisting language="c++" ><![CDATA[
+    void kiir (Csomopont * elem, std::ostream & os)
+    {
+        if (elem != NULL)
+        {
+            ++melyseg;
+            kiir (elem->egyesGyermek (), os);
+            for (int i = 0; i < melyseg; ++i)
+                os << "---";
+            os << elem->getBetu () << "(" << melyseg - 1 << ")" << std::endl;
+            kiir (elem->nullasGyermek (), os);
+            --melyseg;
+        }
+    }
+    void szabadit (Csomopont * elem)
+    {
+        if (elem != NULL)
+        {
+            szabadit (elem->egyesGyermek ());
+            szabadit (elem->nullasGyermek ());
+            delete elem;
+        }
+    }]]>
+        </programlisting>
+        Ebben a részben a már jól megismert <function>kiir</function> és
+        a <function>szabadit</function> függvényt láthatjuk. Működése lényegében
+        megegyezik a C forrásban leírtakkal. A fabejárás itt is inorder módon történik.
+        <programlisting language = "c++"><![CDATA[
+
+protected:			
+
+    
+    Csomopont gyoker;
+    int maxMelyseg;
+    double atlag, szoras;
+
+    void rmelyseg (Csomopont * elem);
+    void ratlag (Csomopont * elem);
+    void rszoras (Csomopont * elem);
+
+};]]>
+                
+            </programlisting>
+            Legvégül pedig lássuk mi is van az LZWBinFa osztály protected részében.
+            Ez abban különbözik a private résztől, hogy olyan osztályok el tudják érni,
+            amik az LZWBinFa osztályból vannak származtatva. Ebben a részben találjuk a
+            feladat címében szereplő gyoker változót, amely tagja az osztálynak. Itt vannak 
+            deklarálva továbbá a szórás, átlag és mélység kiszámításához szükséges
+            függvényeket is. Ezzel az LZWBinFa osztály végére értünk, érezhetően sokkal
+            hosszabb volt, mint a C forrás struktúrája, de sokkal több dolgot
+            tudunk egy objektumként kezelni.
+        </para>
+        <para>
+            Akkor nézzük meg, hogy mi is történik az LZWBinFa class-on kívül.
+            <programlisting language="c++"><![CDATA[
+int
+LZWBinFa::getMelyseg (void)
+{
+    melyseg = maxMelyseg = 0;
+    rmelyseg (&gyoker);
+    return maxMelyseg - 1;
+}
+
+double
+LZWBinFa::getAtlag (void)
+{
+    melyseg = atlagosszeg = atlagdb = 0;
+    ratlag (&gyoker);
+    atlag = ((double) atlagosszeg) / atlagdb;
+    return atlag;
+}
+
+double
+LZWBinFa::getSzoras (void)
+{
+    atlag = getAtlag ();
+    szorasosszeg = 0.0;
+    melyseg = atlagdb = 0;
+
+    rszoras (&gyoker);
+
+    if (atlagdb - 1 > 0)
+        szoras = std::sqrt (szorasosszeg / (atlagdb - 1));
+    else
+        szoras = std::sqrt (szorasosszeg);
+
+    return szoras;
+}
+
+void
+LZWBinFa::rmelyseg (Csomopont * elem)
+{
+    if (elem != NULL)
+    {
+        ++melyseg;
+        if (melyseg > maxMelyseg)
+            maxMelyseg = melyseg;
+        rmelyseg (elem->egyesGyermek ());
+        // ez a postorder bejáráshoz képest
+        // 1-el nagyobb mélység, ezért -1
+        rmelyseg (elem->nullasGyermek ());
+        --melyseg;
+    }
+}
+
+void
+LZWBinFa::ratlag (Csomopont * elem)
+{
+    if (elem != NULL)
+    {
+        ++melyseg;
+        ratlag (elem->egyesGyermek ());
+        ratlag (elem->nullasGyermek ());
+        --melyseg;
+        if (elem->egyesGyermek () == NULL && elem->nullasGyermek () == NULL)
+        {
+            ++atlagdb;
+            atlagosszeg += melyseg;
+        }
+    }
+}
+
+void
+LZWBinFa::rszoras (Csomopont * elem)
+{
+    if (elem != NULL)
+    {
+        ++melyseg;
+        rszoras (elem->egyesGyermek ());
+        rszoras (elem->nullasGyermek ());
+        --melyseg;
+        if (elem->egyesGyermek () == NULL && elem->nullasGyermek () == NULL)
+        {
+            ++atlagdb;
+            szorasosszeg += ((melyseg - atlag) * (melyseg - atlag));
+        }
+    }
+}]]>
+            </programlisting>
+            Az osztályon belül deklarált függvényeket az osztályon kívül definiáljuk,
+            ezzel leegyszerűsítve a már így is bonyolult osztályunkat. Az osztályon
+            belüli függvényeket a <function>LZWBinFa::_nev_</function> előtaggal
+            tudjuk elérni. A <function>get*</function> függvények azt a célt
+            szolgálják, hogy a private részben lévő elemeket elérjük, a többi pedig
+            a C-ben megismert értékeket számolja ki.
+            <programlisting language="c++"><![CDATA[
+void
+usage (void)
+{
+    std::cout << "Usage: lzwtree in_file -o out_file" << std::endl;
+}]]>
+            </programlisting>
+            Ha a felhasználó nem a megfelelő módon futtatja a progarmot, akkor
+            hibaüzenetet dobunk. Majd következik a main.
+            <programlisting language = "c++"><![CDATA[
+int
+main (int argc, char *argv[])
+{
+    // http://progpater.blog.hu/2011/03/12/hey_mikey_he_likes_it_ready_for_more_3
+    // alapján a parancssor argok ottani elegáns feldolgozásából kb. ennyi marad:
+    // "*((*++argv)+1)"...
+
+    // a kiírás szerint ./lzwtree in_file -o out_file alakra kell mennie, ez 4 db arg:
+    if (argc != 4)
+    {
+        // ha nem annyit kapott a program, akkor felhomályosítjuk erről a júzetr:
+        usage ();
+        // és jelezzük az operációs rendszer felé, hogy valami gáz volt...
+        return -1;
+    }
+
+    // "Megjegyezzük" a bemenő fájl nevét
+    char *inFile = *++argv;
+
+    // a -o kapcsoló jön?
+    if (*((*++argv) + 1) != 'o')
+    {
+        usage ();
+        return -2;
+    }
+
+    // ha igen, akkor az 5. előadásból kimásoljuk a fájlkezelés C++ változatát:
+    std::fstream beFile (inFile, std::ios_base::in);
+
+    // fejlesztgetjük a forrást: http://progpater.blog.hu/2011/04/17/a_tizedik_tizenegyedik_labor
+    if (!beFile)
+    {
+        std::cout << inFile << " nem letezik..." << std::endl;
+        usage ();
+        return -3;
+    }
+
+    std::fstream kiFile (*++argv, std::ios_base::out);
+
+    unsigned char b;		// ide olvassik majd a bejövő fájl bájtjait
+    LZWBinFa binFa;		// s nyomjuk majd be az LZW fa objektumunkba
+
+    // a bemenetet binárisan olvassuk, de a kimenő fájlt már karakteresen írjuk, hogy meg tudjuk
+    // majd nézni... :) l. az említett 5. ea. C -> C++ gyökkettes átírási példáit
+
+    while (beFile.read ((char *) &b, sizeof (unsigned char)))
+        if (b == 0x0a)
+            break;
+
+    bool kommentben = false;
+
+    while (beFile.read ((char *) &b, sizeof (unsigned char)))
+    {
+
+        if (b == 0x3e)
+        {			// > karakter
+            kommentben = true;
+            continue;
+        }
+
+        if (b == 0x0a)
+        {			// újsor
+            kommentben = false;
+            continue;
+        }
+
+        if (kommentben)
+            continue;
+
+        if (b == 0x4e)		// N betű
+            continue;
+
+        // egyszerűen a korábbi d.c kódját bemásoljuk
+        // laboron többször lerajzoltuk ezt a bit-tologatást:
+        // a b-ben lévő bájt bitjeit egyenként megnézzük
+        for (int i = 0; i < 8; ++i)
+        {
+            // maszkolunk eddig..., most már simán írjuk az if fejébe a legmagasabb helyiértékű bit vizsgálatát
+            // csupa 0 lesz benne a végén pedig a vizsgált 0 vagy 1, az if megmondja melyik:
+            if (b & 0x80)
+                // ha a vizsgált bit 1, akkor az '1' betűt nyomjuk az LZW fa objektumunkba
+                binFa << '1';
+            else
+                // különben meg a '0' betűt:
+                binFa << '0';
+            b <<= 1;
+        }
+
+    }
+
+    //std::cout << binFa.kiir (); // így rajzolt ki a fát a korábbi verziókban de, hogy izgalmasabb legyen
+    // a példa, azaz ki lehessen tolni az LZWBinFa-t kimeneti csatornára:
+
+    kiFile << binFa;		// ehhez kell a globális operator<< túlterhelése, lásd fentebb
+    // (jó ez az OO, mert mi ugye nem igazán erre gondoltunk, amikor írtuk, mégis megy, hurrá)
+
+    kiFile << "depth = " << binFa.getMelyseg () << std::endl;
+    kiFile << "mean = " << binFa.getAtlag () << std::endl;
+    kiFile << "var = " << binFa.getSzoras () << std::endl;
+
+    kiFile.close ();
+    beFile.close ();
+
+    return 0;
+}]]>
+            </programlisting>
+        </para>
     </section>        
                 
     <section>
@@ -426,6 +1034,8 @@ kiir (BINFA_PTR elem)
         </para>
         <para>
             Megoldás forrása:  
+        </para>
+        <para>
         </para>
     </section>                     
 
