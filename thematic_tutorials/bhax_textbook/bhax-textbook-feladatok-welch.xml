@@ -1114,6 +1114,10 @@ LZWBinFa ()
         <para>
             Megoldás forrása:  
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>A feladat megoldásában tutoráltként részt vett Országh Levente.</para>
+        </caution>
         <para>
             A feladathoz ahhoz a programhoz nyúlunk vissza, amely esetén a gyökét tag
             volt. Ezen elvégezve az apróbb módosításokat, már készen is van a mozgatókonstruktor.
