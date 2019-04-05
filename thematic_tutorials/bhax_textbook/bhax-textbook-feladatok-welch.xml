@@ -1154,10 +1154,74 @@ LZWBinFa ()
     kiFile << "mean = " << binFa2.getAtlag () << std::endl;
     kiFile << "var = " << binFa2.getSzoras () << std::endl;]]>
             </programlisting>
-            Végezetül a <function>move</function> függvénnyel átmozgatjuk az egyes
-            elemeket, és végül kiírjuk az új fát. Fontos látni, hogy ha ezután
+            Végezetül a <function>move</function> függvénnyel jobbértékké
+            tesszük az átadott argumentumot,mellyel meghívjuk a mozgató értékadást,
+            és végül kiírjuk az új fát. Fontos látni, hogy ha ezután
             az eredeti binFa-t is ki akarnánk nyomni, akkor nem tudnánk, mert azt
             kinulláztuk.
+        </para>
+        <para>
+            Ha már tudjuk, hogy hogyan kell megcsinálni a mozgató konstruktor úgy,
+            hogy a <function>gyoker</function> kompozícióban van, lássuk ennek a
+            feladatnak a megoldását mutatóval. Észrevehetően sokkal egyszerűbb lesz.
+            <programlisting language="c++"><![CDATA[
+    LZWBinFa (LZWBinFa&& forras)
+    {
+        std::cout<<"Move ctor\n";
+        gyoker = nullptr;
+        *this = std::move(forras); //ezzel kényszerítjük ki, hogy a mozgató értékadást használja
+        
+    }
+    LZWBinFa& operator= (LZWBinFa&& forras)
+    {
+        std::cout<<"Move assignment ctor\n";
+        std::swap(gyoker, forras.gyoker);
+        return *this;
+    }]]>
+            </programlisting>
+            Ebben már kifejezetten a feladatban előírt a mozgató konstruktort a 
+            mozgató értékadásra alapozós analógiát követjük. Tehát a mozgató konstruktorban
+            meghívjuk a mozgató értékadást. Azt már említettem feljebb, hogy a mozgatást
+            úgy oldjuk meg, hogy a fát átmásoljuk, és az eredetit pedig kinullázzuk.
+            Ezt egy kicsit most más megközelítéssel használjuk fel. A fának, 
+            ahova az erdeti fánkat akarjuk mozgatni, a gyökér mutatóját kinullázzuk,
+            majd pedig meghívjuk a mozgató értékadást, úgy hogy az argumentumként 
+            átadott fát egyenlővé tesszük a cél fával, természetesen jobbértértékké
+            alakítva. A mozgató értékadásban pedig megcseréljük a cél fa gyökerének
+            és a forrás fa gyökerének az értékét, melyben a <function>swap</function>
+            van segítségünkre. 
+            Ezzel megoldjuk a forrás fa kinullázását egy lépésben. Ha csak ennyit
+            módosítasz az előző feladatban tárgyalt programon, akkor memóriakezelési
+            problémákba fogsz ütközni. Mégpedig a destruktor tartalma miatt.
+            <programlisting language="c++"><![CDATA[
+    ~LZWBinFa ()
+    {
+        
+        
+        szabadit (gyoker->egyesGyermek ());
+        szabadit (gyoker->nullasGyermek ());
+        delete(gyoker);
+        
+    }]]>
+            </programlisting>
+            Jelenleg ez konstruktorunk, de ez hibás. Gondoljunk arra, hogy a 
+            forrásunk gyökerét kinulláztuk, és ezután meg szeretnénk
+            hívni a szabadít függvényt annak a gyökérnek az egyes és nullás
+            gyermekére, aki nem is mutat már semmire. Tehát ezeket az utasításokat
+            csak akkor szabad végrehajtani, ha a gyökér mutató nincs kinullázva,
+            így a konstruktor a következőképpen módosul:
+            <programlisting language="c++"><![CDATA[
+    ~LZWBinFa ()
+    {
+        if (gyoker != nullptr)
+        {
+            szabadit (gyoker->egyesGyermek ());
+            szabadit (gyoker->nullasGyermek ());
+            delete(gyoker);
+        }
+    }]]>
+            </programlisting>
+            Ezzel a kikötéssel tudjuk biztosítani a program helyes működését.
         </para>
     </section>                     
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
