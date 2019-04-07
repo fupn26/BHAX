@@ -740,6 +740,10 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
                 Telepíteni: sudo apt-get install libqt4-dev
             </para>
         </caution>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>A feladat megoldásában tutorként részt vett Racs Tamás</para>
+        </caution>
         <para>
             A program a QT GUI-t használja, ennek segítségével tudjuk elkészíteni a 
             Mandelbrot halmazt beutazó programunkat. Ez a GUI az egyik legertejedtebb
