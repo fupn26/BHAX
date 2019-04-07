@@ -62,9 +62,258 @@
         <para>
             Megoldás forrása: <link xlink:href=""></link>               
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>
+                Telepíteni kell a következőket:
+                <function>sudo apt-get install opencv-data</function> és a
+                <function>sudo apt-get install libopencv-dev</function>
+                csomagokat a program helyes működéséhez.
+            </para>
+        </caution>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A BrainB Benchmark feladata az esport tehetségek felkutatása lenne,
+            úgy, hogy feltérképezi az agy kognitív képességeit, és az 
+            elért pontszámok alapján össze lehet hasonlítani az egyes 
+            egyéneket. Maga a benchmark a "karakterelvesztést" teszteli,
+            vagyis ha a játékban elveszítjük a karakterünket, mennyi ideig
+            tart megtalálnunk, és ha megtaláltuk, mennyi ideig tart elveszítenünk.
+            Ideális esetben rövidebb ideig tart megtalálnunk, mint elveszteni.
+            A program azt is figyeli, hogy az egyes karakterelvesztésekhez
+            milyen bit/sec képernyőváltások tartoznak.
+            <figure>
+                <title>Program</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/BrainB/program.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A program így néz ki, a feladat annyi, hogy a kurzort rajta kell tartani a Samu Entropyn, minnél tovább tartod
+            rajta, annál több New Entropy jelenik meg, ezzel nehezítve a dolgod. Ha elveszted, akkor a szaporodás lelassul, hogy könyebben
+            megtalálhasd a karakteredet. 
+            A benchmark összesen 10 percig tart, és 
+            minél komplikáltabb lesz a kép a végén, annál jobb vagy.
+            <figure>
+                <title>Eredmény</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/BrainB/eredmeny.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A végén pedig megkapod ezt a fájlt, ami tartalmazza az elért eredményt.
+            Hogy te is le tudd futattni, fontos, hogy minden fájl egy mappában legyen, majd
+            pedig a következő paracsokat kell kiadni:
+            <function>qmake BrainB.pro</function>, <function>make</function>,
+            <function>./BrainB</function>. Ha nem szeretnéd az egész
+            benchmarkot végig várni, Esc-el ki tudsz lépni bármikor, és
+            az addig elért eredményedről is kapsz pontos leírást.
+        </para>
+        <para>
+            A <filename>main.cpp</filename> nézzük át elsőnek.
+            <programlisting language="c++"><![CDATA[
+#include <QApplication>
+#include <QTextStream>
+#include <QtWidgets>
+#include "BrainBWin.h"
+
+int main ( int argc, char **argv )
+{
+        QApplication app ( argc, argv );
+
+        QTextStream qout ( stdout );
+        qout.setCodec ( "UTF-8" );]]>
+            </programlisting>
+            Mivel a program a Qt grafikus felületét használja, ezért a
+            hozzzá tartozó osztályokat is szükséges hozzáfűzni a 
+            forráshoz. Természetesen a <filename>BrainBWin.h</filename>-ra
+            is szükségünk van, mert ezzel biztosítjuk, hogy a main-ből
+            el tudjuk éerni a többi fájlt. A <function>main</function>
+            a már megszokott formában köszön vissza, viszont első
+            lépésként deklarálunk egy <function>QApplication</function>
+            típusú objektumot, melynek paramétereként adjuk
+            át a parancssori argumentumok számát, és tömbüket. A <function>qout</function>
+            segítségével pedig a standard kimenetre írunk. Ez is egy objektum, amely
+            QTextStream típusú. A <function>qout</function> objektumnak
+            része a <function>setCodec</function> függvény, mellyel a
+            karakterkódolást tudjuk beállítani.
+            <programlisting language="c++"><![CDATA[
+                qout << "\n" << BrainBWin::appName << QString::fromUtf8 ( " Copyright (C) 2017, 2018 Norbert Bátfai" ) << endl;]]>
+            </programlisting>
+            A <function>std::cout</function>-hoz hasonlóan, a <function>qout</function>-ba
+            is beleshifteljük a kimenetet. A <function>BrainBWin</function> osztályról majd
+            később beszélünk, de itt az osztály <function>appName</function> változóját
+            érjük el és írjuk ki. A <function>QString::fromUtf8</function> függvény
+            segítségével pedig UTF-8-as stringet írunk ki a parancssorba.
+            <programlisting language="c++"><![CDATA[
+                QRect rect = QApplication::desktop()->availableGeometry();]]>
+            </programlisting>
+            A <function>QRect</function> osztály segítségével egy téglalapot
+            tudunk rajzolni a síkra, melynek méretét a kijelző méretével tesszük
+            egyenlővé. A kijelző méretét úgy kapjuk meg, hogy a 
+            <function>desktop()</function> függvéy visszaadja magát az asztalt,
+            az <function>availableGeometry()</function> pedig annak a méretét.
+            <programlisting language="c++">
+                BrainBWin brainBWin ( rect.width(), rect.height() );
+            </programlisting>
+            Létrehozzuk a <function>BrainBWin</function> objektumunkat, melynek
+            átadjuk a képernyő méretét. Ekkor meghívódik a <function>BrainBWin</function>
+            konstruktora, amely a következőképpen néz ki:
+            <programlisting language = "c++"><![CDATA[
+BrainBWin::BrainBWin ( int w, int h, QWidget *parent ) : QMainWindow ( parent )
+{
+
+
+        statDir = appName + " " + appVersion + " - " + QDate::currentDate().toString() + QString::number ( QDateTime::currentMSecsSinceEpoch() );
+
+        brainBThread = new BrainBThread ( w, h - yshift );
+        brainBThread->start();
+
+        connect ( brainBThread, SIGNAL ( heroesChanged ( QImage, int, int ) ),
+                  this, SLOT ( updateHeroes ( QImage, int, int ) ) );
+
+        connect ( brainBThread, SIGNAL ( endAndStats ( int ) ),
+                  this, SLOT ( endAndStats ( int ) ) );
+
+}]]>
+            </programlisting>
+            A <function>QMainWindow</function> osztály segítségével hozzuk létre a fő ablkát a 
+            programnak, és ezen belül készítjükm el a <function>BrainBWin</function> ablakot. 
+            A hierarchikus sorrendet úgy érjuk el, hogy a <function>BrainBWin</function>
+            konstruktora meghívja a <function>QMainWindow</function> konstruktorát, és jellezzük
+            neki, hogy ő a szülő. A <function>QString</function> típusú <function>statDir</function>
+            változóvban tároljuk a későbiiekben létrehozandó mappa nevét. Mjd a
+            <filename>BrainBWin.h</filename>-ban deklarált <function>BrainBThread</function>
+            objektumra mutató muutatót ráállítjuk egy újonan lefoglalt tárterületre. Ehhez
+            meghívódik a <function>BrainBTread</function> konstruktora.
+            <programlisting language="c++"><![CDATA[
+BrainBThread::BrainBThread ( int w, int h )
+{
+
+        dispShift = heroRectSize+heroRectSize/2;
+
+        this->w = w - 3 * heroRectSize;
+        this->h = h - 3 * heroRectSize;
+
+        std::srand ( std::time ( 0 ) );
+
+        Hero me ( this->w / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100,
+                  this->h / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100,
+                                                         255.0 * std::rand() / ( RAND_MAX + 1.0 ), 9 );
+
+        Hero other1 ( this->w / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100,
+                      this->h / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100, 255.0 * std::rand() / ( RAND_MAX + 1.0 ), 5, "Norbi Entropy" );
+        Hero other2 ( this->w / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100,
+                      this->h / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100, 255.0 * std::rand() / ( RAND_MAX + 1.0 ), 3, "Greta Entropy" );
+        Hero other4 ( this->w / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100,
+                      this->h / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100, 255.0 * std::rand() / ( RAND_MAX + 1.0 ), 5, "Nandi Entropy" );
+        Hero other5 ( this->w / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100,
+                      this->h / 2 + 200.0 * std::rand() / ( RAND_MAX + 1.0 ) - 100, 255.0 * std::rand() / ( RAND_MAX + 1.0 ), 7, "Matyi Entropy" );
+
+        heroes.push_back ( me );
+        heroes.push_back ( other1 );
+        heroes.push_back ( other2 );
+        heroes.push_back ( other4 );
+        heroes.push_back ( other5 );
+
+}]]>    
+            </programlisting>
+            Paramáterként átadjuk a magasságot és a szélességet. A <function>dispShift</function> 
+            alapértelmezett értéke 40, és a <function>heroRectSize</function>-é is.
+            AZ első sorban a <function>dispShift</function>-hez hozzáadjuk a 
+            <function>heroRectSize</function> másfélszeresét. Ezután pedig 
+            random számokat generálunk, és létrehozzuk az öt alapértelmezett "karaktert", ami
+            meg fog jelenni a képernyőn. A <function>Hero</function> class
+            a <filename>BrainBThread.h</filename>-ban van definiálva. A konstruktorának
+            5 paraméterre van szüksége, de ha nem adunk meg, akkor használja az alapértelmezett
+            értékeket:
+            <programlisting language="c++"><![CDATA[
+Hero ( int x=0, int  y=0, int color=0, int agility=1,  std::string name ="Samu Entropy" )]]>
+            </programlisting>
+            Az <function>me</function>-nek nem adtunk meg nevet, ezért
+            ő lesz <function>Samu Entropy</function>, akit majd követni kell az egérrel.
+            A létrehozott hősöket pedig a <function>heroes</function> vektorba rakjuk.
+            A hősök mozgásáért a <function>move</function> függvény lesz a felelős.
+            <programlisting language="c++"><![CDATA[
+    void move ( int maxx, int maxy, int env ) {
+
+        int newx = x+ ( ( ( double ) agility*1.0 ) * ( double ) ( std::rand() / ( RAND_MAX+1.0 ) )-agility/2 ) ;
+        if ( newx-env > 0 && newx+env < maxx ) {
+            x = newx;
+        }
+        int newy = y+ ( ( ( double ) agility*1.0 ) * ( double ) ( std::rand() / ( RAND_MAX+1.0 ) )-agility/2 );
+        if ( newy-env > 0 && newy+env < maxy ) {
+            y = newy;
+        }]]>
+            </programlisting>
+            Ezzel új pozíciót adunk meg a hősöknek, annak a függvéynében, hogy
+            hol van hozzá képest a másik hős, ezt az <function>env</function>
+            változóban tároljuk. Az új pozíció meghatározásában fontos szerepe van
+            az agilitásnak is, hiszen az előző x-hez az agilitás random számszorosának és
+            az agilitás felének a különbségét adjuk. Ha a kapott szám és a környezet
+            különbsége nagyobb,mint nulla, és összegük kisebb, mint a max x érték, akkor
+            ez lesz az új x koordinátája a hősnek. Ugyan ezt hajtjuk végre az y
+            koordinátával is. 
+        </para>
+        <para>
+            A <function>BrainBThread</function> osztály definíciója a következő:
+            <programlisting><![CDATA[
+class BrainBThread : public QThread
+{
+    Q_OBJECT
+
+    
+     //Norbi
+    cv::Scalar cBg { 247, 223, 208 };
+    cv::Scalar cBorderAndText { 47, 8, 4 };
+    cv::Scalar cCenter { 170, 18, 1 };
+    cv::Scalar cBoxes { 10, 235, 252 };]]>
+            </programlisting>
+            A fejrészben láthatjuk, hogy a <function>BrainBThread</function>
+            osztály az alosztályaa lesz a <function>QThread</function> osztálynak.
+            A <function>cv::</function> használatához volt szükség az 
+            openCV telepítésére. A <function>Scalar</function> osztály 
+            konstruktora 4 paramétert kér, mi ebből csak 3-at adunk meg, 
+            a negyediket alapértelmezett értéken hagyjuk. A változók neveiből
+            sejthető, hogy jeen esetben RGB kódot tárolunk bennük, ezzel hatátozzuk
+            meg a hősök színét.
+            <programlisting><![CDATA[
+    Heroes heroes;
+    int heroRectSize {40};
+
+    cv::Mat prev {3*heroRectSize, 3*heroRectSize, CV_8UC3, cBg };
+    int bps;
+    long time {0};
+    long endTime {10*60*10};
+    int delay {100};
+
+    bool paused {true};
+    int nofPaused {0};
+
+    std::vector<int> lostBPS;
+    std::vector<int> foundBPS;
+
+    int w;
+    int h;
+    int dispShift {40};]]>
+            </programlisting>
+            Az első sorban deklaráljuk a <function>heroes</function> vektort.
+            Majd adunk a <function>heroRectSize</function> értékét 40-re
+            állítjuk, ez lényegében a hösőkt ábrázoló téglalap mérete.
+            A <function>cv::Mat</function> osztály segítségével
+            több dimenziós tömböt hozunk létre, amiben megadjuk a sorok,
+            oszlopok számát, egy típust, és egy <function>Scalar</function>
+            vektort. A típussal jelöljük, hogy a <function>Scalar</function>
+            vektorban RGB színeket tárolunk. Majd létrehozzuk, a <function>bps</function>
+            változót, melyben a pillanatnyi bps értékeket fogjuk tárolni. Megadjuk
+            a benchmark idejét, ahogy láthatod, 10 percre van állítva. A <function>lostBPS</function>
+            és a <function>foundBPS</function> vektorokban fogjuk tárolni a 
+            az elvesztés és a megtalálás pillanatában fennálló bps-t.  
+        </para>
     </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 </chapter>                
