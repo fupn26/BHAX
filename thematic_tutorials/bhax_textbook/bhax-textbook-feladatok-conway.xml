@@ -15,11 +15,292 @@
             Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2018/10/10/myrmecologist">https://bhaxor.blog.hu/2018/10/10/myrmecologist</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href=""></link>               
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Myrmecologist">itt</link>               
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <caution>
+            <title>Használat előtt</title>
+            <para>
+                sudo apt-get install qtbase5-dev
+            </para>
+        </caution>
+        <para>
+            A program lényegében a hanygák feromonokkal történő
+            kommunkiációját szimulálja. A képernyőt cellákra
+            osztjuk, és a cellákban lévő hangyák megkeresik azt
+            a szomszédjukat, akinek a legerősebb a feromonja, és
+            arra lép tovább. A cellák fermonon értékei folyamatosan
+            csökkennek, viszont ha valamelyik hangya bele lép az egyikbe, 
+            akkor ott megnő a fermomon szint. Ezeket az értékeket mind 
+            parancssori argumentumok formájában tudjuk megadni.
+        </para>
+        <para>
+            A <filename>main.cpp</filename>-ben megtalálható futtatási javaslat a következő:
+            <programlisting>
+./myrmecologist -w 250 -m 150 -n 400 -t 10 -p 5 -f 80 -d 0 -a 255 -i 3 -s 3  -c 22
+            </programlisting>
+            A <function>w</function> kapcsolóval állítjuk be, hogy egy cella
+            hány oszlopból álljon, vagyis, milyen széles legyen, a 
+            <function>m</function>-el pedig a cellák magasságát. Az
+            <function>n</function> kapcsoló a hangyák számát állítja be, a 
+            <function>t</function>-vel pedig a lépéseik gyakoriságát állítjuk,
+            melyet miliszekundumba adunk meg. A <function>p</function>-vel
+            a feromonok párolgásának a gyorsaságát állítjuk be, az
+            <function>f</function>-el pedig azt, hogyha egy hangya belelép
+            egy cellába, akkor mennyivel növeli meg annak a feromonértékét.
+            A <function>d</function> kapcsolóval meg tudjuk adni, hogy mi legyen
+            a cellák feromonértékének a kezdőértéke. Az <function>a</function>
+            és a <function>i</function> kapcsolókkal meg tudjuk adni a maximális
+            és a minimális fermonoértékeket. Az <function>s</function>
+            kapcsoló azt állítja, hogy a hangyák mennyi feromont hagyjanak a
+            szomszédos cellákban. Végezetül pedig lehetőségünk van 
+            beállítani azt is, hogy az egyes cellákban maximum hány
+            hangya lehessen egyszerre. Természetesen ezeket nem muszáj
+            megadni, mivel vannak a programban alapértelmezett értékek a 
+            futtatáshoz.
+        </para>
+        <caution>
+            <title>Futtatás</title>
+            <para>
+                Mindegyik fájlnak egy mappában kell lennie. Majd:
+                <programlisting>
+qmake myrmecologist.pro
+make
+./myrmecologist //+ a kapcsolók, ha szeretnéd állítani
+                </programlisting>
+            </para>
+        </caution>
+        <para>
+            <figure>
+                <title>Kapcsolók nélkül</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Myrmecologist/alapertelmezett.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Kapcsolókkal</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Myrmecologist/kapcsoloval.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
+        <para>
+            Most, hogy láttuk, hogyan is működik a program, lássuk magát a forrást.
+            Mivel most több fájlból áll a forrás, ezért egy kicsit forradalmibb
+            módon próbálom neked demonstrálni a program alapvető felépítését. Ezt
+            nevezzük UML osztálydiagramnak. Segítségével könnyebben átláthatod
+            a bonyolult programokat.
+            <figure>
+                <title>UML diagram</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Myrmecologist/uml.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Az ábrán láthatjuk a programunk egyes osztáylait. Azon elemek, melyek előtt
+            a "-" jel szerepel, nem érhetők el az osztályon kívül, míg a "+"
+            jelesek igen. Tehát ezekkel különböztetjük meg az oszrtályok 
+            <function>public</function> és <function>private</function> tagjait. 
+            A legkisebb osztály az <function>Ant</function>, melyet a 
+            <filename>ant.h</filename> header tartalmazza.
+            <programlisting language="c++"><![CDATA[
+class Ant
+{
+
+public:
+    int x;
+    int y;
+    int dir;
+
+    Ant(int x, int y): x(x), y(y) {
+        
+        dir = qrand() % 8;
+        
+    }
+
+};
+
+typedef std::vector<Ant> Ants;]]>
+            </programlisting>
+            Ebben csak a hangyák pozícióját határozzuk meg az x és az y koordináták
+            segítségével, plusz az irányát is itt számoljuk ki, melyet a 
+            <function>dir</function> változóban tárolunk.
+            Az utolsó sor az ábrán már külön bubrékban szerepel. A
+            <function>typedef</function> segítségével az 
+            <function>Ant</function> típusú elemkeből álló vektorokra 
+            az <function>Ants</function> alias-szal tudunk hivatkozni.
+            Tehát:
+            <programlisting language="c++">
+                Ants elso;
+            </programlisting>
+            Ebben a kódcsipetben tehát egy <function>Ant</function>
+            típusú elemekből álló vektort deklaráltunk.
+        </para>
+        <para>
+            A következő osztályunk az <function>AntWin</function>, melyet
+            az <filename>antwin.h</filename> és az 
+            <filename>antwin.cpp</filename>-ben találunk. A header fájlban
+            vannak az egyes elemek deklarációi, míg a C++ forrás tartalmazza
+            azok definícióját. Ez viszonylag gyakori eljárás a C++
+            programozásban, mivel így letisztultabb kódot kapunk.
+            <programlisting language="c++"><![CDATA[
+#include <QMainWindow>
+#include <QPainter>
+#include <QString>
+#include <QCloseEvent>
+#include "antthread.h"
+#include "ant.h"
+
+class AntWin : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    AntWin(int width = 100, int height = 75,
+           int delay = 120, int numAnts = 100,
+           int pheromone = 10, int nbhPheromon = 3,
+           int evaporation = 2, int cellDef = 1,
+           int min = 2, int max = 50,
+           int cellAntMax = 4, QWidget *parent = 0);
+
+    AntThread* antThread;
+
+    void closeEvent ( QCloseEvent *event ) {
+
+        antThread->finish();
+        antThread->wait();
+        event->accept();
+    }
+
+    void keyPressEvent ( QKeyEvent *event )
+    {
+
+        if ( event->key() == Qt::Key_P ) {
+            antThread->pause();
+        } else if ( event->key() == Qt::Key_Q
+                    ||  event->key() == Qt::Key_Escape ) {
+            close();
+        }
+
+    }
+
+    virtual ~AntWin();
+    void paintEvent(QPaintEvent*);
+
+private:
+
+    int ***grids;
+    int **grid;
+    int gridIdx;
+    int cellWidth;
+    int cellHeight;
+    int width;
+    int height;
+    int max;
+    int min;
+    Ants* ants;
+
+public slots :
+    void step ( const int &);
+
+};]]>
+            </programlisting>
+            A Qt egyes funkcióinak a használatához nélkülözhetetlen a 
+            fenti header-ök csatolása. A <function>QMainWindow</function>
+            osztállyal tudjuk megalkotni a programunk ablakját, amiben a
+            a hangyaszimuláció kirajzolódik. Kirajzolódik, ezért van szükség
+            a <function>QPainter</function> osztályra. A <function>QString</function>
+            osztály segítségével tudunk Unicode karakterkódulású sztringeket
+            tárolni, a <function>QCloseEvent</function> segítségével pedig
+            a program bezárását tudjuk szabályozni paraméterek segítségével.
+            Ez a header fájl kapcsolja össze az <function>Ant</function> és
+            a <function>AntThread</function> osztáylokat. Összességében elmondható,
+            hogy ebben az osztályban történik meg a pogramablaknak a létrehozása,
+            itt állítjuk be az egyes paramétereket, amkiet parancssori argumentumok
+            segítségével a programnak át tudunk adni. A program futásának
+            szüneteltetéséért és bezárásáért is ez az  osztály felelős, itt vannak 
+            meghatározva az egyes billentyűkhöz rendelt tevékenységek.
+        </para>
+        <para>
+            Maga az érdemi számítást pedig az <filename>antthread.h</filename>
+            és az <filename>antthread.cpp</filename> fájlok tartalmazzák.
+            Az előzőhöz hasonlóan itt is csak a headert nézzük meg:
+            <programlisting language="c++"><![CDATA[
+#include <QThread>
+#include "ant.h"
+
+class AntThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    AntThread(Ants * ants, int ***grids, int width, int height,
+             int delay, int numAnts, int pheromone, int nbrPheromone, 
+             int evaporation, int min, int max, int cellAntMax);
+    
+    ~AntThread();
+    
+    void run();
+    void finish()
+    {
+        running = false;
+    }
+
+    void pause()
+    {
+        paused = !paused;
+    }
+
+    bool isRunnung()
+    {
+        return running;
+    }
+
+private:
+    bool running {true};
+    bool paused {false};
+    Ants* ants;
+    int** numAntsinCells;
+    int min, max;
+    int cellAntMax;
+    int pheromone;
+    int evaporation;
+    int nbrPheromone;
+    int ***grids;
+    int width;
+    int height;
+    int gridIdx;
+    int delay;
+    
+    void timeDevel();
+
+    int newDir(int sor, int oszlop, int vsor, int voszlop);
+    void detDirs(int irany, int& ifrom, int& ito, int& jfrom, int& jto );
+    int moveAnts(int **grid, int row, int col, int& retrow, int& retcol, int);
+    double sumNbhs(int **grid, int row, int col, int);
+    void setPheromone(int **grid, int row, int col);
+
+signals:
+    void step ( const int &);
+
+};]]>
+            </programlisting>
+            A <function>Qthread</function> osztályra azért van szükség, hogy
+            kezelni tudjuk a program egyes szálait. Az  <function>AntThread</function>
+            osztély konstruktora megkapja azokat az értékeket, amiket az
+            <function>AntWin</function> osztályban megkapott a program, majd 
+            elkezdi "mozgatni" a hangyákat. Kiszámolja az irányukat a 
+            feromonszintek és a cellatelítettség alapján, állítja az 
+            egyes cellák feromonértékeit, és megadja az <function>AntWin</function>
+            osztálynak, hogy mely cellákat kell átszínezni.
+        </para>
     </section>        
     <section>
         <title>Java életjáték</title>
@@ -33,6 +314,12 @@
         <para>
             Megoldás forrása: <link xlink:href=""></link>               
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>
+                A feladat megoldásában tutorként részt vett Petrus József Tamás.
+            </para>
+        </caution>
         <para>
             Tanulságok, tapasztalatok, magyarázat...
         </para>            
@@ -60,7 +347,7 @@
             Megoldás videó: 
         </para>
         <para>
-            Megoldás forrása: <link xlink:href=""></link>               
+            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/BrainB">itt</link>               
         </para>
         <caution>
             <title>Megjegyzés</title>
@@ -74,6 +361,14 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <caution>
+            <title>Használata előtt</title>
+            <para>
+                sudo apt-get install libqt4-dev
+                sudo apt-get install opencv-data
+                sudo apt-get install libopencv-dev 
+            </para>
+        </caution>
         <para>
             A BrainB Benchmark feladata az esport tehetségek felkutatása lenne,
             úgy, hogy feltérképezi az agy kognitív képességeit, és az 
