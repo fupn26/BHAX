@@ -343,6 +343,265 @@ signals:
 			</programlisting>
 			Ezen szabályok megadásával elképesztő animációkat kapunk,
 			de mi most kifejezetten egyre, a siklókilövőre koncentrálunk.
+			Ehhez fix cellákba helyezzük a kezdeti sejteket, és utána
+			folymatosan indulnak el felfelé a siklók.
+			<programlisting language="java"><![CDATA[
+	public class game_of_life extends JFrame {
+    RenderArea ra;
+    private int i;
+    
+    public game_of_life() {
+        super("Game of Life");
+        this.setSize(1005, 1030);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setVisible(true);
+        this.setResizable(false);
+        ra = new RenderArea();
+        ra.setFocusable(true);
+        ra.grabFocus();
+        add(ra);
+        int[][] siklokilovo = {{6,0},{6,1},
+            {7,0},{7,1},
+            {3,13},
+            {4,12},{4,14},
+            {5,11},{5,15},{5,16},{5,25},
+            {6,11},{6,15},{6,16},{6,22},{6,23},{6,24},{6,25},
+            {7,11},{7,15},{7,16},{7,21},{7,22},{7,23},{7,24},
+            {8,12},{8,14},{8,21},{8,24},{8,34},{8,35},
+            {9,13},{9,21},{9,22},{9,23},{9,24},{9,34},{9,35},
+            {10,22},{10,23},{10,24},{10,25},
+            {11,25}};
+        int min_o = 5;
+        int min_s = 85;]]>
+			</programlisting>
+			A <function>game_of_life</function> osztálynak a 
+			<function>JFrame</function> a szülőosztálya. A 
+		    <function>JFrame</function> osztályra azért van szükség,
+			hogy az ablak, amiben a prograunk fut, megjelenjen.
+			Deklarálunk egy <function>RenderArea</function> objektumot,
+			melynek segítségével az ablak specifikációját adjuk meg.
+			A <function>game_of_life()</function> konstruktorban pont
+			ezeket állítjuk be. Megadjuk az ablak nevét, a méretét. Beállítjuk
+			azt, hogy hogyan záródjon be a program alapértelmezetten, és az
+			átméretezhetőséget kikapcsoljuk, mivel fix abalkmérettel
+			dolgozunk. Az <function>ra</function> objektumot hozzáadjuk
+			az ablakhoz, így tudjuk kirajzolni a sejtautomatát. Ezután
+			pedig megalkotjuk a siklókilövőhöz szükséges fix pontok
+			koordinátáit. Végül pedig meghatározzuk, hol legyen az origó, 
+			ahonnan a koordinátákat kirajzoljuk.
+			<programlisting language="java"><![CDATA[
+	    for (int i = 0; i < siklokilovo.length; ++i)
+        {
+          ra.entities.get(min_o + siklokilovo[i][1]).set(min_s+ siklokilovo[i][0],!ra.entities.get(min_o + siklokilovo[i][1]).get((min_s+ siklokilovo[i][0])));
+                this.update(this.getGraphics());  
+        }
+        
+
+        ra.edit_mode = false;
+        ra.running = true;]]>
+			</programlisting>
+			A <function>for</function> ciklusban kirajzoljuk az egyes
+			sejteket a képernyő megadott pontjaira.
+			Az <function>edit_mode</function>-ra azért van szükség, mert
+			a program képes lenne egyedi ábrák használatára is, de ez most
+			nem része a feladatnak. A <function>running</function>
+			pedig jelzi, hogy a program fut.
+			<programlisting language="c++"><![CDATA[
+	public void update() {
+        ArrayList<ArrayList<Boolean>> entities = new ArrayList<ArrayList<Boolean>>();// = ra.entities;
+        int size1 = ra.entities.size();
+        int size2 = ra.entities.get(0).size();
+        for(int i=0;i<size1;i++)
+        {
+            entities.add( new ArrayList<Boolean>());
+            for(int j=0;j<size2;j++)
+            {
+                int alive = 0;
+                
+                if(ra.entities.get((size1+i-1)%size1).get((size2+j-1)%size2)) alive++;
+                if(ra.entities.get((size1+i-1)%size1).get((size2+j)%size2)) alive++;
+                if(ra.entities.get((size1+i-1)%size1).get((size2+j+1)%size2)) alive++;
+
+                if(ra.entities.get((size1+i)%size1).get((size2+j-1)%size2)) alive++;
+                if(ra.entities.get((size1+i)%size1).get((size2+j+1)%size2)) alive++;
+
+                if(ra.entities.get((size1+i+1)%size1).get((size2+j-1)%size2)) alive++;
+                if(ra.entities.get((size1+i+1)%size1).get((size2+j)%size2)) alive++;
+                if(ra.entities.get((size1+i+1)%size1).get((size2+j+1)%size2)) alive++;
+                
+
+
+                /*for(int k=-1;i<2;k++)
+                {
+                    for(int l = -1; l < 2 ;l++)
+                    {
+                        if(!(k==0 && l == 0))
+                        {
+                            if(ra.entities.get((size1+i+k)%size1).get((size2+j+l)%size2)) alive++;
+                        }
+                    }
+                }*/
+
+                if(ra.entities.get(i).get(j))
+                {
+                    if(alive < 2 || alive > 3)
+                    {
+                        //ra.entities.get(i).set(j,false);
+                        entities.get(i).add(false);
+                    }
+                    else
+                    {
+                        entities.get(i).add(true);
+                    }
+                }
+                else
+                {
+                    if(alive == 3)
+                    {
+                        //ra.entities.get(i).set(j,true);
+                        entities.get(i).add(true);
+                    }
+                    else
+                    {
+                        entities.get(i).add(false);
+                    }
+                }
+
+            }
+        }
+        ra.entities = entities;
+
+    }]]>
+			</programlisting>
+			Az <function>update()</function> függvény felelős a
+			Conway által meghatározott szabályok implementálásáért.
+			Minden sejthez kiszámoljuk a szomszédjai számát, majd 
+			a szabáylok alapján eldöntjük, hogy életben marad-e, meghal,
+			vagy születik.
+			<programlisting language="java"><![CDATA[	
+    class RenderArea extends JPanel implements KeyListener {
+        public ArrayList<ArrayList<Boolean>> entities;
+
+        public int diff;
+        public boolean edit_mode;
+        public boolean running;
+        public RenderArea() {
+            super();
+            setSize(1000, 1000);
+            setVisible(true);
+            setBackground(Color.WHITE);
+            setForeground(Color.BLACK);
+            setLocation(0, 0);
+
+            diff = 10;
+            
+
+            
+            this.addKeyListener(this);
+            entities = new ArrayList<ArrayList<Boolean>>();
+            for(int i=0;i<1000/diff;i++)
+            {
+                entities.add(new ArrayList<Boolean>());
+                for(int j=0;j<1000/diff;j++)
+                {
+                    entities.get(i).add(false);
+                }
+            }
+            
+        }
+
+        
+
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+            //System.out.println(e.getKeyChar());
+        }
+    
+        @Override
+        public void keyReleased(KeyEvent e) {
+            System.out.println("Key pressed:"+e.getKeyChar());
+            if(e.getKeyChar()=='e')
+            {
+                edit_mode = !edit_mode;
+            }
+            else if(e.getKeyChar()=='q')
+            {
+                this.running = false;
+            }
+            else if(e.getKeyChar()=='c')
+            {
+                if(edit_mode)
+                {
+                    for(int i=0;i<this.entities.size();i++)
+                    {
+                        for(int j=0;j<this.entities.get(1).size();j++)
+                        {
+                            this.entities.get(i).set(j,false);
+                        }
+                    }
+                    this.update(this.getGraphics());
+                }
+                
+            }
+
+        }
+    
+        @Override
+        public void keyPressed(KeyEvent e) {
+            //System.out.println(e.getKeyChar());
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.clearRect(0, 0, 1000, 1000);
+            for(int i=0;i<1000;i+=diff)
+            {
+                g.drawLine(i, 0, i, 1000);
+            }
+            for(int j=0;j<1000;j+=diff)
+            {
+                g.drawLine(0, j, 1000, j);
+            }
+            for(int i=0;i<1000;i+=diff)
+            {
+                for(int j=0;j<1000;j+=diff)
+                {
+                    if(entities.get(i/diff).get(j/diff))
+                    {
+                        g.setColor(Color.BLACK);
+                    
+                    }
+                    else
+                    {
+                        g.setColor(Color.WHITE);
+                    }
+                    
+                    g.fillRect(i+2, j+2, diff-3, diff-3);
+                }
+            }
+        }
+
+        
+
+        private static final long serialVersionUID = 1L;
+        
+    }]]>
+			</programlisting>
+			A <function>RenderArea</function> osztály segítségével 
+			történik a sejtek kirajzolása, a rácsháló megjelenítése,
+			és a billentyűzet kezelést is ez az osztály implementálja,
+			és az egérkezelést is, csak most azt nem használjuk, ezért
+			a likelt forrásban azt kikommentelve találod. A
+			<function><![CDATA[@override]]></function> címke segítségével
+			az alatta lévő függvényt nem kell a programban deklarálni.
+		</para>
+		<para>
+			Végezetül a <function>main</function>-ben deklarálunk egy
+			<function>game_of_life</function> objektumot, majd addig 
+			jelenítjük meg az újabb állapotokat, ameddig a felhasználó
+			le nem nyomja a "q" billentyűt, vagy be nem zárja a programot.
 		</para>
     </section>        
     <section>
