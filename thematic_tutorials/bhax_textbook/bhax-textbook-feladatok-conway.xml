@@ -320,6 +320,16 @@ signals:
                 A feladat megoldásában tutorként részt vett Petrus József Tamás.
             </para>
         </caution>
+		<caution>
+			<title>Használat</title>
+			<para>
+				<programlisting>
+sudo apt-get install openjdk-8-jdk
+javac game_of_life.java
+java game_of_life
+				</programlisting>
+			</para>
+		</caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
@@ -615,9 +625,217 @@ signals:
         <para>
             Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Siklokilovo/QT">itt</link>               
         </para>
+		<caution>
+			<title>Használat</title>
+			<para>
+				<progralisting>
+sudo apt-get install libqt4-dev
+qmake Qt sejtkilövő.pro
+make
+./Qt sejtkilövő
+				</programlisting>
+			</para>
+		</caution>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...<emphasis>
+        </para>
+	    <para>
+			Az előző feladatban taglalt Conway-féle életjátékot fogjuk most megcsinálni a Qt grafikus felületet
+			használva C++ nyelven. A szabályok továbbra is adottak. A sejtek meghalnak, ha 2-nél kevesebb
+			a szomszédjuk vagy 3-nál több szomszédja van. Megszületik, ha pontosan 3 szomszédja van, és ha
+			még abban a cellában nem él. Végezetül, ha 2-nél több, de 3-nál kevesebb a szomszédok száma,
+			akkor a életben marad a sejt. Ebben a feladatban is a siklőkilövőt kell megvalósítani, de ehhez már
+			tudjuk a koordinátákat, tehát ez nem lesz gond. A program nem képes önálló alakzatok megvalósítására,
+			még  a forrása sem tartalmazza az ehhez szükséges kódokat.
+		</para>
+		<para>
+			A program forrása 4 fájból áll, erre azért van szükség, hogy áltláthatóbbak legyenek az egyes osztályok
+			definíciója.
+			<programlisting language="c++"><![CDATA[
+#include <QtGui/QMainWindow>
+#include <QPainter>
+#include "sejtszal.h"
+
+class SejtSzal;
+
+class SejtAblak : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    SejtAblak(int szelesseg = 100, int magassag = 75, QWidget *parent = 0);
+    ~SejtAblak();
+    // Egy sejt lehet élõ
+    static const bool ELO = true;
+    // vagy halott
+    static const bool HALOTT = false;
+    void vissza(int racsIndex);
+
+protected:
+    // Két rácsot használunk majd, az egyik a sejttér állapotát
+    // a t_n, a másik a t_n+1 idõpillanatban jellemzi.
+    bool ***racsok;
+    // Valamelyik rácsra mutat, technikai jellegû, hogy ne kelljen a
+    // [2][][]-ból az elsõ dimenziót használni, mert vagy az egyikre
+    // állítjuk, vagy a másikra.
+    bool **racs;
+    // Megmutatja melyik rács az aktuális: [rácsIndex][][]
+    int racsIndex;
+    // Pixelben egy cella adatai.
+    int cellaSzelesseg;
+    int cellaMagassag;
+    // A sejttér nagysága, azaz hányszor hány cella van?
+    int szelesseg;
+    int magassag;    
+    void paintEvent(QPaintEvent*);
+    void siklo(bool **racs, int x, int y);
+    void sikloKilovo(bool **racs, int x, int y);
+
+private:
+    SejtSzal* eletjatek;
+
+};]]>
+			</programlisting>
+			A <function>sejtablak.cpp</function> és 
+			<function>sejtablak.h</function>-ban található a 
+			<function>SejtAblak</function> osztály, ez felelős
+			a program kirajzolásáért a képernyőre. A <filename>sejtablak.cpp</filename>
+			fájlból a siklókilövő implementációját emelném ki, ebben 
+			egy kicsit mást megoldást használtunk.
+			<programlisting language="c++"><![CDATA[
+void SejtAblak::sikloKilovo(bool **racs, int x, int y) {
+
+    racs[y+ 6][x+ 0] = ELO;
+    racs[y+ 6][x+ 1] = ELO;
+    racs[y+ 7][x+ 0] = ELO;
+    racs[y+ 7][x+ 1] = ELO;
+
+    racs[y+ 3][x+ 13] = ELO;
+
+    racs[y+ 4][x+ 12] = ELO;
+    racs[y+ 4][x+ 14] = ELO;
+
+    racs[y+ 5][x+ 11] = ELO;
+    racs[y+ 5][x+ 15] = ELO;
+    racs[y+ 5][x+ 16] = ELO;
+    racs[y+ 5][x+ 25] = ELO;
+
+    racs[y+ 6][x+ 11] = ELO;
+    racs[y+ 6][x+ 15] = ELO;
+    racs[y+ 6][x+ 16] = ELO;
+    racs[y+ 6][x+ 22] = ELO;
+    racs[y+ 6][x+ 23] = ELO;
+    racs[y+ 6][x+ 24] = ELO;
+    racs[y+ 6][x+ 25] = ELO;
+
+    racs[y+ 7][x+ 11] = ELO;
+    racs[y+ 7][x+ 15] = ELO;
+    racs[y+ 7][x+ 16] = ELO;
+    racs[y+ 7][x+ 21] = ELO;
+    racs[y+ 7][x+ 22] = ELO;
+    racs[y+ 7][x+ 23] = ELO;
+    racs[y+ 7][x+ 24] = ELO;
+
+    racs[y+ 8][x+ 12] = ELO;
+    racs[y+ 8][x+ 14] = ELO;
+    racs[y+ 8][x+ 21] = ELO;
+    racs[y+ 8][x+ 24] = ELO;
+    racs[y+ 8][x+ 34] = ELO;
+    racs[y+ 8][x+ 35] = ELO;
+
+    racs[y+ 9][x+ 13] = ELO;
+    racs[y+ 9][x+ 21] = ELO;
+    racs[y+ 9][x+ 22] = ELO;
+    racs[y+ 9][x+ 23] = ELO;
+    racs[y+ 9][x+ 24] = ELO;
+    racs[y+ 9][x+ 34] = ELO;
+    racs[y+ 9][x+ 35] = ELO;
+
+    racs[y+ 10][x+ 22] = ELO;
+    racs[y+ 10][x+ 23] = ELO;
+    racs[y+ 10][x+ 24] = ELO;
+    racs[y+ 10][x+ 25] = ELO;
+
+    racs[y+ 11][x+ 25] = ELO;
+
+}]]>
+			</programlisting>
+			A koordinátákat ezúttal nem egy tömbben tároljuk, hanem
+			egyesével kirajzoljuk az összes sejtet a megfelelő pontokra.
+			Egy másik különbség, hogy a Java-s példában a konstruktor készítette
+			el a siklókilövőhöz szükséges ábrát, itt egy külön eljárást írtunk ezen
+			funkcionalitás megoldására.
+			<programlisting language="c++"><![CDATA[
+#include <QThread>
+#include "sejtablak.h"
+
+class SejtAblak;
+
+class SejtSzal : public QThread
+{
+    Q_OBJECT
+
+public:
+    SejtSzal(bool ***racsok, int szelesseg, int magassag,
+             int varakozas, SejtAblak *sejtAblak);
+    ~SejtSzal();
+    void run();
+
+protected:
+    bool ***racsok;
+    int szelesseg, magassag;
+    // Megmutatja melyik rács az aktuális: [rácsIndex][][]
+    int racsIndex;
+    // A sejttér két egymást követõ t_n és t_n+1 diszkrét idõpillanata
+    // közötti valós idõ.
+    int varakozas;
+    void idoFejlodes();
+    int szomszedokSzama(bool **racs,
+                        int sor, int oszlop, bool allapot);
+    SejtAblak* sejtAblak;
+
+};]]>
+			</programlisting>
+			A <filename>sejtszal.h</filename> és a 
+			<filename>sejtszal.cpp</filename> fájlok tartalmazzák
+			a <function>SejtSzal</function> osztályt, mely a 
+			szabályok implementálását tartalmazza. Itt zajlik az
+			egyes sejtek elhalálozása, születése és életben maradása.
+			<programlisting language="c++"><![CDATA[
+void SejtSzal::idoFejlodes() {
+
+    bool **racsElotte = racsok[racsIndex];
+    bool **racsUtana = racsok[(racsIndex+1)%2];
+
+    for(int i=0; i<magassag; ++i) { // sorok
+        for(int j=0; j<szelesseg; ++j) { // oszlopok
+
+            int elok = szomszedokSzama(racsElotte, i, j, SejtAblak::ELO);
+
+            if(racsElotte[i][j] == SejtAblak::ELO) {
+                /* Élõ élõ marad, ha kettõ vagy három élõ
+             szomszedja van, különben halott lesz. */
+                if(elok==2 || elok==3)
+                    racsUtana[i][j] = SejtAblak::ELO;
+                else
+                    racsUtana[i][j] = SejtAblak::HALOTT;
+            }  else {
+                /* Halott halott marad, ha három élõ
+             szomszedja van, különben élõ lesz. */
+                if(elok==3)
+                    racsUtana[i][j] = SejtAblak::ELO;
+                else
+                    racsUtana[i][j] = SejtAblak::HALOTT;
+            }
+        }
+    }
+    racsIndex = (racsIndex+1)%2;
+}]]>
+			</programlisting>
+			Magát a konkrét szabályokat a <function>idoFejlodes<function>
+			eljárás tartatja be, itt dől el, hogy egy sejt milyen állapotba
+			kerül.
+		</para>
     </section>        
     <section>
         <title>BrainB Benchmark</title>
@@ -630,25 +848,18 @@ signals:
             Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/BrainB">itt</link>               
         </para>
         <caution>
-            <title>Megjegyzés</title>
+            <title>Használata előtt</title>
             <para>
-                Telepíteni kell a következőket:
-                <function>sudo apt-get install opencv-data</function> és a
-                <function>sudo apt-get install libopencv-dev</function>
-                csomagokat a program helyes működéséhez.
+				<programlisting>
+sudo apt-get install libqt4-dev
+sudo apt-get install opencv-data
+sudo apt-get install libopencv-dev
+				</programlisting>
             </para>
         </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
-        <caution>
-            <title>Használata előtt</title>
-            <para>
-                sudo apt-get install libqt4-dev
-                sudo apt-get install opencv-data
-                sudo apt-get install libopencv-dev 
-            </para>
-        </caution>
         <para>
             A BrainB Benchmark feladata az esport tehetségek felkutatása lenne,
             úgy, hogy feltérképezi az agy kognitív képességeit, és az 
