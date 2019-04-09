@@ -321,8 +321,29 @@ signals:
             </para>
         </caution>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+		<para>
+			Melvin Conway 1970-ben alkotta meg saját sejtautomatáját.
+			A sejtautomaták lényege, hogy megadunk néhány feltételt
+			az életben maradásra, a születésre, és a halálozásra, majd
+			figyeljük, hogy az általunk "teremtett" lények, hogyan
+			"élnek". Conway 3 egyszerű szabályt adott meg,
+			és mind a mai napig ez a legnépszerűbb sejtautomata.
+		</para>
+		<para>
+			A szabályok a következők:
+			<programlisting>
+1. szabály: Egy sejt csak akkor marad életbe, ha 2 vagy 3 szomszédja van.
+2. szabály: Ha egy sejtnek 3-nál több szomszédja van, túlnépesedés miatt
+			meghal. Ha pedig 2-nél kevesebb a szomszédai száma, akkor
+			pedig az elszigetelődés miatt hal meg.
+3. szabály: Egy sejt megszületik, ha az üres cellának 3 élő sejt
+			található a szomszédos cellákban.
+			</programlisting>
+			Ezen szabályok megadásával elképesztő animációkat kapunk,
+			de mi most kifejezetten egyre, a siklókilövőre koncentrálunk.
+		</para>
     </section>        
     <section>
         <title>Qt C++ életjáték</title>
