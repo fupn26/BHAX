@@ -649,7 +649,7 @@ signals:
             még  a forrása sem tartalmazza az ehhez szükséges kódokat.
         </para>
         <para>
-            A program forrása 4 fájból áll, erre azért van szükség, hogy áltláthatóbbak legyenek az egyes osztályok
+            A program forrása 4 fájlból áll, erre azért van szükség, hogy áltláthatóbbak legyenek az egyes osztályok
             definíciója.
             <programlisting language="c++"><![CDATA[
 #include <QtGui/QMainWindow>
