@@ -39,7 +39,7 @@
         <para>
             A <filename>main.cpp</filename>-ben megtalálható futtatási javaslat a következő:
             <programlisting>
-./myrmecologist -w 250 -m 150 -n 400 -t 10 -p 5 -f 80 -d 0 -a 255 -i 3 -s 3  -c 22
+                ./myrmecologist -w 250 -m 150 -n 400 -t 10 -p 5 -f 80 -d 0 -a 255 -i 3 -s 3  -c 22
             </programlisting>
             A <function>w</function> kapcsolóval állítjuk be, hogy egy cella
             hány oszlopból álljon, vagyis, milyen széles legyen, a 
@@ -66,28 +66,28 @@
             <para>
                 Mindegyik fájlnak egy mappában kell lennie. Majd:
                 <programlisting>
-qmake myrmecologist.pro
-make
-./myrmecologist //+ a kapcsolók, ha szeretnéd állítani
+                    qmake myrmecologist.pro
+                    make
+                    ./myrmecologist //+ a kapcsolók, ha szeretnéd állítani
                 </programlisting>
             </para>
         </caution>
         <para>
             <figure>
                 <title>Kapcsolók nélkül</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="../../attention_raising/Myrmecologist/alapertelmezett.png" format="PNG"/>
-                        </imageobject>
-                    </mediaobject>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../attention_raising/Myrmecologist/alapertelmezett.png" format="PNG"/>
+                    </imageobject>
+                </mediaobject>
             </figure>
             <figure>
                 <title>Kapcsolókkal</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="../../attention_raising/Myrmecologist/kapcsoloval.png" format="PNG"/>
-                        </imageobject>
-                    </mediaobject>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../attention_raising/Myrmecologist/kapcsoloval.png" format="PNG"/>
+                    </imageobject>
+                </mediaobject>
             </figure>
         </para>
         <para>
@@ -98,11 +98,11 @@ make
             a bonyolult programokat.
             <figure>
                 <title>UML diagram</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="../../attention_raising/Myrmecologist/uml.png" format="PNG"/>
-                        </imageobject>
-                    </mediaobject>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../attention_raising/Myrmecologist/uml.png" format="PNG"/>
+                    </imageobject>
+                </mediaobject>
             </figure>
             Az ábrán láthatjuk a programunk egyes osztáylait. Azon elemek, melyek előtt
             a "-" jel szerepel, nem érhetők el az osztályon kívül, míg a "+"
@@ -320,42 +320,42 @@ signals:
                 A feladat megoldásában tutorként részt vett Petrus József Tamás.
             </para>
         </caution>
-		<caution>
-			<title>Használat</title>
-			<para>
-				<programlisting>
-sudo apt-get install openjdk-8-jdk
-javac game_of_life.java
-java game_of_life
-				</programlisting>
-			</para>
-		</caution>
+        <caution>
+            <title>Használat</title>
+            <para>
+                <programlisting>
+                    sudo apt-get install openjdk-8-jdk
+                    javac game_of_life.java
+                    java game_of_life
+                </programlisting>
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
-		<para>
-			Melvin Conway 1970-ben alkotta meg saját sejtautomatáját.
-			A sejtautomaták lényege, hogy megadunk néhány feltételt
-			az életben maradásra, a születésre, és a halálozásra, majd
-			figyeljük, hogy az általunk "teremtett" lények, hogyan
-			"élnek". Conway 3 egyszerű szabályt adott meg,
-			és mind a mai napig ez a legnépszerűbb sejtautomata.
-		</para>
-		<para>
-			A szabályok a következők:
-			<programlisting>
-1. szabály: Egy sejt csak akkor marad életbe, ha 2 vagy 3 szomszédja van.
-2. szabály: Ha egy sejtnek 3-nál több szomszédja van, túlnépesedés miatt
-			meghal. Ha pedig 2-nél kevesebb a szomszédai száma, akkor
-			pedig az elszigetelődés miatt hal meg.
-3. szabály: Egy sejt megszületik, ha az üres cellának 3 élő sejt
-			található a szomszédos cellákban.
-			</programlisting>
-			Ezen szabályok megadásával elképesztő animációkat kapunk,
-			de mi most kifejezetten egyre, a siklókilövőre koncentrálunk.
-			Ehhez fix cellákba helyezzük a kezdeti sejteket, és utána
-			folymatosan indulnak el felfelé a siklók.
-			<programlisting language="java"><![CDATA[
+        <para>
+            Melvin Conway 1970-ben alkotta meg saját sejtautomatáját.
+            A sejtautomaták lényege, hogy megadunk néhány feltételt
+            az életben maradásra, a születésre, és a halálozásra, majd
+            figyeljük, hogy az általunk "teremtett" lények, hogyan
+            "élnek". Conway 3 egyszerű szabályt adott meg,
+            és mind a mai napig ez a legnépszerűbb sejtautomata.
+        </para>
+        <para>
+            A szabályok a következők:
+            <programlisting>
+                1. szabály: Egy sejt csak akkor marad életbe, ha 2 vagy 3 szomszédja van.
+                2. szabály: Ha egy sejtnek 3-nál több szomszédja van, túlnépesedés miatt
+                meghal. Ha pedig 2-nél kevesebb a szomszédai száma, akkor
+                pedig az elszigetelődés miatt hal meg.
+                3. szabály: Egy sejt megszületik, ha az üres cellának 3 élő sejt
+                található a szomszédos cellákban.
+            </programlisting>
+            Ezen szabályok megadásával elképesztő animációkat kapunk,
+            de mi most kifejezetten egyre, a siklókilövőre koncentrálunk.
+            Ehhez fix cellákba helyezzük a kezdeti sejteket, és utána
+            folymatosan indulnak el felfelé a siklók.
+            <programlisting language="java"><![CDATA[
 	public class game_of_life extends JFrame {
     RenderArea ra;
     private int i;
@@ -383,23 +383,23 @@ java game_of_life
             {11,25}};
         int min_o = 5;
         int min_s = 85;]]>
-			</programlisting>
-			A <function>game_of_life</function> osztálynak a 
-			<function>JFrame</function> a szülőosztálya. A 
-		    <function>JFrame</function> osztályra azért van szükség,
-			hogy az ablak, amiben a prograunk fut, megjelenjen.
-			Deklarálunk egy <function>RenderArea</function> objektumot,
-			melynek segítségével az ablak specifikációját adjuk meg.
-			A <function>game_of_life()</function> konstruktorban pont
-			ezeket állítjuk be. Megadjuk az ablak nevét, a méretét. Beállítjuk
-			azt, hogy hogyan záródjon be a program alapértelmezetten, és az
-			átméretezhetőséget kikapcsoljuk, mivel fix abalkmérettel
-			dolgozunk. Az <function>ra</function> objektumot hozzáadjuk
-			az ablakhoz, így tudjuk kirajzolni a sejtautomatát. Ezután
-			pedig megalkotjuk a siklókilövőhöz szükséges fix pontok
-			koordinátáit. Végül pedig meghatározzuk, hol legyen az origó, 
-			ahonnan a koordinátákat kirajzoljuk.
-			<programlisting language="java"><![CDATA[
+            </programlisting>
+            A <function>game_of_life</function> osztálynak a 
+            <function>JFrame</function> a szülőosztálya. A 
+            <function>JFrame</function> osztályra azért van szükség,
+            hogy az ablak, amiben a prograunk fut, megjelenjen.
+            Deklarálunk egy <function>RenderArea</function> objektumot,
+            melynek segítségével az ablak specifikációját adjuk meg.
+            A <function>game_of_life()</function> konstruktorban pont
+            ezeket állítjuk be. Megadjuk az ablak nevét, a méretét. Beállítjuk
+            azt, hogy hogyan záródjon be a program alapértelmezetten, és az
+            átméretezhetőséget kikapcsoljuk, mivel fix abalkmérettel
+            dolgozunk. Az <function>ra</function> objektumot hozzáadjuk
+            az ablakhoz, így tudjuk kirajzolni a sejtautomatát. Ezután
+            pedig megalkotjuk a siklókilövőhöz szükséges fix pontok
+            koordinátáit. Végül pedig meghatározzuk, hol legyen az origó, 
+            ahonnan a koordinátákat kirajzoljuk.
+            <programlisting language="java"><![CDATA[
 	    for (int i = 0; i < siklokilovo.length; ++i)
         {
           ra.entities.get(min_o + siklokilovo[i][1]).set(min_s+ siklokilovo[i][0],!ra.entities.get(min_o + siklokilovo[i][1]).get((min_s+ siklokilovo[i][0])));
@@ -409,14 +409,14 @@ java game_of_life
 
         ra.edit_mode = false;
         ra.running = true;]]>
-			</programlisting>
-			A <function>for</function> ciklusban kirajzoljuk az egyes
-			sejteket a képernyő megadott pontjaira.
-			Az <function>edit_mode</function>-ra azért van szükség, mert
-			a program képes lenne egyedi ábrák használatára is, de ez most
-			nem része a feladatnak. A <function>running</function>
-			pedig jelzi, hogy a program fut.
-			<programlisting language="c++"><![CDATA[
+            </programlisting>
+            A <function>for</function> ciklusban kirajzoljuk az egyes
+            sejteket a képernyő megadott pontjaira.
+            Az <function>edit_mode</function>-ra azért van szükség, mert
+            a program képes lenne egyedi ábrák használatára is, de ez most
+            nem része a feladatnak. A <function>running</function>
+            pedig jelzi, hogy a program fut.
+            <programlisting language="c++"><![CDATA[
 	public void update() {
         ArrayList<ArrayList<Boolean>> entities = new ArrayList<ArrayList<Boolean>>();// = ra.entities;
         int size1 = ra.entities.size();
@@ -482,13 +482,13 @@ java game_of_life
         ra.entities = entities;
 
     }]]>
-			</programlisting>
-			Az <function>update()</function> függvény felelős a
-			Conway által meghatározott szabályok implementálásáért.
-			Minden sejthez kiszámoljuk a szomszédjai számát, majd 
-			a szabáylok alapján eldöntjük, hogy életben marad-e, meghal,
-			vagy születik.
-			<programlisting language="java"><![CDATA[	
+            </programlisting>
+            Az <function>update()</function> függvény felelős a
+            Conway által meghatározott szabályok implementálásáért.
+            Minden sejthez kiszámoljuk a szomszédjai számát, majd 
+            a szabáylok alapján eldöntjük, hogy életben marad-e, meghal,
+            vagy születik.
+            <programlisting language="java"><![CDATA[	
     class RenderArea extends JPanel implements KeyListener {
         public ArrayList<ArrayList<Boolean>> entities;
 
@@ -598,21 +598,21 @@ java game_of_life
         private static final long serialVersionUID = 1L;
         
     }]]>
-			</programlisting>
-			A <function>RenderArea</function> osztály segítségével 
-			történik a sejtek kirajzolása, a rácsháló megjelenítése,
-			és a billentyűzet kezelést is ez az osztály implementálja,
-			és az egérkezelést is, csak most azt nem használjuk, ezért
-			a likelt forrásban azt kikommentelve találod. A
-			<function><![CDATA[@override]]></function> címke segítségével
-			az alatta lévő függvényt nem kell a programban deklarálni.
-		</para>
-		<para>
-			Végezetül a <function>main</function>-ben deklarálunk egy
-			<function>game_of_life</function> objektumot, majd addig 
-			jelenítjük meg az újabb állapotokat, ameddig a felhasználó
-			le nem nyomja a "q" billentyűt, vagy be nem zárja a programot.
-		</para>
+            </programlisting>
+            A <function>RenderArea</function> osztály segítségével 
+            történik a sejtek kirajzolása, a rácsháló megjelenítése,
+            és a billentyűzet kezelést is ez az osztály implementálja,
+            és az egérkezelést is, csak most azt nem használjuk, ezért
+            a likelt forrásban azt kikommentelve találod. A
+            <function><![CDATA[@override]]></function> címke segítségével
+            az alatta lévő függvényt nem kell a programban deklarálni.
+        </para>
+        <para>
+            Végezetül a <function>main</function>-ben deklarálunk egy
+            <function>game_of_life</function> objektumot, majd addig 
+            jelenítjük meg az újabb állapotokat, ameddig a felhasználó
+            le nem nyomja a "q" billentyűt, vagy be nem zárja a programot.
+        </para>
     </section>        
     <section>
         <title>Qt C++ életjáték</title>
@@ -625,33 +625,33 @@ java game_of_life
         <para>
             Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Siklokilovo/QT">itt</link>               
         </para>
-		<caution>
-			<title>Használat</title>
-			<para>
-				<progralisting>
-sudo apt-get install libqt4-dev
-qmake Qt sejtkilövő.pro
-make
-./Qt sejtkilövő
-				</programlisting>
-			</para>
-		</caution>
+        <caution>
+            <title>Használat</title>
+            <para>
+                <programlisting>
+                    sudo apt-get install libqt4-dev
+                    qmake Qt sejtkilövő.pro
+                    make
+                    ./Qt sejtkilövő
+                </programlisting>
+            </para>
+        </caution>
         <para>
-            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...<emphasis>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
-	    <para>
-			Az előző feladatban taglalt Conway-féle életjátékot fogjuk most megcsinálni a Qt grafikus felületet
-			használva C++ nyelven. A szabályok továbbra is adottak. A sejtek meghalnak, ha 2-nél kevesebb
-			a szomszédjuk vagy 3-nál több szomszédja van. Megszületik, ha pontosan 3 szomszédja van, és ha
-			még abban a cellában nem él. Végezetül, ha 2-nél több, de 3-nál kevesebb a szomszédok száma,
-			akkor a életben marad a sejt. Ebben a feladatban is a siklőkilövőt kell megvalósítani, de ehhez már
-			tudjuk a koordinátákat, tehát ez nem lesz gond. A program nem képes önálló alakzatok megvalósítására,
-			még  a forrása sem tartalmazza az ehhez szükséges kódokat.
-		</para>
-		<para>
-			A program forrása 4 fájból áll, erre azért van szükség, hogy áltláthatóbbak legyenek az egyes osztályok
-			definíciója.
-			<programlisting language="c++"><![CDATA[
+        <para>
+            Az előző feladatban taglalt Conway-féle életjátékot fogjuk most megcsinálni a Qt grafikus felületet
+            használva C++ nyelven. A szabályok továbbra is adottak. A sejtek meghalnak, ha 2-nél kevesebb
+            a szomszédjuk vagy 3-nál több szomszédja van. Megszületik, ha pontosan 3 szomszédja van, és ha
+            még abban a cellában nem él. Végezetül, ha 2-nél több, de 3-nál kevesebb a szomszédok száma,
+            akkor a életben marad a sejt. Ebben a feladatban is a siklőkilövőt kell megvalósítani, de ehhez már
+            tudjuk a koordinátákat, tehát ez nem lesz gond. A program nem képes önálló alakzatok megvalósítására,
+            még  a forrása sem tartalmazza az ehhez szükséges kódokat.
+        </para>
+        <para>
+            A program forrása 4 fájból áll, erre azért van szükség, hogy áltláthatóbbak legyenek az egyes osztályok
+            definíciója.
+            <programlisting language="c++"><![CDATA[
 #include <QtGui/QMainWindow>
 #include <QPainter>
 #include "sejtszal.h"
@@ -695,14 +695,14 @@ private:
     SejtSzal* eletjatek;
 
 };]]>
-			</programlisting>
-			A <function>sejtablak.cpp</function> és 
-			<function>sejtablak.h</function>-ban található a 
-			<function>SejtAblak</function> osztály, ez felelős
-			a program kirajzolásáért a képernyőre. A <filename>sejtablak.cpp</filename>
-			fájlból a siklókilövő implementációját emelném ki, ebben 
-			egy kicsit mást megoldást használtunk.
-			<programlisting language="c++"><![CDATA[
+            </programlisting>
+            A <function>sejtablak.cpp</function> és 
+            <function>sejtablak.h</function>-ban található a 
+            <function>SejtAblak</function> osztály, ez felelős
+            a program kirajzolásáért a képernyőre. A <filename>sejtablak.cpp</filename>
+            fájlból a siklókilövő implementációját emelném ki, ebben 
+            egy kicsit mást megoldást használtunk.
+            <programlisting language="c++"><![CDATA[
 void SejtAblak::sikloKilovo(bool **racs, int x, int y) {
 
     racs[y+ 6][x+ 0] = ELO;
@@ -759,13 +759,13 @@ void SejtAblak::sikloKilovo(bool **racs, int x, int y) {
     racs[y+ 11][x+ 25] = ELO;
 
 }]]>
-			</programlisting>
-			A koordinátákat ezúttal nem egy tömbben tároljuk, hanem
-			egyesével kirajzoljuk az összes sejtet a megfelelő pontokra.
-			Egy másik különbség, hogy a Java-s példában a konstruktor készítette
-			el a siklókilövőhöz szükséges ábrát, itt egy külön eljárást írtunk ezen
-			funkcionalitás megoldására.
-			<programlisting language="c++"><![CDATA[
+            </programlisting>
+            A koordinátákat ezúttal nem egy tömbben tároljuk, hanem
+            egyesével kirajzoljuk az összes sejtet a megfelelő pontokra.
+            Egy másik különbség, hogy a Java-s példában a konstruktor készítette
+            el a siklókilövőhöz szükséges ábrát, itt egy külön eljárást írtunk ezen
+            funkcionalitás megoldására.
+            <programlisting language="c++"><![CDATA[
 #include <QThread>
 #include "sejtablak.h"
 
@@ -795,13 +795,13 @@ protected:
     SejtAblak* sejtAblak;
 
 };]]>
-			</programlisting>
-			A <filename>sejtszal.h</filename> és a 
-			<filename>sejtszal.cpp</filename> fájlok tartalmazzák
-			a <function>SejtSzal</function> osztályt, mely a 
-			szabályok implementálását tartalmazza. Itt zajlik az
-			egyes sejtek elhalálozása, születése és életben maradása.
-			<programlisting language="c++"><![CDATA[
+            </programlisting>
+            A <filename>sejtszal.h</filename> és a 
+            <filename>sejtszal.cpp</filename> fájlok tartalmazzák
+            a <function>SejtSzal</function> osztályt, mely a 
+            szabályok implementálását tartalmazza. Itt zajlik az
+            egyes sejtek elhalálozása, születése és életben maradása.
+            <programlisting language="c++"><![CDATA[
 void SejtSzal::idoFejlodes() {
 
     bool **racsElotte = racsok[racsIndex];
@@ -831,11 +831,11 @@ void SejtSzal::idoFejlodes() {
     }
     racsIndex = (racsIndex+1)%2;
 }]]>
-			</programlisting>
-			Magát a konkrét szabályokat a <function>idoFejlodes<function>
-			eljárás tartatja be, itt dől el, hogy egy sejt milyen állapotba
-			kerül.
-		</para>
+            </programlisting>
+            Magát a konkrét szabályokat a <function>idoFejlodes</function>
+                    eljárás tartatja be, itt dől el, hogy egy sejt milyen állapotba
+                    kerül.
+        </para>
     </section>        
     <section>
         <title>BrainB Benchmark</title>
@@ -850,11 +850,11 @@ void SejtSzal::idoFejlodes() {
         <caution>
             <title>Használata előtt</title>
             <para>
-				<programlisting>
-sudo apt-get install libqt4-dev
-sudo apt-get install opencv-data
-sudo apt-get install libopencv-dev
-				</programlisting>
+                <programlisting>
+                    sudo apt-get install libqt4-dev
+                    sudo apt-get install opencv-data
+                    sudo apt-get install libopencv-dev
+                </programlisting>
             </para>
         </caution>
         <para>
@@ -872,11 +872,11 @@ sudo apt-get install libopencv-dev
             milyen bit/sec képernyőváltások tartoznak.
             <figure>
                 <title>Program</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="../../attention_raising/Source/BrainB/program.png" format="PNG"/>
-                        </imageobject>
-                    </mediaobject>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../attention_raising/Source/BrainB/program.png" format="PNG"/>
+                    </imageobject>
+                </mediaobject>
             </figure>
             A program így néz ki, a feladat annyi, hogy a kurzort rajta kell tartani a Samu Entropyn, minnél tovább tartod
             rajta, annál több New Entropy jelenik meg, ezzel nehezítve a dolgod. Ha elveszted, akkor a szaporodás lelassul, hogy könyebben
@@ -885,11 +885,11 @@ sudo apt-get install libopencv-dev
             minél komplikáltabb lesz a kép a végén, annál jobb vagy.
             <figure>
                 <title>Eredmény</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="../../attention_raising/Source/BrainB/eredmeny.png" format="PNG"/>
-                        </imageobject>
-                    </mediaobject>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../attention_raising/Source/BrainB/eredmeny.png" format="PNG"/>
+                    </imageobject>
+                </mediaobject>
             </figure>
             A végén pedig megkapod ezt a fájlt, ami tartalmazza az elért eredményt.
             Hogy te is le tudd futattni, fontos, hogy minden fájl egy mappában legyen, majd
