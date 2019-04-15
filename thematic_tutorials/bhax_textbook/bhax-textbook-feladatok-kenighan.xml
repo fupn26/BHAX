@@ -762,5 +762,41 @@
             speciálisabb osztályt használjunk ott ahol amúgy általánosabb osztályt
             használtunk.
         </para>
+        <para>
+            Az <emphasis role="strong">egységbezárás</emphasis> C++-ban a struktúrák
+            már nem csak a tagváltozókat tartalmazhatnak, hanem tagfüggvényeket is.
+            Egy másik különbség, hogy a C-ben a struktúra szerinti változót akartunk
+            létrehozni, akkor muszáj volt kiírni elé a <function>struct</function>
+            kulcsszót, vagy meg kellett adni egy alias-t amivel tudunk rá hivatkozni.
+            C++-ban viszont már erre nincs szükség, szimplán a struktúra nevével létrehozhatunk
+            változót. A tagváltozókat a "." és a <![CDATA["->"]]> operátorokkal tudjuk elérni.
+            A tagfüggvényeket struktúrán belül kell deklarálni, viszont a definiálásukra 2
+            módszer is létezik. Az egyik az, hogy struktúrán belül definiáljuk is, vagy
+            a kívül, de ebben az esetben szükség van a "::" hatókör operátorra, mivel
+            előfordulhat, hogy több struktúrának is ugyan olyan nevű taggfüggvénye van.
+            Minden tagfüggvénynek van egy láthatatlan paramétere, ami módosítandó
+            struktúrára mutat. Ezt a láthatatlan pointert a <function>this</function>
+            szóval tudjuk elérni. A struktúrával egy nagy baj van, minden tagja publikus,
+            tehát a programozónak nincs eszköze ahhoz, hogy szabályozza a struktúra
+            elemeinek a hozzáférését. Ezt hivatott megoldani az osztály, mely minden tagja
+            alaértelmezetten private, de megadhatunk oylan elemeket is, amik elérhetők az
+            osztályon kívülről. De ezt implicit módon is kiírhatjuk, <function>private:</function>
+            és <function>public:</function> címkékkel. Az adott osztály használatához egy 
+            változót kell deklarálnunk, ezt az osztály példányosításának nevezzük, 
+            a változót pedig objektumnak. 
+        </para>
+        <para>
+            Az objektumok létrehozásánál felmerül egy kis probléma, mégpedig az, hogy a
+            tagváltozók értékét alapból nem adjuk meg, így az azokkal számoló függvények
+            véletle értéket adnak. Ezt küszöböli ki a konstruktor használata, amivel
+            képesek vagyunk kezdőértéket adni a változóknak, azaz inicializálni őket.
+            Ha nem írunk konstruktort, akkor az alapértelmezett konstruktor hívódik meg,
+            ami nem csinál semmit. Lehetőségünk van több konstruktort is megadni, annak
+            függvényében, hoygan szeretnénk példányosítani. A konstruktor arról ismerszik meg,
+            hogy neve megyegyezik az osztály nevével, és csak egyszer hajtódik végre, amikor
+            létrehozzuk az objektumot. Ennek az ellentéte a destruktor, ami az egyes elemek
+            által lefoglalt erőforrásokat szabadítja fel a program futásának végeztével. 
+            Szerepe főleg a dinamikus adattagokat tartalmazó osztályokban jelentős.   
+        </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
