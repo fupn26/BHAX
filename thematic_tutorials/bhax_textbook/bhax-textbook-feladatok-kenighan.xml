@@ -411,14 +411,73 @@
             Az eljárásorientált nyelvek 4 programegységből állnak. Van egy alprogram, egy blokk
             egy csomag és egy taszk. Az alprogramnak az a lényege, hogyha egy 
             programrész többször ismétlődik, akkor ezt külön megírjuk, és csak 
-            hivatkozunk rá. Ha az egyes programegységek újabb és újabb programegységet hívnak
+            hivatkozunk rá. Két fő típusa van az alprogramoknak: eljárás és függvény.
+            Az eljárás a paraméterként átadott elemekkel végrahajt valmilyen utasítást, viszont
+            nem tér vissza semmilyen értékkel, ellentétben a függvénnyel. A függvénynél
+            a visszatérési érték típusát a függvény nevével együtt adjuk meg, ha nem 
+            adunk meg visszatérési értéket a függvény végén, akkor szintajktiai hibát kapunk. 
+            Ha az egyes programegységek újabb és újabb programegységet hívnak
             meg, akkor alakul ki a hívási lánc. Bizonyos esetekben egy programegység önmagát
             is hívhatja, ezt nevezzük rekurzív hívásnak. Bizoynos nyelvek támogatják a
             törzsben szereplő alprogramokat is, ezeket másodlagos belépési ponttal oldja meg. 
-            Paraméterkiértékelésnél az alprogram hívását követően a formálisparaméterekhez
-            hozzárendeljük az
-            akruális paramétereket. A formális listából mindig csak egy van, ezzel szemben
-            az alprogram hívásának számával megegyező számú aktuális paraméterlista van.  
+            A blokk egy programegység, mely önállóan nem állhat, csak egy másik
+            programegység belsejében. Fromálisan 3 részből áll: kezdet, törzs, vég. 
+            A kezdetet és véget C-ben kapcsoszárójellel jelöljük, nem tartozik hozzá név. 
+            A törzsben szerepelhet bármilyen utasítás. A vezérlés vagy szekvenciálisan kerül
+            a blokkra, vagy egy GOTO utasítással mi ugratjuk rá.  
+        </para>
+        <para>
+            <emphasis role="strong">Paraméterkiértékelés, paraméterátadás</emphasis>
+        </para>
+        <para>
+            A paraméterkiértékelés az alprogram híváskor egymáshoz rendeli a formális és
+            aktuális paraméter listát. Formális paraméter listából mindig csak egy van, melyet
+            az alprogram specifikációja tartalmaz, viszont aktuálisból annyi létezik, ahány
+            függvényhívás. Mindig a formálishoz rendeljük az aktuálist, de ennek megvalósítása
+            többféleképpen lehetséges. Lehet sorrend szerint, tehát elsőt az elsővel és így tovább,
+            vagy név szerint is. Ezt úgy kell elképzelni, hogy az aktuális paraméter listában
+            meg tudjuk adni, hogy a formális paraméter lista melyik eleméhez mit rendelünk. 
+            Az is eltérő lehet, hogy hány paramétert kell megadni. Ezt mindig a formális paraméter
+            lista határozza meg, vagyis ha fix számú, akkor az aktuálisnak is annyit kell tartalmaznia,
+            vagy lehet kevesebb is, de ez kizárólag érték szerinti paraméterátadás esetén lehetséges.
+            Ha a formális paraméter lista tetszőleges  méretű, akkor az aktuális is. Nyelvenként eltérő
+            annak a kezelése, ha az aktuális paraméter lista elemei nem egyeznek meg a 
+            formálisban lévő paraméterek típusával. Ilyenkor vagy hibát kapunk, vagy egyes nyelveknél
+            a típuskényszerítést alkalmazzák.  A paraméterátadásának 6 módja van. Az első, a már
+            említett érték szerinti paraméterátadás. Ebben az esetben a formális paramétereknek
+            van címkomponensük az alprogram területén. Az átadot érték lemásolódik, ezzel 
+            dolgozik tovább az alprogram. Ennek a gyengesége a másolás, mely bizonyos adatszerkezetek
+            esetén sok időbe telhet, és sok helyet foglal. A cím szerinti paraméterátadás 
+            esetén a formális paramétereknek nincs külön címkomponense, hanem az alprogram a 
+            hívó területén dolgozik. Ebben az esetben az alprogram olvashat és írhat is értékeket
+            a hívó területén. Az eredmény szerinti paraméterátadás abban tér el ettől, hogy
+            az alprogram a saját területén dolgozik, míg be nem fejezi a feladatát, ezután pedig a 
+            hívó területére kiírja az eredményt. Az érték-eredmény szerinti átadás ezt gondolja tovább.
+            Itt már azv értéket is átadjuk a cím mellett, az alprogram az átadott értékkel végrahajtódik
+            a saját területén, majd pedig az eredményt kiírja a hívó memóriaterületére. Létezik még 
+            név szerinti átadás is, ahol a paramáter egy szimbólum. Ekkor az alprogram
+            formális paraméterének minden előfordulása átíródik a megadott szimbólumra, és az 
+            alprogram végrehajtódik. A szöveg szerinti abban különbözik, hogy az átírás csak az 
+            alprogram futásának megkezdése után, az első előfordulástól kezdve hajtódik végre.
+        </para>
+        <para>
+            <emphasis role="strong">Hatáskör</emphasis>
+        </para>
+        <para>
+            A hátáskör, vagy láthatóság a programban előforduló nevekhez kapcsolódó
+            fogalom. Egy név hatókörének azt programrészt nevezzük, ahol ugyan azt 
+            a programozási eszközt hivatkozza. A programegységekben deklarált nevek
+            lokális nevek, azokon kívül deklaráltak pedig szabad nevek. A 
+            hatókörkezelésnek két ismert megvalósítása van, az egyik a statikus, 
+            a másik a dinamikus. Az eljáráorientált nnyelvek a statikus verziót
+            használják. A statikus megoldás lényege, hogy minden név hatóköre
+            az adott programegységig terjed, ahol deklarálták. Ebbe beletartoznak
+            a beágyazott programegységek is. Fontos kikötés, hogyha az egyik 
+            beágyazott programegység úradeklarálja a nevet, akkor már nem érhető
+            el ott. A dinamikus hatókörkezelés is hasonló ehhez, azzal a különbséggel,
+            hogy a név hatóköre kiterjed azokra a programegységekre amik a 
+            saját programegysége után vannak a hívási láncban, hacsak ott nem
+            deklarálják újra. 
         </para>
     </section>        
     <section>
@@ -796,7 +855,128 @@
             hogy neve megyegyezik az osztály nevével, és csak egyszer hajtódik végre, amikor
             létrehozzuk az objektumot. Ennek az ellentéte a destruktor, ami az egyes elemek
             által lefoglalt erőforrásokat szabadítja fel a program futásának végeztével. 
-            Szerepe főleg a dinamikus adattagokat tartalmazó osztályokban jelentős.   
+            Szerepe főleg a dinamikus adattagokat tartalmazó osztályokban jelentős.
+        </para>
+        <para>
+            A <emphasis role="strong">dinamikus adattagok</emphasis> memóriakezelését C-ben a 
+            <function>malloc</function> és <function>free</function> függvényekkel
+            oldottuk meg. A <function>malloc</function> függvény hátránya, hogy csak a 
+            legoglalandó terület méretét tudja, magáról a típusról nem tud semmit, azaz
+            nem tudunk vele objektumot inicializálni. Ehhez a C++ új operátorát kell használni,
+            a <function>new</function>-t, ennek az ellentéte a <function>delete</function>,
+            mely a <function>free</function> megfelelője. A <function>new</function> segítségvel
+            példányosíthatunk osztályokat, paraméterket adhatunk át, eredményként egy pointerrel
+            tér vissza. Ha tömbnek szeretnénk helyet foglalni, ahhoz a <function>new []</function>
+            operátorra lesz szükség. Ennek a használata esetén fontos odafigyelni arra, hogy a 
+            felszabadítást a <function>delete []</function> operátorral tegyük.
+        </para>
+        <para>
+            Ha egy objektum tartalmát másolni szeretnénk, akkor van szükségünk a
+            <emphasis role="strong">másoló konstruktorra</emphasis>. Lényegében
+            egy új objektumot inicializálunk egy már létező objektum alapján. A
+            C++ nyelvben van beépített másoló függvény, ami kiválóan átmásolja
+            az egyik változó tartalmát a másikba, de ez a mi esetünkben hibához vezetne.
+            A probléma lényege az, hogyha pointert másoltatunk vele, akkor csak szimplán
+            lemásolja az értékét, vagyis lesz 2 azonos helyre mutató mutatónk. Ezért
+            nekünk kell létrehozni az másolást végző függvényt. A neve, mint a többi
+            konstruktornak, ennek megegyezik az osztály nevével, paraméterként pedig
+            egy objektum refernciát kap. 
+        </para>
+        <para>
+            Ahogy egy korábbi paragrafusban már megbeszéltük, az adatrejtés nagyon fontos 
+            tulajdonsága az objektumorientált programozási nyelveknek. Természetesen vannak
+            speciális megoldások a rejtett tagok kinyerésére, ezzel kapcsolatban kerül elő
+            a <function>friend</function> kulcsszó. A <emphasis role ="strong">friend függvények</emphasis>
+            ugyanolyan jogokkal rendelkeznek, mint az osztály tagfüggvényei, viszont nem 
+            kell az osztályhoz tartozniuk. Lehetőleg érdemes ketülni a használatát, de vannak
+            esetek amikor szükség lehet rájuk. A <function>friend függvéynek</function> mellett
+            fontos szót ejteni még a <emphasis role="strong">friend osztályok</emphasis>-ról
+            is. Ezen osztályok tagfüggvényei teljes hozzáférést kapnak a barát osztály 
+            tagváltozóihoz. 
+        </para>
+        <para>
+            A konstruktorok és destruktorok kapcsán szó volt a <emphasis role="strong">tagváltozók
+                inicializálásáról</emphasis>, most ezt tisztázzuk egy kicsit. Amikor egy objektumot
+            létrehozunk, akkor a konstruktor hívódik meg, ekkor történik meg az 
+            inicializálás. Ha utólag értéket adunk, akkor viszont "=" operátor 
+            hívódik meg, nem a kontrsuktor. A tagváltozókat az inicializáslási 
+            listában tudjuk incializálni, ezt a konstruktor fejléce után írjuk ":"
+            elválasztva. A incializálandó tagokat pedig vesszővel választjuk el. 
+        </para>
+        <para>
+            Az osztályoknak lehetnek <emphasis role="strong">statikus tagjai</emphasis>.
+            Az osztály statikus tagváltozói nem objektumhoz tartoznak, hanem magához az 
+            osztályhoz. Tehát ezek minden objektumnál azonosak, nem foglalódik a memóriában
+            új terület. Ezeket a tagokat az osztályon kívülről a hatókör operátorral lehet
+            elérni, már azelőtt, hogy bármilyen példányosítást végrehajtottunk volna. A
+            statikus tagváltozók mellett létezik még <emphasis role="strong">statikus tagfüggvény</emphasis>.
+            Ezek kizárólag a staikus tagváltozókkal tudnak "dolgozni", főleg olyan esetekben használjuk,
+            amikor a statikus tagváltozó privátban van, és szeretnénk elérni osztályon kívülről.
+        </para>
+        <para>
+            A C++ nyelvben lehetőség van beágyazott definiciókat alkalmazni, ezalatt azt értjük,
+            hogy osztályokat, struktúrákat, típusdefiníciókat lehetőségünk van osztályon
+            belül definiálni. A beágyazott osztályok függvényeit a hatókör operátor
+            többszöri alkalmazásával tudjuk elérni, lényegéban a teljes elérésé utat kell megadni
+            a vezérlésnek. Ezekre is érvényes, hogy ha <function>private</function> részben
+            definiáljuk őket, akkor csak a publikus tagfüggvények segítségével tudjuk elérni 
+            a fő osztályon kívülről. Fontos megjegyezni, hogy attól, hogy egy osztály egy másiknak
+            a része, nem ad jogokat a fő osztálynak, és ez fordítva is igaz. Ez úgy oldható meg, ha 
+            az osztályok egymást <function>friend</function>-nek deklarálják.
+        </para>
+        <para>
+            <emphasis role="strong">Operátorok és túlterhelésük</emphasis>
+        </para>
+        <para>
+            A beépitett típusokkal rengeteg művelet végrehajtható, de ha olyanokra
+            is szeretnénk ezeket értelmezni, ami nem része a nyelvnek, akkor kell
+            operátor túlterheléshez fordulnunk. Az operátorok az argumentumaikon
+            hajtanak végre műveleteket, némelyik még az értéküket is
+            megváltoztatja, ezt hívjuk az operátor <function>mellékhatásának</function>.
+            Az operátorok kiértékelésének sorrendjét a C++ nyelv precedencia
+            táblázata határozza meg. A C nyelvben a függvényeknek nincs mellékhatása,
+            kivéva akkor, ha pointerként adjuk át a paramétert. A C++-ban létező referenciának
+            köszönhetően ez a problma nem áll fent. Tehát az operátotok felfoghatók
+            speciális függvényekként, azzal a különbséggel, hogy a kiértékelés 
+            szabályrendszer alapján történik.  
+        </para>
+        <para>
+            <emphasis role="strong">C++ sablonok</emphasis>
+        </para>
+        <para>
+            A C++ nyelv egy érdekes  megoldása a sablonok használata. Ezekre
+            azért van szükésg, hogy az osztályokat vagy a függvényeket 
+            általánosabb módon tudjuk definiálni. Például van egy függvényünk,
+            amit szeretnénk, hogy működjön <fucntion>int</fucntion>, és 
+            <function>double</function> típussal is. Ebben az esetben választhatnánk
+            azt a megoldást, hogy szimplán lemásoljuk, és ahol eddig <function>int</function> volt, oda
+            <function>double</function> írunk. Ez nem túl hatékony, ezért helyette 
+            készítünk egy sémát, és az éppen használni kívánt típust sablonparaméterként
+            adjuk át. Ugyanez érvényes az osztályokra is, ott is megoldható, hogy 
+            különböző típusokat használjunk, az átadott paraméter alapján. A 
+            fordítónak a <function>template</function> kulcszsóval jelezzük, hogy 
+            ez egy sablon, a sablonparamétereket pedig <![CDATA[<>]]> jelek közé írjuk, 
+            vesszővel elválasztva. PL.:
+            <programlisting language="c++"><![CDATA[
+                template <class valami> valami novelo (valami nev)
+                {
+                    return nev+1;
+                } ]]>
+            </programlisting>
+            A <function>class</function> kulcsszóval jelezzük, hogy egy típust
+            szeretnénk átadni paraméterként. A példányosítást megtehetjük 
+            implicit és explicit módon is.
+            <programlisting language="c++"><![CDATA[
+                int a = novelo(5); //implicit
+                int b = novelo(6.3) //hiba
+                int c = novelo<double>(6.3); //explicit, nincs hiba]]>
+            </programlisting>
+            Ahogy látható, az implicit megadás lestisztultabb, viszont bizonyos
+            esetkeben hibához vezet, mert csak egy típust tud kezelni. Viszont 
+            az explicit megoldásnál már nincs ezzel gond, mivel megadjuk, hogy
+            milyen típust szeretnénk használni, tehát az automatikus konverzió
+            segítségével az <function>double</function>-t <function>int</function>-é
+            tudjuk alakítani.  
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
