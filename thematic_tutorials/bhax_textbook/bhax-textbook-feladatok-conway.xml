@@ -613,6 +613,14 @@ signals:
             jelenítjük meg az újabb állapotokat, ameddig a felhasználó
             le nem nyomja a "q" billentyűt, vagy be nem zárja a programot.
         </para>
+        <figure>
+                <title>Siklókilövő</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../attention_raising/Source/Siklokilovo/Java/program.png" format="PNG"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
     </section>        
     <section>
         <title>Qt C++ életjáték</title>
@@ -630,9 +638,10 @@ signals:
             <para>
                 <programlisting>
                     sudo apt-get install libqt4-dev
-                    qmake Qt sejtkilövő.pro
+                    qmake-qt4 -project
+                    qmake-qt4 *.pro
                     make
-                    ./Qt sejtkilövő
+                    ./QT (vagy a bináris neve, ahogy létrejött)
                 </programlisting>
             </para>
         </caution>
@@ -835,6 +844,14 @@ void SejtSzal::idoFejlodes() {
             Magát a konkrét szabályokat a <function>idoFejlodes</function>
                     eljárás tartatja be, itt dől el, hogy egy sejt milyen állapotba
                     kerül.
+            <figure>
+                <title>Siklókilövő</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../attention_raising/Source/Siklokilovo/QT/program.png" format="PNG"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
         </para>
     </section>        
     <section>
