@@ -947,7 +947,7 @@
             A C++ nyelv egy érdekes  megoldása a sablonok használata. Ezekre
             azért van szükésg, hogy az osztályokat vagy a függvényeket 
             általánosabb módon tudjuk definiálni. Például van egy függvényünk,
-            amit szeretnénk, hogy működjön <fucntion>int</fucntion>, és 
+            amit szeretnénk, hogy működjön <function>int</function>, és 
             <function>double</function> típussal is. Ebben az esetben választhatnánk
             azt a megoldást, hogy szimplán lemásoljuk, és ahol eddig <function>int</function> volt, oda
             <function>double</function> írunk. Ez nem túl hatékony, ezért helyette 
@@ -958,7 +958,7 @@
             ez egy sablon, a sablonparamétereket pedig <![CDATA[<>]]> jelek közé írjuk, 
             vesszővel elválasztva. PL.:
             <programlisting language="c++"><![CDATA[
-                template <class valami> valami novelo (valami nev)
+                template <class tipus> tipus novelo (tipus nev)
                 {
                     return nev+1;
                 } ]]>
@@ -976,7 +976,183 @@
             az explicit megoldásnál már nincs ezzel gond, mivel megadjuk, hogy
             milyen típust szeretnénk használni, tehát az automatikus konverzió
             segítségével az <function>double</function>-t <function>int</function>-é
-            tudjuk alakítani.  
+            tudjuk alakítani.
+            
+            A függvények mellett osztályokból is készíthetünk sablonokat. A 
+            működési elve nagyon hasonló. Itt is sablonparaméterként adjuk meg a
+            típust, a tagváltozók pedig ilyen típusúak lesznek.
+            Szintaktikailag így néz ki:
+            <programlisting language="c++"><![CDATA[
+                template <class tipus> class Pelda
+                {
+                ...
+                };]]>
+            </programlisting>
+            Ha ennek az osztálynak egy tagfüggvényét az osztályon kívül
+            szeretnénk definiálni, akkor a következő módon kell eljárni:
+            <programlisting language="c++"><![CDATA[
+                template <class tipus>
+                void Pelda<tipus>::novelo(tipus adat)
+                {
+                ...
+                }]]>
+            </programlisting>
+            Tehát a definíció előtt a <function>tempplate</function>
+            kucszsó után fel kell sorolni a sablonparamétereket. Ha 
+            ez megvolt, az osztály neve után fel kell sorolnunk a 
+            sablonparaméterek nevét. A konstruktorokat is ugyanígy kell
+            definiálni. Régebbi fordítóknál problémát okozhat, hogy csak
+            az osztály nevét adjuk meg, amikor egy változó típusát
+            adjuk meg. Ilyen esetekben meg kell adni a sablonparaméterek
+            nevét is.
+            <programlisting language="c++"><![CDATA[
+                template <class tipus> class Pelda
+                {
+                    Pelda(const Pelda & objektum) //ez régen hibát dobott
+                    {
+                    }
+                    Pelda(const Pelda<tipus> & objektum) //régen így kellett
+                    {
+                    }
+                };]]>
+            </programlisting>
+        </para>
+        <para>
+            <emphasis role="strong">Argumentumfüggő névfeloldás</emphasis>
+        </para>
+        <para>
+            Az argumentumfüggő névfeloldást Koenig féle névfeloldásnak is nevezik.
+            A lényege az, hogy ha van egy névterünk:
+            <programlisting language="c++"><![CDATA[
+                namespace Pelda
+                {
+                    class X
+                    {
+                    ...
+                    };
+                    
+                    void f(X& x) {...}
+                }]]>
+            </programlisting>
+            Ebben az esetben ahhoz, hogy példányosítsunk egy 
+            X osztáylú objektumot, ki kell írnunk hatókör operátorral, hogy melyik
+            névtérből szeretnénk ezt létrehozni. Ezzel szemben a <function>f</function>
+            függvény esetén erre nincs szükség. Ez annak köszönhető, hogy amikor
+            paraméterként átadjuk neki az objektumot, akkor a fordító a 
+            <function>Pelda</function> névtérben keres, és ott az <function>f</function>
+            függvényt is megtalálja. 
+            <programlisting language="c++">
+                int main()
+                {
+                    Pelda::X alma;
+                    Pelda::f(alma); //ez rendben van
+                    f(alma); // ez is
+                }
+            </programlisting> 
+            Ennek a legnagyobb előnye az operátorok használatánál 
+            ütközik ki. Vegyük példának a már jól ismert 
+            <function>Hello, World!</function> programot.
+            <programlisting language="c++"><![CDATA[
+                #include <iostream>
+                int main()
+                {
+                    std::cout<<"Hello, World!\n";
+                }]]>
+            </programlisting>
+            Ebben a példában mind a <function>cout</function>, mind a 
+            <function><![CDATA[<<]]></function> operátor az 
+            <function>std</function> névtérben van definiálva. Ha nem létezne
+            névfeloldás, akkor ezt a következőképpen kéne írnunk:
+            <programlisting language="c++"><![CDATA[
+                std::operator<<(std::cout, "Hello, World!");]]>
+            </programlisting>
+        </para>
+        <para>
+            <emphasis role="strong">Típuskonverziók</emphasis>
+        </para>
+        <para>
+            A C++ típuskonverziói nagyban hasonlítanak a C-ben
+            megismertekre, viszont ezek használata biztonságosabb.
+            Ráadásul megjelentek objektumorientáltságot is 
+            figyelembe vevő konverziók.
+        </para>
+        <para>
+            Elsőnek nézzük meg a <emphasis role="strong">beépitett típusok</emphasis>
+            konverzióját. A C nyelvvel ellentétben a <function>enum</function> és
+            a <function>int</function> típusok közötti implicit konverzió
+            nem lehetséges, az explicit variánst kell használni. A 
+            <function>double</function> és <function>int</function>
+            típusok között van automatikus konverzió, de más a helyzet
+            a referenciákkal. A refernciák egy memóriaterületre hivatkoznak, 
+            emiatt a típus konverzió hibákhoz vezethet. A típuskényszerítést 
+            csak olyan esetben érdemes használni referenciákkal, ha azok 
+            konstansok. Tehát:
+            <programlisting><![CDATA[
+                double négyzet(const double& d)
+                {
+                    return d*d;
+                }
+                
+                int main()
+                {
+                    int i = 2;
+                    square((double)i);
+                }]]>
+            </programlisting>
+            Ebben az esetben az <function>i</function>-t a fordító 
+            <function>double</function> tudja alakítani, azaz nem ezt alakítja át, 
+            hanem létrehoz egy ideiglenes konstanst, és ennek a referencia szerinti 
+            másolását teszi lehetővé.
+        </para>
+        <para>
+            A <emphasis role="strong">felhasználói típusok</emphasis> konverziója 2 részre osztható,
+            a független típusok közötti, és hierarchikus típusok közötti konverzióra.
+            Előbbi esetben a konverziós konstruktorra van szükségünk, ha egy másik
+            típusról a saját osztályunkra szeretnénk konvertálni. Fordított esetben pedig
+            konverziós operátorra van szükség. A konverziós konstruktor egy egyparaméteres
+            konstruktor, a paramétere pedig olyan típusú, amilyenről szeretnénk végrehajtani
+            a konverziót. Alapesetben csak egyarumentumú konstruktort használjuk, ahonnan
+            a konverzó autómatikusan végrehajtódik, de lehetőség van többargumentumú
+            konstruktor definiálására is. A programozónak lehetősége van
+            elkerülni a véletlen konverziókat azzal, hogy a konstruktor deklarálása
+            elé az <function>explicit</function> kulcsszót írja. Ezzel az implicit
+            konverzió letiltásra kerül, csak expliciten lehet megadni. Bizonyos esetekben
+            a fordító nem tudja eldöntei, hogy melyik konverziót használja, az 
+            operátor mind a két oldalán lévő elemet át tudná alakítani a másikba. 
+            Ekkor explicit módon meg kell adni, hogy melyiket konvertálja, ellenkező esetben
+            fordítási hibát kapunk.
+        </para>
+        <para>
+            A másik fontos része a felhasználói típusok konverziójának az
+            egymással hierarchiában lévő típusok konverziója. Ha leszármazottról
+            a szülőre történő konverzió esetén a másolókonstriktor hívódik meg.
+            Azon tagváltozók, amik nem részei az ősosztálynak, a ásolás során 
+            kimaradnak, ezt nevezik <emphasis role="strong">slicking-on-the-fly</emphasis>-nak.
+            MIvel másolókonstruktornak mindig kell lennie, ezért ez a konverzió
+            automatikusan végrehajtódik. Ezzel szemben a szüéő-gyermek konverzió már nem 
+            ilyen egyszerű. Ebben az esetben a leszármazottban kell megírni a konverziós
+            konstruktort.
+        </para>
+        <para>
+            A <emphasis role ="strong">C++ típuskonverziós operátorai</emphasis>-ról
+            is érdemes szót ejteni. 4 operátor létezik erre a célra:
+            a <function>static_cast</function>, a <function>const_cast</function>,
+            a <function>dynamic_cast</function> és a <function>reinterpret_cast</function>.
+            Ezek közül az első ismert lehet, lényegében ezt használtuk eddig.
+            <programlisting><![CDATA[
+                double d = (int)3.14;
+                double d = static_cast <int> 3.14;]]>
+            </programlisting>
+            A kettő ekvivalens egymással. Összességében elmondható, hogy ez a 
+            leggyakrabban használt konverzó. A <function>const_cast</function>
+            segítségével vagyunk képesek konstansokat nem konstanssá tesz, kizárólag
+            ezzel lehet megoldani ezt a konverziót. Semmiylen más konverzióra nem 
+            használható. A <function>dynamic_cast</function> konverziónak az a nagy 
+            előnye, hogy futási időben ellenőrzi, hogy a konverzió végrahajtható-e, ha nem,
+            akkor hibával tér vissza. A fentebb említett leszármazottra történő konverzió 
+            esetén szükséges a használata. A <function>reinterpret_cast</function> 
+            konverziót pedig általában pointerknél használjuk, amikor 
+            meg akarjuk változtatni a pointer típusát.
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
