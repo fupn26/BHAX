@@ -253,7 +253,7 @@ if __name__ == '__main__':
             </programlisting>
             A program elején importáltuk az <function>argparser</function>
             könyvtárat. Ezt arra tudjuk használni, hogy kapcsolókat tudjunk
-            létrehozni a programunk számára. Jelen esetben a <fucntion>--data_dir</fucntion>
+            létrehozni a programunk számára. Jelen esetben a <function>--data_dir</function>
             kapcsoló használatával mg tudjuk adni, hogy hol tárolj a program a 
             tanuláshoz szükséges állományokat. 
         </para>
@@ -289,7 +289,102 @@ if __name__ == '__main__':
             Megoldás forrása:                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Még az előző feladatban megismerkedtünk a TensorFlow 
+            "Hello world!"-jével, addig ebben a feladatban már a
+            mély neurális háló megvalósítását kell végrehajtani.
+            Ez a feladat kifejezetten haladóknak lett kitalálva. Az előző
+            feladatban csak egy rétegünk volt, ebben már többrétegű
+            neurális hálót készítünk.
+            <programlisting>
+from __future__ import print_function
+
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+
+import tensorflow as tf 
+            </programlisting>
+            Első lépésként importáljuk a szükséges könyvtárakat, ahogy
+            azt már megszoktuk.
+            <programlisting>
+def weight_variable(shape):
+  initial = tf.truncated_normal(shape, stddev=0.1)
+  return tf.Variable(initial)
+
+def bias_variable(shape):
+  initial = tf.constant(0.1, shape=shape)
+  return tf.Variable(initial)
+
+def conv2d(x, W):
+  return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+
+def max_pool_2x2(x):
+  return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
+                        strides=[1, 2, 2, 1], padding='SAME')
+            </programlisting>
+            Ezután létrehozzuk az egyes rétegeket:
+            <programlisting>
+# Input layer
+x  = tf.placeholder(tf.float32, [None, 784], name='x')
+y_ = tf.placeholder(tf.float32, [None, 10],  name='y_')
+x_image = tf.reshape(x, [-1, 28, 28, 1])
+
+# Convolutional layer 1
+W_conv1 = weight_variable([5, 5, 1, 32])
+b_conv1 = bias_variable([32])
+
+h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
+h_pool1 = max_pool_2x2(h_conv1)
+
+# Convolutional layer 2
+W_conv2 = weight_variable([5, 5, 32, 64])
+b_conv2 = bias_variable([64])
+
+h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+h_pool2 = max_pool_2x2(h_conv2)
+
+# Fully connected layer 1
+h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
+
+W_fc1 = weight_variable([7 * 7 * 64, 1024])
+b_fc1 = bias_variable([1024])
+
+h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+
+# Dropout
+keep_prob  = tf.placeholder(tf.float32)
+h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+
+# Fully connected layer 2 (Output layer)
+W_fc2 = weight_variable([1024, 10])
+b_fc2 = bias_variable([10])
+            </programlisting>
+            Végezetül pedig metörténik a tanítás is:
+            <programlisting>
+# Evaluation functions
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+
+correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='accuracy')
+
+# Training algorithm
+train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+
+# Training steps
+sess = tf.InteractiveSession()
+# Train
+tf.initialize_all_variables().run(session=sess)
+
+max_steps = 1000
+for step in range(max_steps):
+      batch_xs, batch_ys = mnist.train.next_batch(50)
+      if (step % 100) == 0:
+          print(step, sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+          sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 0.5})
+          print(max_steps, sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+            </programlisting>
         </para>
     </section>        
 <!--
@@ -320,8 +415,328 @@ if __name__ == '__main__':
             Megoldás forrása:                
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            A Project Malmo-t a Microsoft indította el a mesterséges intelleginciában
+            való kutatás éredkében. A lényege, hogy a programozók beprogramozhatják
+            a Minecraft karakter mozgását, de nem csak azt, hogy hogyan mozogjanak, hanem azt
+            is, hogy felismerjék a környezetüket. Tehát képesek vagyunk a gépi tanulást
+            szimulálni a játékban. A gép megtanulja, hogyan maradjon életben a 
+            virtuális világban. Ebben a feladtban azt fogjuk megnézni, hogy
+            ezt hogyan valósítja meg a program. Ebben a feladatban is a Python 
+            programozási nyelvet fogjuk használni, lényegében a projekt python-os
+            példáit nézzük át. A Malmo projekt Github-on megtalálható
+            csomagjai tartalmaznak tutorial feladatokat, melyek segítségével
+            a kezdők megismerkedhetnek a programmal. Lássuk az első példát:
+            <programlisting>
+# Tutorial sample #1: Run simple mission
+
+from builtins import range
+import MalmoPython
+import os
+import sys
+import time
+
+if sys.version_info[0] == 2:
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
+else:
+    import functools
+    print = functools.partial(print, flush=True)
+
+# Create default Malmo objects:
+
+agent_host = MalmoPython.AgentHost()
+try:
+    agent_host.parse( sys.argv )
+except RuntimeError as e:
+    print('ERROR:',e)
+    print(agent_host.getUsage())
+    exit(1)
+if agent_host.receivedArgument("help"):
+    print(agent_host.getUsage())
+    exit(0)
+
+my_mission = MalmoPython.MissionSpec()
+my_mission_record = MalmoPython.MissionRecordSpec()
+
+# Attempt to start a mission:
+max_retries = 3
+for retry in range(max_retries):
+    try:
+        agent_host.startMission( my_mission, my_mission_record )
+        break
+    except RuntimeError as e:
+        if retry == max_retries - 1:
+            print("Error starting mission:",e)
+            exit(1)
+        else:
+            time.sleep(2)
+
+# Loop until mission starts:
+print("Waiting for the mission to start ", end=' ')
+world_state = agent_host.getWorldState()
+while not world_state.has_mission_begun:
+    print(".", end="")
+    time.sleep(0.1)
+    world_state = agent_host.getWorldState()
+    for error in world_state.errors:
+        print("Error:",error.text)
+
+print()
+print("Mission running ", end=' ')
+
+# Loop until mission ends:
+while world_state.is_mission_running:
+    print(".", end="")
+    time.sleep(0.1)
+    world_state = agent_host.getWorldState()
+    for error in world_state.errors:
+        print("Error:",error.text)
+
+print()
+print("Mission ended")
+# Mission has ended.
+
+            </programlisting>
+            Ez a példa azt mutatja meg, hogy hogyan tudunk elindítani egy 
+            küldetést a Malmo mod segítségével.Első lépésként létre kell 
+            hoznunk egy <function>agent_host</function> objektumot. Majd az ehhez
+            tartozó függvények segítségével elindítjuk a küldetést, anélkül, hogy a 
+            futó Minecraft programba mi belenyúlnánk. A küldetés 10 másodpercig tart,majd 
+            a küldetés befejeződik. Ezután a felhasználó irányíthatja a Minecraft karaktert.
+            Lehetőség van arra is, hogy XML szerűen tároljuk el az utasításokat. Erre ad példát a
+            a második példa. 
+            <programlisting><![CDATA[
+                missionXML='''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+            <Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            
+              <About>
+                <Summary>Hello world!</Summary>
+              </About>
+              
+              <ServerSection>
+                <ServerHandlers>
+                  <FlatWorldGenerator generatorString="3;7,220*1,5*3,2;3;,biome_1"/>
+                  <ServerQuitFromTimeUp timeLimitMs="30000"/>
+                  <ServerQuitWhenAnyAgentFinishes/>
+                </ServerHandlers>
+              </ServerSection>
+              
+              <AgentSection mode="Survival">
+                <Name>MalmoTutorialBot</Name>
+                <AgentStart/>
+                <AgentHandlers>
+                  <ObservationFromFullStats/>
+                  <ContinuousMovementCommands turnSpeedDegs="180"/>
+                </AgentHandlers>
+              </AgentSection>
+            </Mission>''']]>
+            </programlisting>
+            Tehát a <function>missionXML</function> változóban tároljuk az 
+            utasításokat. A pprogram kiírja, hogy <function>Hello world!</function>,
+            generál egy világot, majd 30 másodpercig fut, végül átadja az irányítást a 
+            felhasználónak. Mivel lehetőségünk van befolyásolni a világot, ezért 
+            rajzolhatunk is benne tárygakat. Ezt mutatja be a harmadik példa.
+            A rajzoláshoz szükségünk van elsőnek egy függvényre:
+            <programlisting><![CDATA[
+    def Menger(xorg, yorg, zorg, size, blocktype, holetype):
+    #draw solid chunk
+    genstring = GenCuboid(xorg,yorg,zorg,xorg+size-1,yorg+size-1,zorg+size-1,blocktype) + "\n"
+    #now remove holes
+    unit = size
+    while (unit >= 3):
+        w=old_div(unit,3)
+        for i in range(0, size, unit):
+            for j in range(0, size, unit):
+                x=xorg+i
+                y=yorg+j
+                genstring += GenCuboid(x+w,y+w,zorg,(x+2*w)-1,(y+2*w)-1,zorg+size-1,holetype) + "\n"
+                y=yorg+i
+                z=zorg+j
+                genstring += GenCuboid(xorg,y+w,z+w,xorg+size-1, (y+2*w)-1,(z+2*w)-1,holetype) + "\n"
+                genstring += GenCuboid(x+w,yorg,z+w,(x+2*w)-1,yorg+size-1,(z+2*w)-1,holetype) + "\n"
+        unit = w
+    return genstring]]>
+            </programlisting>
+            Ez a függvény felelős azért, hogy rajtoljunk egy nagy kocka, és abban
+            pedig apró lyukakat végjunk. A végeredmény pedig ez lesz:
+            <figure>
+            <title>Tutorial_3</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Malmo/tutorial_3.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A 4. példa mutatja be azt, hogyan lehet iráynítani a karaktert. Jelen esetben a 
+            az előbb létrehozott lyukacsos test belsejébe juttat el. Ezt a következő
+            parancsokkal érjük el:
+            <programlisting>
+agent_host.sendCommand("hotbar.9 1")
+agent_host.sendCommand("hotbar.9 0")
+agent_host.sendCommand("pitch 0.2")
+time.sleep(1)
+agent_host.sendCommand("pitch 0")
+agent_host.sendCommand("move 1")
+agent_host.sendCommand("attack 1")
+            </programlisting>
+            Terhát szintaktikailag így lehet átadni parancsot a karakternek. De ez
+            még nem az a szint, amit a bevezetőben belengettem, amikor már a 
+            karakterünk érzékeli a környezetét. Viszont az ötödik példában
+            már ilyet is láthatunk. Na jó, persze ezt is be kell programozni, 
+            nem a gép jön rá magától, de már egy fokkal inteligensebb, mint
+            az előző feladatban.
+            <programlisting>
+if world_state.number_of_observations_since_last_state > 0:
+   msg = world_state.observations[-1].text
+   observations = json.loads(msg)
+   grid = observations.get(u'floor3x3', 0)
+   if jumping and grid[4]!=u'lava':
+      agent_host.sendCommand("jump 0")
+      jumping = False
+   if grid[3]==u'lava':
+      agent_host.sendCommand("jump 1")
+      jumping = True
+            </programlisting>
+            A <function>json.loads(msg)</function> függvény segítségével tesszük lehetővé, hogy
+            a környzetet tudjuk vizsgálnoi. A <function>grid</function> változónak átadjuk a
+            talajt, majd azt vizsgálva, ahol láva van a karakter bizonyos környezetében, 
+            akkor a karakter ugrik egyet. A 6-os példa hozza el az igazi áttörést
+            gép tanulás tekintatében. Itt a <function>Q-learning</function> technológiát
+            használja a program. A küldetés többször lefut, és feljegyzi, hogy mennyit
+            tudott mozogni a karakter az egyes irányokba, ameddig meghalt. Ezzel azt 
+            éri el, hogy életben tudja tartani a gép a karaktert.
+            <programlisting>
+class TabQAgent(object)
+                ...  
+            </programlisting>
+            A lényeget a <function>TabQAgent</function> osztály tartalmazza.  
+            Az osztály konstruktora a következő:
+            <programlisting><![CDATA[
+def __init__(self):
+  self.epsilon = 0.01 # chance of taking a random action instead of the best
+
+  self.logger = logging.getLogger(__name__)
+  if False: # True if you want to see more information
+      self.logger.setLevel(logging.DEBUG)
+  else:
+      self.logger.setLevel(logging.INFO)
+  self.logger.handlers = []
+  self.logger.addHandler(logging.StreamHandler(sys.stdout))
+
+  self.actions = ["movenorth 1", "movesouth 1", "movewest 1", "moveeast 1"]
+  self.q_table = {}
+  self.canvas = None
+  self.root = None]]>
+            </programlisting>
+            Itt meg vannak adva a lehetséges parancsok, amiket a 
+            karakter végrehajthat. Ezek közül fog választani majd a program
+            félig random, félig pedig a megismert információk alapján.
+            <programlisting><![CDATA[
+def updateQTable( self, reward, current_state ):
+        """Change q_table to reflect what we have learnt."""
+        
+        # retrieve the old action value from the Q-table (indexed by the previous state and the previous action)
+        old_q = self.q_table[self.prev_s][self.prev_a]
+        
+        # TODO: what should the new action value be?
+        new_q = old_q
+        
+        # assign the new action value to the Q-table
+        self.q_table[self.prev_s][self.prev_a] = new_q
+        
+def updateQTableFromTerminatingState( self, reward ):
+        """Change q_table to reflect what we have learnt, after reaching a terminal state."""
+        
+        # retrieve the old action value from the Q-table (indexed by the previous state and the previous action)
+        old_q = self.q_table[self.prev_s][self.prev_a]
+        
+        # TODO: what should the new action value be?
+        new_q = old_q
+        
+        # assign the new action value to the Q-table
+        self.q_table[self.prev_s][self.prev_a] = new_q]]>
+            </programlisting>
+            A program futása során megjelenik egy táblázat, amiben a megismert információkat
+            követheti a felhasználó. Az előbbi két függvény ennek a táblázatnak
+            a frissítését végzi. 
+            <programlisting><![CDATA[
+def act(self, world_state, agent_host, current_r ):
+       ...
+       
+       rnd = random.random()
+        if rnd < self.epsilon:
+            a = random.randint(0, len(self.actions) - 1)
+            self.logger.info("Random action: %s" % self.actions[a])
+        else:
+            m = max(self.q_table[current_s])
+            self.logger.debug("Current values: %s" % ",".join(str(x) for x in self.q_table[current_s]))
+            l = list()
+            for x in range(0, len(self.actions)):
+                if self.q_table[current_s][x] == m:
+                    l.append(x)
+            y = random.randint(0, len(l)-1)
+            a = l[y]
+            self.logger.info("Taking q action: %s" % self.actions[a])]]>
+            </programlisting>
+            A karakter által elvégzett mozgásokat a <function>act</function>
+            függvény határozza meg. Ahogy látható, ha a random szám kisebb, mint
+            a konstruktorban a véletlen lépés esélyére adott értéknél, akkor
+            az alapértelmezetten megadott mozgások egyikét választja a program, anélkül,
+            hogy figyelembe venné a már megismert adatokat. Ellenkező esetben pedig
+            az aktuális állapot alapján választ egy random lépést.
+            <programlisting><![CDATA[
+def run(self, agent_host):
+     ...
+     # main loop:
+        world_state = agent_host.getWorldState()
+        while world_state.is_mission_running:
+
+            current_r = 0
+            
+            if is_first_action:
+                # wait until have received a valid observation
+                while True:
+                    time.sleep(0.1)
+                    world_state = agent_host.getWorldState()
+                    for error in world_state.errors:
+                        self.logger.error("Error: %s" % error.text)
+                    for reward in world_state.rewards:
+                        current_r += reward.getValue()
+                    if world_state.is_mission_running and len(world_state.observations)>0 and not world_state.observations[-1].text=="{}":
+                        total_reward += self.act(world_state, agent_host, current_r)
+                        break
+                    if not world_state.is_mission_running:
+                        break
+                is_first_action = False
+            else:
+                # wait for non-zero reward
+                while world_state.is_mission_running and current_r == 0:
+                    time.sleep(0.1)
+                    world_state = agent_host.getWorldState()
+                    for error in world_state.errors:
+                        self.logger.error("Error: %s" % error.text)
+                    for reward in world_state.rewards:
+                        current_r += reward.getValue()
+                # allow time to stabilise after action
+                while True:
+                    time.sleep(0.1)
+                    world_state = agent_host.getWorldState()
+                    for error in world_state.errors:
+                        self.logger.error("Error: %s" % error.text)
+                    for reward in world_state.rewards:
+                        current_r += reward.getValue()
+                    if world_state.is_mission_running and len(world_state.observations)>0 and not world_state.observations[-1].text=="{}":
+                        total_reward += self.act(world_state, agent_host, current_r)
+                        break
+                    if not world_state.is_mission_running:
+                        break]]>  
+            </programlisting>
+            A <function>run</function> függvény felelős a karakter mozgatásáért. Az aktuális 
+            állapot itt tárolódik, itt történik az <function>act</function> függvény
+            meghívása. Ellenőrzi, hogy az első akciót hajtjuk-e végre. 
+       </para>
     </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 </chapter>                
