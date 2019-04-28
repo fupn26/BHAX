@@ -11,25 +11,48 @@
                 
         </para>
         <para>
-            Megoldás videó:
+            Megoldás videó: <link xlink:href="https://youtu.be/z6NJE2a1zIA">https://youtu.be/z6NJE2a1zIA</link>
         </para>
         <para>
             Megoldás forrása:                
         </para>
-    </section>        
-        
-    <section>
-        <title>Weizenbaum Eliza programja</title>
         <para>
-            Éleszd fel Weizenbaum Eliza programját!
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
         <para>
-            Megoldás videó:
+            Ebben a feladatban a Lisp nyelvet fogjuk megismerni. A nyelvet John McCarthy alkotta meg 1958-ban.
+            Ez nevezhető a második magas szintű programozási nyelvnek, melynél csak a Fortran régebbi. Ez az
+            alapján gondolhatnánk azt, hogy nem sok értelme van róla beszélni, tekintve korát, de a 
+            mesterséges intelligencia kutatások egyre nagyobb előretörése újra előtérbe hozta. Most
+            nem a mestreséges intelligenciával foglalkozunk, és nem is a Lisp nyelvvel önmagában, hanem
+            a GIMP képszerkesztő programjának egy különlegességével. Ezt nevezik Script-fu-nak, mely lehetőséget
+            ad, hogy a Windows rendszereken megismert makrókhoz hasonló dolgokat alkossunk meg. Ehhez pedig a 
+            Lisp nyelvet fogjuk használni. A nyelv szintaktikailag nem bonyolult, viszont van pár dolog, amire oda 
+            kell figyelni. Ilyen az, hogy nem infix alakban kell megadni a műveleteket, hanem prefix-ben. A másik 
+            fontos dolog, hogy a zárójelek használatára is oda kell figyelni, uyganis a Lisp teljesen zárójelezett 
+            programozási nyelv. Nézzük is, hogy hogyan néz ki a feladat megoldása.  
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>
+                Magát a gimpet így tudod letölteni (terminálon keresztül):
+                <programlisting>
+                    sudo apt-get install gimp
+                </programlisting>
+            </para>
+        </caution>
         <para>
-            Megoldás forrása:                
+            Maga a faktoriális kiszámítása nyelvtől függetlenül ugyan úgy
+            kell megoldani. Persze vannak eltérő megoldások, de az alapja ugyanaz.
+            Az <function>n!</function> faktoriális értéke a következő:
+            <programlisting>
+                n * (n-1) * (n-2) ... * 2 * 1
+            </programlisting>
+            Ezt iteratívan egyszerű megoldani, veszünk egy <function>while</function>
+            ciklust, amit addig futtatunk, ameddig <function>n</function> kisebb
+            lesz, mint 1.
         </para>
-    </section>        
+    </section>
 
     <section>
         <title>Gimp Scheme Script-fu: króm effekt</title>
@@ -63,34 +86,7 @@
         <para>
             Tanulságok, tapasztalatok, magyarázat...
         </para>            
-    </section>        
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-    <section>
-        <title>Lambda</title>
-        <para>
-            Hasonlítsd össze a következő programokat!
-        </para>
-        <para>
-            Megoldás videó: <link xlink:href=""></link>      
-        </para>
-        <para>
-            Megoldás forrása: <link xlink:href=""></link>               
-        </para>
-        <para>
-            Tanulságok, tapasztalatok, magyarázat...
-        </para>            
-    </section>        
-
-    <section>
-        <title>Omega</title>
-        <para>
-        </para>
-        <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
-        </para>
-    </section>        
+    </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+   
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 </chapter>                
