@@ -479,6 +479,105 @@
             saját programegysége után vannak a hívási láncban, hacsak ott nem
             deklarálják újra. 
         </para>
+        <para>
+            <emphasis role="strong">INPUT/OUTPUT</emphasis>
+        </para>
+        <para>
+            Az I/O az, amiben a legynagyobb divergencia figyelhető meg az
+            egyes programnyelvek között. Ez a programoknyelveknek azon
+            része, melynek segítségével a perifériákról tudunk 
+            beolvasni, és perifériára tudunk kiírni állományokat. Állományokon
+            belül különbséget teszünk a logikai állományok és a fizika 
+            állományok között. A logikai állomány a programban jelenik, ezzel
+            szemben a fizikai állomány valamilyen periférián megjelenő adatállomány.
+            Egy állomány lehet <function>input</function>, <function>output</function>
+            és <function>input-output</function>. A különbség aból fakad, hogy
+            az első fajtából csak olvasni tudunk, a másodikba csak írni, viszont 
+            a harmadik lehetővé teszi mindkettőt. Tehát a tárban és a perifériakon
+            valamilyen módon ábrázolva vannak az állományok. Annak a függvényében,
+            hogy történik-e konverzió a tár és a perifériák közötti adatmozgás során, 
+            két módot különböztetünk meg: a folyamatos és a bináris átviteli módot.
+            A folyamatos átviteli mód esetén a tárban és a periférián eltérő az 
+            adatok reprezentációja. Ennek következtében konverziót kell alkamazni.
+            Háromféleképpen alakult ki ennek a konverziónak a megvalósítása az egyes
+            nyekvekben. A <function>formátumos módú adatátvitel</function>
+            esetén minden adathoz meg kell adni a karakterszámot, és azok típusát.
+            A <function>szerkesztett módú átvitel</function>-nél  maszkot kell 
+            megadni, ezen kersztül tudjuk beállítani a fromátumot,és a karakterek
+            típusát is. A <function>listázott átvitel</function> pedig a 
+            karaktersorozatban tárolj a a tördelő karaktereket, a karaktertípus
+            expliciten nem kerül meghatározásra. A bináris átvitelnél pedig 
+            mivel a periférián és a tárolón ugyan úgy jelennek meg az adatok,
+            ezért nincs szükség konverzióra, ebben az esetben rekordokként 
+            történik az adatok továbbítása.
+            
+            Ahhoz, hogy állományokat tudjunk kezelni szükséges néhány lépést 
+            végrehajtanunk a program írása során. Az első a <function>deklaráció</function>. Itt a
+            logikai állományt deklaráljuk, hiszen a programunkban ezzel dolgozunk,
+            nem a fizikia állománnyal, legalábbis nem közvetlenül. Ahogy már megszokhattuk
+            a deklaráció során nevet adunk, és jelen esetben szükség van attribútumokra
+            is. Az <function>összerendelés</function> során a logikai állományhoz
+            hozzárendelünk egy fiziki állományt. Ezzel érjük el azt, hogy miközben a 
+            logikai állománnyal dolgozunk, aközben lényegében a fizikaival. Ha 
+            megtörtént az összerendelés, akkor <function>megnyitjuk</function>
+            az állományt. Ezután edig történhet az adatok <function>feldolgozása</function>,
+            mely alatt rthetünk írást vagy olvasást. Végezetül pedig 
+            ba kell <function>zárni</function> az állományt. Ez output és
+            input-output állományokra kötelező, input állományok esetén pedig 
+            csak javasolt. De ezek elmulasztása sem okoz hatalmas bajt, mert a 
+            megnyitott állományok automatikusan bezáródnak a program futásának 
+            befejeztével.
+            
+            Az imént említett módszeren kívül egyes nyelvek lehetőséget biztosítanak arra,
+            hogy nem állományokkal dolgozunk, hanem az írást-olvasást közvetlenül a 
+            perifáriával végezzük. Ennek a neve az <function>implicit</function> állomány. 
+            Ilyen állomány példáióul a sztenderd bemenet, és a sztenderd kimenet. Ezekhez pedig
+            lehetőségünk van hozzárendelni más állományokat. A Linux terminálban például lehetőségünk
+            van átírányitíni a program kimenetét egy fájlba, vagy a bemenetet egy fájlból olvasni.
+            
+            A C nyelvben az I/O műveletekhez könyvtári függvényekre van szükségük. Átviteli 
+            módok közül mind a folyamatos, mind a bináris fajtát ismeri. Írás és olvasás
+            során a mnimálisan egy karaktert, egy bájtot tudunk kezelni. 
+        </para>
+        <para>
+            <emphasis role="strong">KIVÉTELKEZELÉS</emphasis>
+        </para>
+        <para>
+            Az egyes programnyelvek lehetőséget biztosítanak a programozónak, 
+            hogy a megszakítások kezelését átvegye az operációs rendszertől, és 
+            program szintjén oldja meg. A kivételkezelő egy programrész, mely
+            akkor fut le, ha egy kivétel bekövetkezik. Lehetőség van arra, hogy 
+            egyes kivételeket figyelmen kívül hagyjunk, tehát a kivételek
+            figyelését letilthatjuk. A kivételek felépítése 2 elemből áll:
+            névből, kódból.
+        </para>
+        <para>
+            <emphasis role="strong">JAVA KIVÉTELKEZELÉSE</emphasis>
+        </para>
+        <para>
+            Egy Java program a futása során módszereket hajt végre. Ha
+            valamelyik módszer esetén speciális esemény bekövetkezik, akkor 
+            jön létre a kivétel-objektum. A módszer eldobja a kivételt, és
+            a Java virtuális gép foglalkozik vele tovább. A JVM feladata, hogy
+            megtalálja a megfelelő kivételkezelést. Megfelelőnek akkor hívjuk, ha 
+            a kivétel típusával megyegyeezik a kivételkezelő típusa vagy esetleg
+            a kivételkezelő típusa őse a kivétel típusának. Itt megjelenik a 
+            Java nyelv öröklődés tulajdonsága, mely jól mutatja, hogy ez a nyelv is
+            objektumorientált. Egy kivételkezelőnek fontos tulajdonsága a láthatósága,
+            melyet saját magának definiál. A kivételkezelőre úgy gonolhatunk, mint
+            egy blokkra. A kódban bárhol elhelyezhetők, és tetszőlegesen egymásba
+            ágyazhatóak. Ilyen esetben a JVM a blokk belsejéből kifelé haladva, keresi
+            a szükséges kivételkezelést, ha megtalálja, a vezérlést átadja, 
+            lefut a kivételkezelő, majd pedig a program futása onnan folytatódik.
+            Javaban vannak ellenőrzött és nem ellenőrzött kivételek. Általánosan 
+            elmondható, hogy érdemes ellenőrzött kivételeket használni. Nem ellenőrzött
+            kivételek csak akkor alkalmaznak a programozók, ha túl sok kódsort eredményezne,
+            vagy képtelen kezelni. Azokat a kivételeket, amik egy módszer futása során 
+            keletkezhetnek, de nem ellenőrizzük, a módszer fejében fel kell sorolni. A
+            hibát a <function>Throw</function> kulcsszóval tudunk dobni. A 
+            <function>catch</function> kulcsszó jelzi a kivételkezelést, mely a 
+            hibát "elkapja".  
+        </para>
     </section>        
     <section>
         <title><![CDATA[K&R könyv]]></title>
@@ -1153,6 +1252,106 @@
             esetén szükséges a használata. A <function>reinterpret_cast</function> 
             konverziót pedig általában pointerknél használjuk, amikor 
             meg akarjuk változtatni a pointer típusát.
+        </para>
+        <para>
+            <emphasis role="strong">A C++ I/O alapjai</emphasis>
+        </para>
+        <para>
+            A C nyelv állomány leírókat használ I/O műveletek vágrehajtására. Ezzel
+            szemben a C++ objektumokkal dolgozik. Ezeket nevezzük adatfolyamnak, angolul
+            <function>stream</function>-nek, mely bájtok sorozatából áll. A <function>istream</function>
+            objektumok csak olvsahatók, az <function>ostream</function> objektumok pedig 
+            csak írható. A beolvasást és a kiíratást a <function><![CDATA[<<, >>]]></function>
+            opertátotok végzik. Az adatfolyamok automatikusan felismerik a feldolgozásra szánt
+            adatok típusát, ezért, ellentétben a C-vel, nem kell megadni explicit, ezt az információt.
+            Beolvasásra a <function>cin</function> objektumot használjuk,
+            ez alapértelmezetten a billentyűzetről olvas, a hozzá szükséges operátor:
+            <![CDATA[>>]]>. Kiíratásra több alapértelmezett objektum is van. Ha valamit 
+            ki akarunk íratni a képernyőre, akkor a <function>cout</function>-ot használjuk.
+            Ez adatfolyambufferbe tárolja a kiírandó adatokat. Ha hibát akarun kiírni, akkor
+            a <function>cerr</function> objektumot használjuk. Ez nem bufferel, ellentétben
+            a szintén hibák kiírására használatos <function>clog</function>-gal.Mivel
+            a bufferek tárolása erőforrás igényes, ezért lehetőség van a bufferek ürítésére,
+            erre a <function>flush</function> kulcsszó használható, a következő formában:
+            <programlisting language = "c++"><![CDATA[
+                cout << flush;
+                cout.flush();]]>
+            </programlisting>
+            Az 
+            adatok beolvasása során fontos mindig ellenőrizni az <function>cin</function> 
+            állapotát, ha valami hiba történt, akkor azt jelezni a felhasználónak. Az 
+            állapotot az <function>iostate</function> tagfüggvény adja meg. Ezt mi is állíthatjuk.
+            4 jelzőbit létezik ennek az állapotnak a kifejezésére:
+            <function>eofbit</function>,
+            <function>failbit</function>,
+            <function>badbit</function>,
+            <function>goodbit</function>.
+            Az <function>eofbit</function> jelzi, ha az állomány végére ért az írás, vagy az
+            olvasás. A <function>failbit</function> olyan hibát jelöl, amely valamilyen
+            formátumbeli problémákból ered. Ezzel szemben a <function>badbit</function> már
+            fatális hibát jelöl, melynek oka adatvesztés, vagy ehhez hasonló probléma. Fontos,
+            hogy a <function>failbit</function> akkor is igazzal tér vissza, ha a 
+            <function>badbit</function> van igazra állítva. A <function>goodbit</function>
+            esetén pedig az egyik előbb említett hibabit sincs beállítva. Ha egy 
+            adatfolyam valamelyik hibabitje beállítódik, onnantól kezdve
+            használhatatlanná válik, minden írás és olvasás hatástalan. Ezen
+            jelzőbitek állapotát külön-külön le tudjuk kérdezni a hozzájuk
+            tartozó tagfügvényekkel, tehát <function>cin.good(), cin.bad(),
+                                               cin.fail(), cin.eof()
+            </function>. Természetesen ez igaz az összes eddig említett adatfolyam 
+            objektumra is. Lehetőségünk függvéynek használatára is, mellyel az írást és
+            az olvasást végezhetjük. <function>get()</function> segítségével karaktereket
+            olvashatunk be, a <function>getline()</function> függvény a sor végéig olvassa
+            a bemenetet, a <function>read</function> segítségével bináris adatokat olvashatunk
+            be, az <function>unget, putback</function> pedig az utolsó karaktert visszahelyezi
+            az adatfolyamba. A kiíratásra a <function>write</function> függvényt használhatjuk,
+            ha a bináris adatokat akarunk kiírni, a <function>put</function> karaktert ír ki.
+        </para>
+        <para>
+            Az adatfolyamokat lehetőségünk van manipulátorokkal tudjuk beállítani
+            az egyes tulajdonságait, vagy tagfüggvények használatával. Mind a kettőre
+            láttunk példát, buffer ürítésével kapcsolatban:
+            <programlisting language = "c++"><![CDATA[
+                cout << flush; //manipulátor
+                cout.flush(); //tagfüggvény]]>
+            </programlisting>
+            A manipulátorok közé tartozik még a <function>endl</function>, ami
+            egy sortörést szúr be. A <function>cin</function> például
+            bolvasáskor elhagyja a whitespace karaktereket, ezt a 
+            <function>noskipws</function> manipulátorral tudjuk megakadályozni.
+            Manipulátorokkal tudunk például lebegőpontos számok kiírásának pontosságát
+            beállítani, ilyen a <function>setprecision()</function>. Használhatunk 
+            jelzőbiteket a tulajdonságok beállításának és törlésének a megkönnyítése érdekében.
+            Ilyen jelzőbit a <function>ios::fixed</function>.
+            Ha ezek tárolására nem elég egy bit, akkor pedig maszkot használunk. Manipulárokkal
+            képesek vagyunk mezőszélességet állítani, kitöltő karaktereket beállítani, igazítani
+            a szöveget, számrendszerek között váltani, a lebegőpontos számok formátumát állítani,
+            számok előjelenék muatatását pozitívak esetén is, helykitöltő nullákat megjeleníteni.
+            Tehát rengeteg minedre képesek ezek a manipulátorok, és nem is kell mindegyiket fejben tartani, 
+            mert a mindet megtaláljuk a fordítók dokumentációjában. Fontos, hogy a <function>setw</function>
+            manipulátor, melyet a mezőszélesség beállítására használunk, az egyetlen, ami csak a
+            megadott adatok kiírására érvényes. A többi hatályba lép az utána következő
+            írásokra vagy olvasásokra, tehát ezeket mindig vissza kell állítani alapértelmezettre, ha
+            már nincs rájuk szükségünk.
+        </para>
+        <para>
+            Ha állományokba akarunk írni, vagy állományokból akarunk olvasni, akkor
+            az <function>ofsream</function> és az <function>ifstream</function>
+            osztályokat kell használnunk. Az előbbi a kimenethe használt állomány kezelésére szolgál,
+            utóbbi pedig a bemeneti állományokat kezeli. Ha kétirányú adatfolymra van szükségünk, 
+            akkor pedig a <function>fstream</function> osztálytra lesz szükség.
+            Mivel az osztályokhoz tartozik 
+            konstruktor és destruktor, ezért az állományok megnyitása, és bezárása elvégezhető
+            ezekben. Itt is használhatunk jelzőbiteket, mint a formázánál, melyeket az <function>ios::</function>
+            előtaggal látunk el. Ilyen jelzőbit az <function>ios::in</function>, mellyel megadjuk, hogy
+            csak olvasásra nyitottunk meg az állományt, természetesen az <function>ios::out</function>
+            pedig azt jelenti, hogy írásra szeretnénk használni az állományt. Ha nem szeretnénk
+            felülírni a célállomány tartalmát, akkor használhatunk hozzáfűzést az <function>ios::app</function>
+            kapcsolóval. Az <function>ios::ate</function> jelzőbit segítségével
+            az állomány végére ugrunk a megnyitás után, a <function>ios::trunc</function>
+            törli az adatokat az állományból, a <function>binary</function> pedig az állomány
+            hozzáférést binárisra állítja. Ternészetesen ezeket a jelzőbiteket lehet kombinálni
+            is egymással a "|" operátorral.
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
