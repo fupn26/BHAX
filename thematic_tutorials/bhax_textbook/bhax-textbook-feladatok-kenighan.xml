@@ -576,7 +576,20 @@
             keletkezhetnek, de nem ellenőrizzük, a módszer fejében fel kell sorolni. A
             hibát a <function>Throw</function> kulcsszóval tudunk dobni. A 
             <function>catch</function> kulcsszó jelzi a kivételkezelést, mely a 
-            hibát "elkapja".  
+            hibát "elkapja". A kivételkezelés Java-ban így néz ki:
+            <programlisting>
+                TRY
+                    {utasítások}
+                CATCH (típus változónév)
+                    {utasítások}
+                [CATCH (típus változónév) {Utasítások}]...
+                [FINALLY {Utasítások}]
+            </programlisting>
+            A <function>TRY</function> blokkban dobjuk az esetleges kivételeket,
+            amelyeket a <function>CATCH</function> blokkban, blokkokban kezeljük.
+            Ha JVM nem talál megfelelő <function>CATCH</function> blokkot, akkor
+            fut le a <function>FINALLY</function> blokk. Fontos tulajdonsága
+            ennek a blokknak, hogy mindenképpen lefut, akkor is, ha nem volt kivétel.
         </para>
     </section>        
     <section>
@@ -1352,6 +1365,148 @@
             törli az adatokat az állományból, a <function>binary</function> pedig az állomány
             hozzáférést binárisra állítja. Ternészetesen ezeket a jelzőbiteket lehet kombinálni
             is egymással a "|" operátorral.
+        </para>
+        <para>
+            <emphasis role="strong">Kivételkezelés</emphasis>
+        </para>
+        <para>
+            C nyelvben a hibák kezelésére a <function>return</function>
+            kulcsszót használtuk, de ez egy hosszabb híváslista esetén
+            átláhatatlanná teszi a hibakezelést. Erre nyújt megoldást a 
+            C++ kivételkezelése. A neve jól muataja, hogy nem csak 
+            hibakezelésre alakalmas, hanem bármilyen kivételes esetet 
+            tudunk vele kezelni, ami előfordul a programban. A kivételt 
+            a "eldobjuk" és a vezérlés a megfelelő kivételkezelésre ugrik, 
+            annak lefutásának következtével pedig a vezérlés a kivételkezelő
+            után ugrik. A könyvben látható egy egyszerű példa a C++ kivételkezelésre, 
+            mely a bekért szám reciprokát adja vissza.
+            <programlisting language="c++"><![CDATA[
+                //BME tankönyv 190.o.
+#include <iostream>
+using namespace std;
+int main()
+{
+    try{
+        double d;
+        cout << "Enter a nonzero number: ";
+        cin >> d;
+        if (d==0)
+            throw "The number can not be zero.";
+        cout << "The reciprocal is: " << 1/d << endl;
+    }
+    catch (const char* exc)
+    {
+        cout << "Error! The error text is: " << exc << endl;
+    }
+    cout << "Done." << endl;
+} ]]>
+            </programlisting>
+            A <function>throw</function> kulcsszót használjuk a 
+            kivétel dobására. Jelen esetben azt kell kezelni, ha 
+            a felhasználó nullát ad meg. zt a részt, amin a kivételkezelést szeretnénk
+            alkalmazni a <function>try</function> blokkba zárjuk.  
+            Amikor eldobjuk a hibát a 
+            vezélés megkeresi a megfelelő <function>catch</function>
+            blokkot, amellyel elkapjuk a kivételt. Akkor megfelelő egy
+            <function>catch</function> blokk, ha a paraméter típusa megyegyezik
+            a kivételként dobott elem típusával. A kivétel beíródik a 
+            <function>catch</function> blokk paraméterének, a blokkon belül elérhető.
+            Jelen esetben kiíratjuk a hibaként dobott kódot. Már említettem, hogy a
+            kivételkezelés nagy előnye, hogy egészen hosszú hívási lánc végéről
+            dobott kivételek kezelésére is könnyen alkalmazható. Hiszen a 
+            vezérlés a hívási láncon visszafelé lépkedve mgekeresi a megfelelő 
+            <function>catch</function> blokkot. Vannak esetek, amikor 
+            közvetlenebbül kell kezelnünk valamilyen kivételt. Ebben az esetben 
+            a függvények belsejében kell létrehozni egy <function>try-catch</function>
+            blokkot.  Arra is lehetőség van, hogy a függvényen belül elkapott kivételt 
+            továbbítsuk egy magasabb szintű kivételkezelőnek, tehát a szükséges 
+            utasításokat a lokális <function>catch</function> blokk végrehajtja, majd
+            továbbítja a kivételt. Erre főleg azért van szükség, hogy a felhasználó
+            kapjon információt arról, hogy hiba történt. Ellenkező esetben csak a lokális
+            <function>catch</function> blokk tudna a kivételről, a <function>main</function>
+            függvény nem. Fontos tudni, hogy amikor a vezérlés visszafelé halad a 
+            hívási láncon, akkor a lokális változók destruktorai meghívódnak, tehát azokat
+            már később nem érjük el. Nem szabad a kivétel dobása és elkapása között hibát dobni.
+            A lokális változók felszabadulásának folyamatát ebben az esetben 
+            verem visszacsévélésnek nevezzük. Erre ad példát a következő példa:
+            <programlisting language="c++"><![CDATA[
+                //BME 197.o.
+                int main()
+                {
+                    try
+                    {
+                        f1();
+                    }
+                    catch(const char* errorText)
+                    {
+                        cerr << errorText << endl;
+                    }
+                }
+                
+                void f1()
+                {
+                    Fifo fifo;
+                    f2();
+                }
+                
+                void f2()
+                {
+                    int i = 1;
+                    throw "error'";
+                }]]>
+            </programlisting>
+            Tehát a program a <function>try</function> blokkban meghívja az
+            <function>f1()</function> függvényt. Ez a függvény példányosít egy 
+            <function>Fifo</function> objektumot, majd meghívja az <function>f2()</function>
+            függvényt. Az <function>f2()</function> függvény definiálja az <function>i</function>
+            változót, és a dob egy kivételt, mely <function>string</function>,
+            azaz <function>char*</function> típusú. Ekkor kezdódik meg a 
+            verem visszacsévélés. Az <function>i</function> változó felszabadul, 
+            a <function>Fifo</function> osztály destruktora meghívódik, végül pedig
+            lefut a <function>main</function> függvény <function>catch</function> blokkja.
+            Fontos aspektusa a kivételkezelésnek az erőforrások kezelése, azon belül is 
+            a memóriája. Vegyük azt az esetet, mikor még az előtt dobunk kivételt, hogy a
+            egy objektumot felszabadítanánk. Ebben az esetben a memória elfolyik, mivel
+            a vezérlés már nem fog ráugrani a megefelelő utasításra, hanem a 
+            <function>catch</function> blokk után folytatódik. Ezt úgy tudjuk megoldani,
+            hogy ilyen esetekben a <function>catch</function> blokkon belül
+            szabadítjuk fel az objektumot. Ezt láthatjuk a következő kódban:
+            <programlisting><![CDATA[
+                class MessageHandler
+                {
+                public:
+                    void ProcessMessages(istrean& is)
+                    {
+                        Messages *pMessage;
+                        while(pMessage = readNextMessage(is)) != NULL)
+                        {
+                            try
+                            {
+                                pMessage -> Process();
+                                delete pMessage;
+                            }
+                            catch(...)
+                            {
+                                delete pMessage;
+                                throw;
+                            }
+                        }
+                    }
+                ...
+                }]]>
+            </programlisting>
+            Tehát ebben a kódrészleteben üzeneteket feldolgozó
+            függvényt nézzük meg. A függvényben példányosítunk
+            egy <function>Messages</function> objektumra mutató
+            mutatót. Majd ebbe olvassuk be az üzeneteket. Az
+            üzenetek feldolgozását a <function>Process()</function>
+            függvény végzi, ebben a példában ez a függvény dobja a hibát.
+            De ha hibát dob, akkor az őt követő <function>delete</function>
+            hívása. Ezért van szükség a <function>catch</function> blokkban
+            lévő <function>delete</function> hívásra. Egy másik fontos
+            dolgot megfigyelhetünk ebben a példában. A 
+            <function>catch</function> blokk paraméterlistája nem neveze meg
+            konkrét paramétertípust, ennek következtében minden kivétlt elkap.
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
