@@ -29,7 +29,7 @@
             ad, hogy a Windows rendszereken megismert makrókhoz hasonló dolgokat alkossunk meg. Ehhez pedig a 
             Lisp nyelvet fogjuk használni. A nyelv szintaktikailag nem bonyolult, viszont van pár dolog, amire oda 
             kell figyelni. Ilyen az, hogy nem infix alakban kell megadni a műveleteket, hanem prefix-ben. A másik 
-            fontos dolog, hogy a zárójelek használatára is oda kell figyelni, uyganis a Lisp teljesen zárójelezett 
+            fontos dolog, hogy a zárójelek használatára is oda kell figyelni, ugyanis a Lisp teljesen zárójelezett 
             programozási nyelv. Nézzük is, hogy hogyan néz ki a feladat megoldása.  
         </para>
         <caution>
@@ -48,9 +48,89 @@
             <programlisting>
                 n * (n-1) * (n-2) ... * 2 * 1
             </programlisting>
-            Ezt iteratívan egyszerű megoldani, veszünk egy <function>while</function>
-            ciklust, amit addig futtatunk, ameddig <function>n</function> kisebb
-            lesz, mint 1.
+            Az iteratív megoldásnál adná magát, hogy egy <function>for</function>
+            vagy egy <function>while</function> ciklust kéne használni. De ez
+            Lispben nem egészen így van. Ciklust fogunk használni, ami nagyon 
+            hasonlít a <function>while</function> ciklushoz, viszont ezt expliciten
+            nem írjuk ki.
+            <programlisting><![CDATA[
+(define (fakt n)
+    (if (= 0 n) 
+                (set! n 1)
+    )
+    (let loop ((variable (- n 1)))
+        (if (> variable 1)                               
+            (begin
+                (set! n (* n variable))
+                (loop (- variable 1) )
+            )
+        )
+    )
+    n
+)]]>
+            </programlisting>
+            Tehát definiálunk egy függvényt, aminek a neve <function>fakt</function>,
+            és egy paramétert kér. Az első <function>if</function>-ben ellenőrizzük, hogy
+            a megadott paraméter nulla-e. Ha igen, akkor az <function>n</function> értékét
+            1-re állítjuk, mivel ez a 0! értéke.
+            A <function>let</function> operátor teszi lehetővé, hogy
+            változókat hozzunk létre, és azokkal művelteket hajtsunk végre. Jelen esetben a
+            ciklusváltozót hozzuk létre, melynek értéke paraméterül kapott szám és az 1
+            különbsége. Aztán megfogalmazunk egy feltételt, ha a változó nagyobb, mint
+            1, akkor a paraméter értékét megváltozatatjuk a faktoriális szabályának
+            megfelelően. Tehát a <function>set</function> segítségével adhatunk
+            új értéket egy véktozónak. Ha ezt megtettük, akkor a csökkentjük a 
+            ciklusváltozót 1-el. Végezetül pedig visszadjuk az <function>n</function>
+            értékét, amikor a ciklus lefutott.
+        </para>
+        <para>
+            Az iteratív megoldással szemben a rekurzív sokkal rövidebb, viszont 
+            átlátni talán egy kicsit nehezebb, hogy mi is történik a háttérben.
+            <programlisting><![CDATA[
+(define (fakt n)
+    (
+    if (< n 1) 
+         1 
+    (* n (fakt (- n 1))) ;else ag
+    )
+)]]>
+            </programlisting>
+            A függvény fejrésze teljesen megegyezik az előző példával, de utána
+            láthatjuk a rekurzív megoldás erősségét. Nincs szükségünk ciklusokra.
+            Ezt azzal érjük el, hogy a függvény önmagát hívja meg, abban az esetben, ha
+            a paraméter értéke nagyobb, mint 1. Ellenkező esetben pedig 1-et 
+            adunk vissza.
+            Matematikai szempontból ez a megoldás
+            teljesen helyes és pontos. Viszont fontos látni, hogy programozói szempontból
+            a ez tartalmaz egy felesleges függvéynhívást. Hiszen a vezérlés akkor is
+            az <function>else</function> ágra ugrik, amikor az <function>n</function> 1, pedig
+            tudjuk 1!-nak az értéke 1.
+            A programot így módosíthatjuk:
+            <programlisting><![CDATA[
+(define (fakt n)
+    (
+    if (< n 2) 
+         1 
+    (* n (fakt (- n 1))) ;else ag
+    )
+)]]>  
+            </programlisting>
+            Ezzel a módosítással elérjük. hogyha az <function>n</function> 1, akkor
+            ne ugorjon a vezérlés az <function>else</function> ágra. Hogy jobban lásd, mi is történik a háttérben ennél a
+            megoldásnál, vess egy pillantást az alábbi ábrára:
+            <figure>
+                <title>Rekurzió</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/fakt_seged.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A képen láthatod, hogyan is zajlik az 5!-nak a kiszámolása. Tehát folyamatosan
+            az <function>else</function> ágra ugrik a vezérlés, egészen addig, ameddig el
+            nem érünk az 1!-ig. Ekkor visszatérünk eggyel, és fokozatosan haladunk vissza
+            a hívási láncba, mindig visszaadva a megfelelő értéket, vagyis az éppen
+            aktuális n és az (n-1) szorzatát.
         </para>
     </section>
 
