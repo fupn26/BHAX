@@ -147,7 +147,7 @@
             Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/GIMP_Lisp/Chrome">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/GIMP_Lisp/Chrome</link>               
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>    
     </section>        
 
@@ -164,8 +164,336 @@
             Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/GIMP_Lisp/Mandala">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/GIMP_Lisp/Mandala</link>               
         </para>
         <para>
-            Tanulságok, tapasztalatok, magyarázat...
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A mandala lényegében egy alakzat, amit a neved forgatásával, állítasz elő.
+            Magát az alakzatot a GIMP-ben bárki meg tudja csinálni, erről egy
+            <link xlink:href="https://bit.ly/2GGZaU4">tutoriál</link> található az 
+            interneten. A mi programunk is nagyjából ezt valósítja meg, azzal a 
+            különbséggel, hogy a folyamatok automatizálva vannak, tehát nem kell
+            kézzel előállítani a saját mandaládat.
         </para>            
+        <para>
+            Az előző feladatokban már megismerkedtünk a Lisp programozási 
+            nyelvvel, szóval a szintaktika már nem lesz újdonság, lássuk is a 
+            forrást:
+            <programlisting><![CDATA[
+(define (elem x lista)
+
+    (if (= x 1) (car lista) (elem (- x 1) ( cdr lista ) ) )
+
+)]]>
+            </programlisting>
+            Az első függvényünk egy listának az <function>x.</function> elemét
+            adja vissza. Ehhez a rekurziót használjuk, tehát ha az első elemét
+            keressük a listának, akkor a <function>car</function> függvénysegítségével
+            visszaadjuk, de ha nem, akkor lesz szükség további hívásokra. A 
+            megoldás lényege, hogy mindig eggyel kisebb <function>x</function>-re
+            hívjuk meg az <function>elem</function> függvényt, és a lista első 
+            elemét töröljük. Ha egy 5 elemű lstából ki szeretnénk venni az utolsó
+            elemet, akkor tehát 4-szer hívja meg önmagát a fóüggvény, majd visszaadja
+            a lista első elemét, ami ekkor már az eredeti lista utolsó eleme lesz.
+            <programlisting>
+(define (text-width text font fontsize)
+(let*
+    (
+        (text-width 1)
+    )
+    (set! text-width (car (gimp-text-get-extents-fontname text fontsize PIXELS font)))    
+
+    text-width
+    )
+)
+            </programlisting>
+            A <function>text-width</function> függvény paraméteréül egy szöveget
+            kér, annak a betűstílusát és a méretét. A <function>let*</function>
+            függvény segítségével definiálunk egy változót. A <function>set!</function>
+            függvény beállítja a <function>text_width</function> változó értékét az
+            általunk megadott értékre. Jelen esetben ez a <function>gimp-text-get-extents-fontname</function>
+            függvény által visszaadott lista első eleme. Ez a függvény egy szövegdobozt
+            hoz létre az általunk megadott szöveggel, és ennek a szövegdoboznak a 
+            szélességével, magasságával tér vissza. A visszaadott listában van
+            még két elem, de azok a feladat megoldásának sezmpontjából nem fontosak.
+            Tehát a függvény visszaadja a szövegünk szélességét.
+            <programlisting>
+(define (text-wh text font fontsize)
+(let*
+    (
+        (text-width 1)
+        (text-height 1)
+    )
+    ;;;
+    (set! text-width (car (gimp-text-get-extents-fontname text fontsize PIXELS font)))    
+    ;;; ved ki a lista 2. elemét
+    (set! text-height (elem 2  (gimp-text-get-extents-fontname text fontsize PIXELS font)))    
+    ;;;    
+    
+    (list text-width text-height)
+    )
+)  
+            </programlisting>
+            Ez a függvény nagyon hasonlít az előzőre, de ebben az a különbség, hogy nem
+            csak a szélességet, de a magasságot is vissza kell adnunk. Az eredeti 
+            mandalához elég lenne az előző függvény, de a mi programunk a 
+            mandala közepére kiír egy másik szöveget is. Ennek a helyes pozícionálásához
+            nélkülözhetetlen a <function>text-wh</function> függvény. Mivel a 
+            <function>gimp-text-get-extents-fontname</function> által visszaadott
+            lista második eleme a magasság, ezért használjuk a már korábban megírt
+            <function>elem</function> függvényt, ezzel a <function>text-height</function>
+            változó értékét is meg tudjuk határozni. Végezetelül visszadajuk a 
+            szövegdoboz szélességéből és magasságából álló listát. 
+        </para>
+        <para>
+            Az eddig tárgyalt függvények csak segédfüggvények voltak, a mandala
+            készítő függvény most jön.
+            <programlisting>
+(define (script-fu-bhax-mandala text text2 font fontsize width height text2_color gradient)
+(let*
+    (
+        (image (car (gimp-image-new width height 0)))
+        (layer (car (gimp-layer-new image width height RGB-IMAGE "bg" 100 LAYER-MODE-NORMAL-LEGACY)))
+        (textfs)
+        (text-layer)
+        (text-width (text-width text font fontsize))
+        ;;;
+        (text2-width (car (text-wh text2 font fontsize)))
+        (text2-height (elem 2 (text-wh text2 font fontsize)))
+        ;;;
+        (textfs-width)
+        (textfs-height)
+        (gradient-layer)
+    ) 
+            </programlisting>
+            A neve <function>script-fu-bhax-mandala</function>. Alap esetben csak
+            egy szöveget kérne paraméteréül, de most kettőt kérünk a 
+            felhasználótól. Megadható a betűstílus, a betűméret, a kép mérete, a második
+            szöveg színe és
+            a kép elkészítéséhez szükséges grádiens.
+            A szokásos módon létrehozunk változókat. Az <function>image</function>
+            változóban tároljuk a képet, amit a <function>gimp-image-new</function>-val
+            létrehozunk. Ennek képnek a mérete az általunk megadott paraméterek. Ezután
+            létrehozunk egy új réteget, amelynél megadjuk, hogy melyik képhez
+            adja hozzá az új réteget, meagdjuk a réteg méretét, a típusát, ami 
+            jelen esetben RGB, tehát a réteg képes lesz kezelni az RGB színeket. Ezeken
+            felül megadható a réteg neve, az átlátszósága és a réteg kombináció módja.
+            A új réteget a <function>layer</function> változóban tároljuk. Ezen a részen
+            érdemes még megemlíteni a <function>text-width</function>, 
+            <function>text2-width</function> és <function>text2-height</function>
+            változókat. Ezeknek az értékét a már fentebb taglalt függvényekkel
+            számoljuk ki. A többi változóról majd a későbbiekben lesz szó.
+            <programlisting>
+    (gimp-image-insert-layer image layer 0 0)
+
+    (gimp-context-set-foreground '(0 255 0))
+    (gimp-drawable-fill layer FILL-FOREGROUND)
+    (gimp-image-undo-disable image) 
+
+    (gimp-context-set-foreground text2_color)
+            </programlisting>
+            A <function>gimp-context-insert-layer</function> függvény azt 
+            teszi lehetővé, hogy egy réteget hozzáadjunk egy képhez. Jelen
+            esetben az <function>image</function> változóban tárolt
+            képhez adjuk hozzá a korábban létrehozott rétegünket. Az utolsó
+            2 paraméter a szülő réteg számát és a beillesztés helyét adja meg.
+            Tehát a réteg a kép többi rétegével egyenrangú lesz, mivel egyik sem a 
+            szülője, és ő kerül legfelülre.
+            A <function>gimp-context-set-foreground</function>
+            segitségével lehet az előtérszínt módosítani, de ez nem azt jelenti, hogy
+            ezzel a paranccsal a kép ilyen színű lesz, csak ezután bármit írnánk, 
+            rajzolnánk a képre, az ilyen színű lenne. A <function>gimp-drawable-fill</function>
+            segítségével színezzük be a rétegünket az előbb megadott előtérszínnel.
+            A <function>gimp-image-undo-disable</function> arra szolgál, hogy ne lehessen
+            visszavonni az előző módosításokat az <function>image</function>-en. Végezetül
+            újra meghívjuk a <function>gimp-context-set-foreground</function>, ezúttal
+            a második szöveg színe lesz ilyen. Ha már elolvastad a belinkelt 
+            tutoriált, akkor tudhatod, hogy elsőnek maga az ábra is ilyen lesz, csak
+            utána alkalmazunk rá grádienst, ami átszínezi a többit.
+            <programlisting>
+    (set! textfs (car (gimp-text-layer-new image text font fontsize PIXELS)))
+    (gimp-image-insert-layer image textfs 0 -1)
+    (gimp-layer-set-offsets textfs (- (/ width 2) (/ text-width 2))  (/ height 2))
+    (gimp-layer-resize-to-image-size textfs)
+            </programlisting>
+            A <function>textfs</function> változóban tároljuk el a 
+            <function>gimp-text-layer-new</function> által létrehozott
+            szöveges rétegünket, amelhez meg kell adni, hogy melyik képre
+            szeretnénk ráilleszteni, milyen szöveggel, milyen 
+            betűstílussal és betűmérettel. Ezen kívül, még azt is
+            meg kell adni, hogy a betűméretet milyen mértékegységben adtuk meg, jelen
+            esetben pixelekben. Ezt a réteget beszúrjuk az <function>image</function>-be,
+            egészen pontosan az éppen aktív réteg fölé. A <function>gimp-layer-set-offsets</function>
+            függvépyn felelős a réteg eltolásának a meghatározásában. Tehát a 
+            szöveget űgy toljuk el, hogy az x-tengelyen középen legyen, viszont az y
+            tengelyen kicsit lejjebb, mint a középérték. Végezetül pedig a réteget
+            a kép ,méretével megegyezővé tesszük a <function>gimp-layer-resize-to-image-size</function>
+            függvénnyel. Ezután létrehozunk egy új réteget.
+            <programlisting>
+    (set! text-layer (car (gimp-layer-new-from-drawable textfs image)))
+    (gimp-image-insert-layer image text-layer 0 -1)
+    (gimp-item-transform-rotate-simple text-layer ROTATE-180 TRUE 0 0)
+    (set! textfs (car(gimp-image-merge-down image text-layer CLIP-TO-BOTTOM-LAYER)))
+            </programlisting>
+            Az új réteget úgy kapjuk, hogy lényegében lemásoljuk az <function>textfs</function>
+            réteget. Ehhez a <function>gimp-layer-new-from-drawable</function> függvényre
+            van szükség. Majd a réteget uygan úgy beillesztjük a képbe, mint előzőleg, tehát
+            az éppen aktív réteg fölé. Majd elforgatjuk 180°-al, ehhez a
+            <function>gimp-item-transform-rotate-simple</function> függvényt használjuk. 
+            A paraméterekj közül egyértelmű, hogy meg kell adni, hogy mit forgatunk, és hány
+            fokban. Viszont az utolsó 3 már érdekesebb, a <function>TRUE</function>
+            azt jelenti, hogy a automatikusan a kijelölés közepe körül forgasson, az 
+            utolsó kettő pedig a forgatás középpontjának koordinátái. A 
+            <function>gimp-image-merge-down</function> függvény a képnek a megadott
+            rétegét és az alatta lévő első látható réteget vonja össze. A 
+            <function>CLIP-TO-BOTTOM-LAYER</function> paraméter azt adja meg, hogy a 
+            az eredményül kapott réteget olyan méretűre kell állítani, mint a legalsó réteg.
+            Ugyanezeket a lépéseket végzi el a program még 90°-al, 45°-al és 30°-al.
+            Ha kész van a forgatásokkl előállított alakzat, akkor következik annak 
+            szépítése.
+            <programlisting>
+    (plug-in-autocrop-layer RUN-NONINTERACTIVE image textfs)
+    (set! textfs-width (+ (car(gimp-drawable-width textfs)) 100))
+    (set! textfs-height (+ (car(gimp-drawable-height textfs)) 100))  
+            </programlisting>
+            A <function>plug-in-autocrop-layer</function> körbevágja az
+            aktív réteget, vagyis azt, amelyiken az alakzatunk van. A 
+            <function>textfs-width</function> és a <function>textfs-height</function> 
+            változóknak átadjuk a <function>textfs</function> réteg 100x100 pixellel
+            növelt méretét.
+            <programlisting>
+    (gimp-layer-resize-to-image-size textfs)
+    
+    (gimp-image-select-ellipse image CHANNEL-OP-REPLACE (- (- (/ width 2) (/ textfs-width 2)) 18) 
+        (- (- (/ height 2) (/ textfs-height 2)) 18) (+ textfs-width 36) (+ textfs-height 36))
+    (plug-in-sel2path RUN-NONINTERACTIVE image textfs)
+            </programlisting>
+            A <function>textfs</function> méretét visszaálltjuk a képpel megegyező méretre,
+            majd ellipszis kijelölést alkalmazunk a képen. Ehhez meg kell adnunk
+            az ellipszist magába foglaló téglalap bal felső sarkának koordinátáit, és magának 
+            a téglalapnak a szélességét és magasságát. Ezt az ellipszis kijelölést a 
+            <function>plug-in-sel2path</function> függvény segítségével görbévé alakítjuk.
+            <programlisting>
+    (gimp-context-set-brush-size 22)
+    (gimp-edit-stroke textfs) 
+            </programlisting>
+            A létrehozott görbe vonalvastagságát a <function>gimp-context-set-brush-size</function>
+            függvénnyel állítjuk be. A <function>gimp-edit-stroke</function> pedig a 
+            <function>textfs</function> rétegben kijelült területet, vagyis a görbét az 
+            előtér színére színezi. Ezekkel az utasításokkal létrehoztuk a külső 
+            gyűrűt, ugyanígy hozzuk létre a belsőt is.
+            <programlisting>
+    (set! textfs-width (- textfs-width 70))
+    (set! textfs-height (- textfs-height 70))
+    
+    (gimp-image-select-ellipse image CHANNEL-OP-REPLACE (- (- (/ width 2) (/ textfs-width 2)) 18) 
+        (- (- (/ height 2) (/ textfs-height 2)) 18) (+ textfs-width 36) (+ textfs-height 36))
+    (plug-in-sel2path RUN-NONINTERACTIVE image textfs)
+        
+    (gimp-context-set-brush-size 8)
+    (gimp-edit-stroke textfs)
+            </programlisting>
+            Annyia különbség, hogy csökkentjük a <function>textfs-width</function>
+            és a <function>textfs-height</function> változók értékét 70-nel. Egy másik
+            különbség, hogy a vonalvastagsága is vékonyabb lesz a belső gyűrűnek.
+            Ha nem alkalmaznánk grádienst, aza szín átmenetet, akkor itt véget is
+            érhetne a program, a következő eredménnyel:
+            <figure>
+                <title>Alap mandala</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Mandala/elso.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Ennél még befolyásolhatjuk mandala színét a <function>text2_color</function>
+            néven átadott paraméter segítségével, ahogy azt a feladat elején is említettem.
+            De ezzel nem elégszünk meg, nézzük, hogyan lehet tovább javítani a kinézetét.
+        </para>
+        <para>
+            Következő lépésként a színátmenetet oldjuk meg, mellyel sokkal látványosabb
+            mandalákat lehet készíteni.
+            <programlisting>
+    (set! gradient-layer (car (gimp-layer-new image width height 
+                RGB-IMAGE "gradient" 100 LAYER-MODE-NORMAL-LEGACY)))
+            </programlisting>
+            Első lépésként létrehozunk egy új réteget, melynek szélesége és
+            magassága megyegyezik a kép méretével, ez is RGB színeket használ, és
+            teljesen átlátszó.
+            <programlisting>
+    (gimp-image-insert-layer image gradient-layer 0 -1)
+    (gimp-image-select-item image CHANNEL-OP-REPLACE textfs)
+    (gimp-context-set-gradient gradient) 
+    (gimp-edit-blend gradient-layer BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY GRADIENT-RADIAL 100 0 REPEAT-NONE FALSE TRUE 5 .1 TRUE 500 500 (+ (+ 500 (/ textfs-width 2)) 8) 500)
+            </programlisting>
+            A szokásos módon az új réteget, amit a <function>gradient-layer</function>
+            változóban tárolunk, a kép utolsó aktív rétege fölé. A
+            <function>gimp-image-select-item</function> függvény a megadott réteget
+            kijelöléssé alakítja, vagyi annak az alfa csatornáját. A kijelölt területre
+            a <function>gimp-edit-blend</function> függvény segítségével tudunk
+            színátmenetet beállítani, melynek paraméteréül a felhasználó által megadott 
+            grádiens nevét, a színezés módját, a színátmenet típusát és azt a területet, ahol színezni szeretnénk,
+            kell megadni. Rengeteg más paramétere van, de ezek a legfontosabbak.
+            <programlisting>
+                (plug-in-sel2path RUN-NONINTERACTIVE image textfs)
+            </programlisting>
+            A kijelölést görbévé alakítjuk a szokásos módon.
+            <programlisting>
+    (set! textfs (car (gimp-text-layer-new image text2 font fontsize PIXELS)))
+    (gimp-image-insert-layer image textfs 0 -1)
+    (gimp-layer-set-offsets textfs (- (/ width 2) (/ text2-width 2)) (- (/ height 2) (/ text2-height 2)))
+            </programlisting>
+            A második szöveget, amit meg tudunk adni, ezekkel a sorokkal helyezzük al a kép közepére.
+            <programlisting>
+    (gimp-selection-none image)
+    
+    (gimp-display-new image)
+    (gimp-image-clean-all image)
+    )
+)
+            </programlisting>
+            Végezetül pedig megszüntetjük a kijelölést, a képet új ablakban jelenítjük meg a 
+            GIMP-ben, ehhez a <function>gimp-display-new</function> függvéynt használjuk.
+            A <function>gimp-image-clean-all</function> függvénnyel pedig eltüntetjük a
+            képből a szükségtelen információkat.
+            Ahhoz, hogy alaértelmezett értékeket állítsunk be a felhasználóknak a 
+            következő utsasításokat kell elvégezni:
+            <programlisting>
+(script-fu-register "script-fu-bhax-mandala"
+    "Mandala9"
+    "Creates a mandala from a text box."
+    "Norbert Bátfai"
+    "Copyright 2019, Norbert Bátfai"
+    "January 9, 2019"
+    ""
+    SF-STRING       "Text"      "Bátf41 Haxor"
+    SF-STRING       "Text2"     "BHAX"
+    SF-FONT         "Font"      "Sans"
+    SF-ADJUSTMENT   "Font size" '(100 1 1000 1 10 0 1)
+    SF-VALUE        "Width"     "1000"
+    SF-VALUE        "Height"    "1000"
+    SF-COLOR        "Color"     '(255 0 0)
+    SF-GRADIENT     "Gradient"  "Deep Sea"
+)
+            </programlisting>
+            Ebben a részben adhatunk nevet, magyarázó szöveget a scriptünknek. Beállíthatjuk, hogy
+            a script megnyitásakor mik legyenek az alap értékek, amiből a felhasználó kiindulhat.
+            Azt pedig, hogy honnan legyen elérhető a script a GIMP menüjéből a követkeőképpen
+            tudjuk meghatározni:
+            <programlisting><![CDATA[
+(script-fu-menu-register "script-fu-bhax-mandala" 
+    "<Image>/File/Create/BHAX"
+)]]>
+            </programlisting>
+            Végezetül pedig lássuk, hogy milyen képet tudunk készíteni ezzel a scripttel.
+            <figure>
+                <title>Végső mandala</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Mandala/vege.png" format="PNG" scale="200"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
