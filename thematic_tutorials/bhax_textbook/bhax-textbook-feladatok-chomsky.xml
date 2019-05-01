@@ -724,12 +724,121 @@ $(\exists y \forall x (y<x) \supset \neg (x \text{ prím}))$
         </para>
         <para>
             Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Deklar%C3%A1ci%C3%B3">itt</link>
-            ,
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
         <para>
+            A feladat első részében készíteni kell egy programot, ami tartalmazza a fentebb felsorolt 
+            elemeket. Menjünk végig a forráson. Maga a forrás C++ nyelven íródott mivel a referenciákat
+            a sima C nem támogatja.
+            <programlisting language="c++"><![CDATA[
+int* fakt(int szam){
+    static int a = 1;
+    if (szam < 2)
+        return &a;
+    while (szam>1){
+        a = a*szam;
+        --szam;
+    }
+    return &a;
+}]]>
+            </programlisting>
+            Az első függvény egy számnak a faktoriálisát számolja ki, és visszaad
+            egy erre az értékre mutató mutatót. Mivel a függvényen belül deklarált 
+            változók lokálisak, és törlődnek a függvény lefutása után, ezért nem
+            tudunk visszatérni annak a memóriacímével. Ezért kellett használni a 
+            <function>static</function> kulcszsót, mely lehetővé teszi, hogy a 
+            lokális változó benne maradjon a memóriában, akkor is ha vezérlés már
+            továbblépett a függvényen.
+            <programlisting language="c++"><![CDATA[
+int* sum(int egyik, int masik){
+    static int sum = egyik + masik;
+    return &sum;
+}
+
+int szorzat(int egyik, int masik){
+    return egyik*masik;
+}
+
+int osztas(int egyik, int masik){
+        return egyik/masik;
+}]]>
+            </programlisting>
+            Ezek a függvények lényegében segítségként jöttek létre, hogy a 
+            függvényre mutató mutatókat használni tudjuk a programban. Ebben a 
+            dologban a legnagyobb problémát a <function>fakt</function> függvényben 
+            lévő statikus változó okozta. Csinálni kell egy egészre mutató mutatót visszadó
+            függvényre mutató mutatót. Ez a pointer mutathatna a <function>fakt</function>-ra, csak
+            az a probléma, hogyha a pointeren keresztül meghívja a program a függvényt, akkor a <function>sum</function>
+            értéke megváltozik. Ezért definiáljuk a <function>sum</function> függvényt, ami szintén 
+            a egészre mutató mutatót ad vissza. A <function>szorzat</function> és
+            <function>osztas</function> függvények pedig, ahogy említettem, csak segéd
+            függvéynek.
+            <programlisting language="c++"><![CDATA[
+int (*pfgv (int a)) (int,int){
+    if (a){
+        return &szorzat;
+    }
+    else
+        return &osztas;
+}]]>
+            </programlisting>
+            A <function>pfgv</function> egy olyan függvény, ami függvényre mutató pointert ad vissza, egy olyan függvényre 
+            mutató pointert, ami két egészt kér paraméteréül. A <function>pfgv</function> egy egészet kér 
+            paraméteréül, és ennek függvényében ad vissza egy pointert, vagy a <function>szorzat</function> vagy a 
+            <function>osztas</function> függvényekre.
+            <programlisting language="c++"><![CDATA[
+int main()
+{
+    int a = 10;
+    int b = 5;
+    int* pa = &a;
+    int& ra = a;
+    int tomb[a];
+    int(& rtomb)[a] = tomb;
+    int* ptomb[2];
+    ptomb[0] = &a;
+    ptomb[1] = &b;
+    int* fakt_a = fakt(a);
+    int*(*psum)(int,int) = &sum;
+    int (*(*p_pfgv) (int valami))(int, int) = &pfgv;
+    std::cout<<"a és b szorzata "<<(pfgv(1))(a,b)<<std::endl;
+    std::cout<<"a és b hányadosa "<<(pfgv(0))(a,b)<<std::endl;
+    std::cout<<"a és b hányadosa "<<(p_pfgv(0))(a,b)<<std::endl;
+    std::cout<<"a értéke "<<a<<'\t'<<"a! értéke "<<*fakt_a<<std::endl;
+    std::cout<<"a és b összege "<<*psum(a,b)<<std::endl;
+}]]> 
+            </programlisting>
+            Az <function>main</function> függvény tartalmazza a feladat további megoldásait. 
+            A <function>a</function> és <function>b</function> változók egészek. A <function>pa</function>
+            egy egész számra mutató pointer. A pointer egy memóriacímre mutat, emiatt az <function>a</function>
+            változó címét kell képeznünk, amit a <function><![CDATA[&]]></function> operátorral tehetünk meg.
+            A referncia nagyon hasonlít a pointerre, ez is egy változóra hivatkozik. Lényegében az érékéül 
+            adott változó aliasa. Előnye a pointerrel szemben, hogy nem foglal külön helyet, hanem a 
+            változó memóriacímét használja. Ilyen referncia a <function>ra</function>. Itt a 
+            <function><![CDATA[&]]></function> nem címképző operátor, hanem ezzel jelezzük a fordítónak, hogy 
+            egy refernciát deklaráltunk. Az <function>tomb</function> egy egészeket tartalmazó tömb, aminek az 
+            elemszáma megegyezik az <function>a</function> változó értékével. A <function>rtomb</function>
+            pedig a <function>tomb</function> tömbnek a refernciája, nem csak az első elemé, hanem az egész
+            tömbbé. A <function>ptomb</function> tömb egészekre mutató mutatók tömbje. Ahogy látható
+            az elemeihez hozzá tudjuk rendelni a változók memóriacímét. A <function>fakt_a</function>
+            pointer pedig a <function>fakt</function> függvény által visszaadott <function>sum</function>
+            változóra mutat. A <function>psum</function> szintén egy pointer, de nem egy változóra mutat, vagy 
+            egy tömbre, hanem egy függvényre. Jelen esetben egy olyan függvényre tud mutatni, ami <function>int*</function>
+            ad vissza, azaz egészre mutató pointert, és paraméteréül két egészt kér. Ennek a leírásnak pont megfelel a 
+            <function>sum</function> függvény. A <function>p_pfgv</function> szintén egy függvénymutató, ahogy a nevéből 
+            látszik a <function>pfgv</function> függvényé. Vagyis ez a pointer egy olyan függvényre mutat, ami 
+            paraméteréül kér egy egészt, és egy olyan függvényre mutató pointert ad vissza, ami két egészet kér be, és
+            egy egészet ad vissza. A <function>cout</function> segítségével pedig kiírjuk a képernyőre a következő sorokat. Érdekesség, hogy a 
+            pointere keresztüli függvényhívásoknál nincs szükség a <function>*</function> használatára, ellentétben a 
+            változókkra mutató pointerekkel. Például a <function>fakt_a</function> értékét csak a * operátor segítségével kaphatjuk meg, ha 
+            ellenkező esetben a memóriacímet adja vissza. Viszont a <function>psum</function> pointeren keresztüli függvényhívásnál már
+            használtunk * operátort, mivel a <function>sum</function> függvény egy egészre muató pointert ad vissza. 
+        </para>
+        <para>
+            Mostpedig lássuk a feladat másik részét, ahol le kell írni, hogy mit vezetnek be a programba az alábbi kifejezések. Az feladat első részében
+            már minegyikkel kellett dolgoznunk, szóval könnyű dolgunk lesz.
             <programlisting><![CDATA[int a;]]></programlisting> egy egész vezet be a programba.
             <programlisting><![CDATA[int *b = &a;]]></programlisting> egy egészre mutató mutatót vezet be. A mutató, vagy elterjedtebb nevén pointer lényegében egy olyan változó, ami egy változó, 
             egy tömbre esetleg egy függvényre
