@@ -163,6 +163,20 @@
         <para>
             Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/GIMP_Lisp/Mandala">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/GIMP_Lisp/Mandala</link>               
         </para>
+        <caution>
+            <title>Használat</title>
+            <para>
+                Ha már telepítetted a faktorálisos feladat alapján a GIMP-et, akkor
+                a következőt kell tenned, hogy használhasd a scriptet:
+                <programlisting><![CDATA[
+cp *.scm /home/<user_name>/snap/gimp/165/.config/GIMP/2.10/scripts/]]>
+                </programlisting>
+                Ha új betústílusokat akarsz hozzáadni a GIMP-hez, akkor pedig ezt:
+                <programlisting><![CDATA[
+cp *.ttf /home/<user_name>/snap/gimp/165/.config/GIMP/2.10/fonts/]]>
+                </programlisting>
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
