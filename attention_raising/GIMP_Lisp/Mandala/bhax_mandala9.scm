@@ -61,7 +61,7 @@
 
 ;(text-width "alma" "Sans" 100)
 
-(define (script-fu-bhax-mandala text text2 font fontsize width height color gradient)
+(define (script-fu-bhax-mandala text font fontsize text2 font2 fontsize2 width height text2_color gradient)
 (let*
     (
         (image (car (gimp-image-new width height 0)))
@@ -70,8 +70,8 @@
         (text-layer)
         (text-width (text-width text font fontsize))
         ;;;
-        (text2-width (car (text-wh text2 font fontsize)))
-        (text2-height (elem 2 (text-wh text2 font fontsize)))
+        (text2-width (car (text-wh text2 font2 fontsize2)))
+        (text2-height (elem 2 (text-wh text2 font2 fontsize2)))
         ;;;
         (textfs-width)
         (textfs-height)
@@ -84,7 +84,7 @@
     (gimp-drawable-fill layer FILL-FOREGROUND)
     (gimp-image-undo-disable image) 
 
-    (gimp-context-set-foreground color)
+    (gimp-context-set-foreground text2_color)
 
     (set! textfs (car (gimp-text-layer-new image text font fontsize PIXELS)))
     (gimp-image-insert-layer image textfs 0 -1)
@@ -106,10 +106,10 @@
     (gimp-item-transform-rotate text-layer (/ *pi* 4) TRUE 0 0)
     (set! textfs (car(gimp-image-merge-down image text-layer CLIP-TO-BOTTOM-LAYER)))
     
-    (set! text-layer (car (gimp-layer-new-from-drawable textfs image)))
-    (gimp-image-insert-layer image text-layer 0 -1)
-    (gimp-item-transform-rotate text-layer (/ *pi* 6) TRUE 0 0)
-    (set! textfs (car(gimp-image-merge-down image text-layer CLIP-TO-BOTTOM-LAYER)))    
+    ;(set! text-layer (car (gimp-layer-new-from-drawable textfs image)))
+    ;(gimp-image-insert-layer image text-layer 0 -1)
+    ;(gimp-item-transform-rotate text-layer (/ *pi* 6) TRUE 0 0)
+    ;(set! textfs (car(gimp-image-merge-down image text-layer CLIP-TO-BOTTOM-LAYER)))    
     
     (plug-in-autocrop-layer RUN-NONINTERACTIVE image textfs)
     (set! textfs-width (+ (car(gimp-drawable-width textfs)) 100))
@@ -139,17 +139,16 @@
     (gimp-image-insert-layer image gradient-layer 0 -1)
 	(gimp-image-select-item image CHANNEL-OP-REPLACE textfs)
 	(gimp-context-set-gradient gradient) 
-	(gimp-edit-blend gradient-layer BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY GRADIENT-RADIAL 100 0 
-	REPEAT-TRIANGULAR FALSE TRUE 5 .1 TRUE (/ width 2) (/ height 2) (+ (+ (/ width 2) (/ textfs-width 2)) 8) (/ height 2))
+	(gimp-edit-blend gradient-layer BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY GRADIENT-RADIAL 100 0 REPEAT-NONE FALSE TRUE 5 .1 TRUE 500 500 (+ (+ 500 (/ textfs-width 2)) 8) 500)
 	
 	(plug-in-sel2path RUN-NONINTERACTIVE image textfs)
 
-    (set! textfs (car (gimp-text-layer-new image text2 font fontsize PIXELS)))
+    (set! textfs (car (gimp-text-layer-new image text2 font2 fontsize2 PIXELS)))
     (gimp-image-insert-layer image textfs 0 -1)
     (gimp-message (number->string text2-height))
     (gimp-layer-set-offsets textfs (- (/ width 2) (/ text2-width 2)) (- (/ height 2) (/ text2-height 2)))
 		
-    ;(gimp-selection-none image)
+    (gimp-selection-none image)
     ;(gimp-image-flatten image)
     
     (gimp-display-new image)
@@ -157,7 +156,7 @@
     )
 )
 
-;(script-fu-bhax-mandala "Bátfai Norbert" "BHAX" "Ruge Boogie" 120 1920 1080 '(255 0 0) "Shadows 3")
+;(script-fu-bhax-mandala "Bátfai Norbert" "Sans" 100  "BHAX" "Sans" 100 1000 1000 '(255 0 0) "Deep Sea")
 
 (script-fu-register "script-fu-bhax-mandala"
     "Mandala9"
@@ -167,9 +166,11 @@
     "January 9, 2019"
     ""
     SF-STRING       "Text"      "Bátf41 Haxor"
+    SF-FONT         "Font"      "Sans"
+    SF-ADJUSTMENT   "Font size1" '(100 1 1000 1 10 0 1)
     SF-STRING       "Text2"     "BHAX"
     SF-FONT         "Font"      "Sans"
-    SF-ADJUSTMENT   "Font size" '(100 1 1000 1 10 0 1)
+    SF-ADJUSTMENT   "Font size2" '(100 1 1000 1 10 0 1)
     SF-VALUE        "Width"     "1000"
     SF-VALUE        "Height"    "1000"
     SF-COLOR        "Color"     '(255 0 0)
