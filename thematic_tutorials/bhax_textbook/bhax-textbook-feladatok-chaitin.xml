@@ -146,6 +146,16 @@
         <para>
             Megoldás forrása: <link xlink:href="https://bit.ly/2DFLPe6">itt</link>               
         </para>
+        <caution>
+            <title>Használat</title>
+            <para>
+                Ha már telepítetted a faktorálisos feladat alapján a GIMP-et, akkor
+                a következőt kell tenned, hogy használhasd a scriptet:
+                <programlisting><![CDATA[
+cp *.scm /home/<user_name>/snap/gimp/165/.config/GIMP/2.10/scripts/]]>
+                </programlisting>
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
