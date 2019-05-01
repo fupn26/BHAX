@@ -144,11 +144,296 @@
             Megoldás videó: <link xlink:href="https://youtu.be/OKdAkI_c7Sc">https://youtu.be/OKdAkI_c7Sc</link>      
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://bit.ly/2VCaEBY">itt</link>               
+            Megoldás forrása: <link xlink:href="https://bit.ly/2DFLPe6">itt</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
-        </para>    
+        </para>
+        <para>
+            Az előző feladatban megismert Script-fu alrendszert fogjuk használni ebben a 
+            feladatban is. Ahogy a feladatban is látható, egy szövegre kell alkalmazni a 
+            króm effektet. Nézzük is meg, hogyan lehet ezt megvalósítani.
+            <programlisting>
+(define (color-curve)
+    (let* (
+        (tomb (cons-array 8 'byte))
+    )
+        (aset tomb 0 0)
+        (aset tomb 1 0)
+        (aset tomb 2 50)
+        (aset tomb 3 190)
+        (aset tomb 4 110)
+        (aset tomb 5 20)
+        (aset tomb 6 200)
+        (aset tomb 7 190)
+    tomb)    
+)
+            </programlisting>
+            Első lépésként definiálunk egy függvényt, amely létrehoz egy 
+            8 elemből álló tömböt, majd az elemket beállítjuk a megfelelő értékekre.
+            <programlisting>
+(define (elem x lista)
+
+    (if (= x 1) (car lista) (elem (- x 1) ( cdr lista ) ) )
+
+)   
+            </programlisting>
+            Az <function>elem</function> függvény segítségével azt oldjuk
+            meg, hogy elérjük egy lista x. elemét. Ehhez rekurziót használunk. 
+            A <function>car</function> függvény egy lista első elemét adja vissza,
+            ezért abban az esetben, ha az <function>x</function> 1, akkor 
+            ezt hívjuk meg. A <function>cdr</function> pedig a lista első elemét
+            törli. Tehát, ha a második elemet akarjuk megkapni, akkor a program 
+            törli a lista első elemét, majd visszadja a korábban még másodiknak
+            számító elemet a <function>car</function> függvénnyel.  
+            <programlisting>
+(define (text-wh text font fontsize)
+(let*
+    (
+        (text-width 1)
+        (text-height 1)
+    )
+ 
+    (set! text-width (car (gimp-text-get-extents-fontname text fontsize PIXELS font)))    
+    (set! text-height (elem 2  (gimp-text-get-extents-fontname text fontsize PIXELS font)))    
+    
+    (list text-width text-height)
+    )
+)
+            </programlisting>
+            A <function>text-wh</function> függvény egy listát ad vissza a 
+            paramétereként kapott szöveg szélességéről és magasságáról.
+            A <function>let*</function> lehetővé teszi, hogy változókat 
+            hozhassunk létre. 
+            A szöveg méretének meghatározásához a 
+            <function>gimp-text-get-extents-fontname</function> függvényre van szükség,
+            amely meghatározza a szöveget bekerítő "doboz" méretét. Egy listát ad vissza,
+            melynek első paramétere a szélesség, a második a magasság. Ahhoz, hogy a 
+            <function>text-height</function> változó értékét megadjuk az 
+            <function>elem</function> függvény segítségével kell kinyernünk a viszzaadott
+            list a második elemét. Ez a folyamat a <function>text-width</function>
+            esetán könnyű, mivel elég a <function>car</function> függvényt használnunk.
+            Most, hogy a szükséges segédfüggvényeket definiáltuk, jöhet a feladat lényegi
+            megoldása a Chrome effekt. A <function>script-fu-bhax-chrome</function>
+            egy szöveget, egy betűtipust, egy betűméretet, a létrehozandó kép
+            méretét, egy színt és egy színátmenetet kér paraméteréül.
+            Mint a többi függvénynél, itt is a
+            változók definiálásával kezdünk:
+            <programlisting>
+(define (script-fu-bhax-chrome text font fontsize width height color gradient)
+(let*
+    (
+        (image (car (gimp-image-new width height 0)))
+        (layer (car (gimp-layer-new image width height RGB-IMAGE "bg" 100 LAYER-MODE-NORMAL-LEGACY)))
+        (textfs)
+        (text-width (car (text-wh text font fontsize)))
+        (text-height (elem 2 (text-wh text font fontsize)))
+        (layer2)        
+    )
+            </programlisting>
+            Az <function>image</function> változóban tároljuk el a 
+            <function>gimp-image-new</function> függvéyn által létrehozott
+            képet, pontosabban annak az azonosítóját. A kép a felhasználó
+            által megadott értékeknek megfelelő méretű lesz. A harmadik paraméter
+            pedig azt jelöli, hogy RGB képet hoztunk létre. A <function>layer</function>
+            változó fogja tartalmazni az újonan létrehozott réteg azonosítóját. A réteget
+            a <function>gimp-layer-new</function> függvénnyel alkotjuk meg. Paramétereként
+            meg kell adni azt a képet, amihez hozzá szeretnénk adni a réteget, a réteg 
+            méretét, azt, hogy milyen színkezelést használjon. A réteget el is kell 
+            nevezni, meg kell határozni a kép átlátszóságát és a kombinációs módját.
+            Tehát jelen esetben egy a képpel megyegyező méretű réteget hozunk létre, ami
+            RGB színeket használ, a neve bg és teljesen átlátszó. A <function>text-width</function>
+            és <function>text-height</function> változók értékét a <function>text-wh</function>
+            függvény segítségével adjuk meg. Mivel ez a függvény egy listát ad vissza, ezért
+            ismét alkalmaznunk kell az <function>elem</function> függvényt, ahhoz, hogy a
+            szöveg magasságát meghatározzuk. A változókat definiáltuk, most jöhetnek
+            az érdemi módosítások.
+            <programlisting>
+    (gimp-image-insert-layer image layer 0 0)
+    (gimp-context-set-foreground '(0 0 0))
+    (gimp-drawable-fill layer  FILL-FOREGROUND )
+    (gimp-context-set-foreground '(255 255 255))
+   
+    (set! textfs (car (gimp-text-layer-new image text font fontsize PIXELS)))
+    (gimp-image-insert-layer image textfs 0 0)   
+    (gimp-layer-set-offsets textfs (- (/ width 2) (/ text-width 2)) (- (/ height 2) (/ text-height 2)))
+   
+    (set! layer (car(gimp-image-merge-down image textfs CLIP-TO-BOTTOM-LAYER))) 
+            </programlisting>
+            Elsőnek a <function>layer</function> változóhoz társított réteget
+            beszúrjuk a létrehozott képbe. Az utolsó két paraméter azt jelölné, hogy
+            van-e szülője a rétegnek, és listában elfoglalt helyét adják meg. Jelen
+            esetben nincs szülőréteg, és a lista legtetejére rakjuk. Itt a listát úgy
+            kell elképzelni, hogyha van sok réteg, akkor ebben az esetben mindegyik
+            fölé kerülne az új réteg. A <function>gimp-context-set-foreground</function>
+            beállítja az előtér színét, melyet a réteg színezéséhez használunk. Ezt a 
+            <function>gimp-drawable-fill</function> függvénnyel oldjuk meg. Az első paramétere
+            azt adja  meg, hogy mit szeretnénk kitölteni, a második pedig azt, hogy előtér-
+            vagy háttérszínnel. Ezután pedig az előtér színét megváltozatjuk fehérre. Ezzel a 
+            színnel fog kiíródni a szöveg addig, ameddig nem alkalmazzuk rá a Chrome effektet.
+            A <function>textfs</function> változóban fogjuk tárolni a szöveges réteg azonosítóját.
+            Szöveges réteget a <function>gimp-text-layer-new</function> függvény hoz létre. 
+            Természetesen meg kell adnunk a szöveget, a stílust, a méretet, és azt is, hogy a méret
+            milyen mértékegységben van. Ezt a réteget is ráillesztjük a képre a már 
+            ismert módon, vagyis a lista elejére. A <function>gimp-layer-set-offsets</function>
+            függvény segítségével be tudjuk állítani a réteg eltolását. Jelen esetben ezt arra
+            használjuk, hogy a szöveget a kép közepére mozgassuk. Alapesetben a szöveg a 
+            bal felső sarokban lenne, ezért a középre való eltolás a kép szélességének
+            és magasságának a fele lenne, viszont akkor a szöveg bal felső sarka lenne 
+            középen, emiatt még ki kell vonni a szöveg szélességét és magasságát. Végül
+            pedig a szövegréteget lefelé az első aktív réteggel összevonjuk. Erre 
+            használjuk a <function>gimp-image-merge-down</function> függvényt. Ezzel
+            meg van a kép, amit alapjául szolgál a feladat megoldásához.
+            <figure>
+                <title>Alap</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Chrome/elso.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure> 
+            <programlisting>
+    (plug-in-gauss-iir RUN-INTERACTIVE image layer 15 TRUE TRUE)  
+            </programlisting>
+            A <function>plug-in-gauss-iir</function> függvény segítségével a réteget
+            elhomályosítjuk. A haramdik paraméterrel tudjuk meghatározni a homályosítás mértékét.
+            Az utolsó két érték pedig azt szabályozza, hogy vízszintesen vagy függőlegesen
+            homályosítson, most ezt mind a két irányból alkalmazzuk.
+            <figure>
+                <title>Blur effect</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Chrome/masodik.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure> 
+            <programlisting>
+    (gimp-drawable-levels layer HISTOGRAM-VALUE .11 .42 TRUE 1 0 1 TRUE)
+            </programlisting>
+            Hogy ez a függvény mit csinál az már egy kicsit bonyolultabb. A histogram
+            lényegében egy diagram lenne, ami azt mutatja, hogy az egyes színek
+            árnyalatai hogyan oszlanak el a képen. Tehát ez a függvény befolyásolja
+            a kép hisztogramján előforduló érékeket. A legalacsonabb értéknek az 
+            intenzitását kisebbre állítjuk, mint a legmagasabbét. Ezt láthatkjuk a 
+            3. és 4. paramétereknél. Az 5. paraméter a clampolást állítja be. 
+            A clampolásra azért van szükség, mert a sima képek élei túl 
+            recések lehetnek. Ez megoldható, ahogyan mi is csináltuk, homályosítással.
+            Ezzel viszont az a baj, hogy a kép tartalam így nehezebben látható. A clampolás
+            abban segít, hogy az elhomályosított kép részkleteit visszakapjuk, de az élek
+            finomabbak maradjanak. A 6. paraméter a fényerősséget állítja be. A 7. azt 
+            jelenti, hogy a kimeneti értékek közül a legalacsonyabbat teljesen kiveszzük
+            a képből, mert annak intenzitását 0-ra állítjuk. A legmagasabb értéket pedig
+            maximális intezitásra állítjuk. Végezetül pedig engedélyezzük a clampolás
+            eredményeként kapott érékek visszaadását.
+            <figure>
+                <title>Clamp</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Chrome/harmadik.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure> 
+            <programlisting>
+    (plug-in-gauss-iir RUN-INTERACTIVE image layer 2 TRUE TRUE)  
+            </programlisting>
+            A clampolás után kapott képen ismét alkalmazunk homályosítást, de 
+            azzal előbbinél jóval kisebb mértékben.
+            <programlisting>
+    (gimp-image-select-color image CHANNEL-OP-REPLACE layer '(0 0 0))
+    (gimp-selection-invert image)
+            </programlisting>
+            A <function>gimp-image-select-color</function> függvény segítségével
+            a rétegen minden fekete pixelt kijelölünk. Majd pedig a 
+            <function>gimp-selection-invert</function>  inverzévé fordítja az
+            előbbi kijelölést, tehát minden pixel, ami nem fekete, ki lesz jelölve.
+            <programlisting>
+    (set! layer2 (car (gimp-layer-new image width height RGB-IMAGE "2" 100 LAYER-MODE-NORMAL-LEGACY)))
+    (gimp-image-insert-layer image layer2 0 0)
+            </programlisting>
+            A kijelölés után létrehozunk egy új réteget, amelyet kép 
+            rétegeinek a legtetejére rakunk. Ezt a réteget a <function>layer2</function>
+            változóban tároljuk.
+            <programlisting>
+    (gimp-context-set-gradient gradient) 
+    (gimp-edit-blend layer2 BLEND-CUSTOM LAYER-MODE-NORMAL-LEGACY GRADIENT-LINEAR 100 0 REPEAT-NONE 
+        FALSE TRUE 5 .1 TRUE width (/ height 3) width  (- height (/ height 3)))
+            </programlisting>
+            A hsználni kívánt színátmenetet a <function>gimp-context-set-gradient</function>
+            függvény segítségével tudjuk beállítani. Jelen esetben a függvénynek a 
+            felhasználó által megadott színátmenetet adjuk paraméterül. Ezzel még nem 
+            alkalmaztuk a színátmenetet a szövegre, ahhoz a  
+            <function>gimp-edit-blend</function> függvényre van szükség. Ennek nem megyünk végig
+            mindegyik paraméterén, de nézzük a fonotosabbakat. Elsőnek meg kell adni, hogy 
+            melyik rétegre szeretnénk alkalmazni, utána a színkeverést egyénire állítjuk. A 
+            színátmenet típusa lináris lesz, tehát vizszintesen változik a színe a szövegnek.
+            Ami fontos még a koordináták, meg kell adni a színezés kezdő és végpontját.
+            <figure>
+                <title>Színetmenet alkalmazása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Chrome/negyedik.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure> 
+            <programlisting>
+    (plug-in-bump-map RUN-NONINTERACTIVE image layer2 layer 120 25 7 5 5 0 0 TRUE FALSE 2)
+            </programlisting>
+            A <function>plug-in-bump-map</function> függvény lehetővé teszi, hogy a 
+            szöveget dombornyomat szerűvé tegyük. Ehhez szükség van egy másik rétegre, ami
+            kiindulásként szolgál folyamathoz. Lényegében az szolgáltatja a bump map-et.
+            <programlisting>
+    (gimp-curves-spline layer2 HISTOGRAM-VALUE 8 (color-curve))
+            </programlisting>
+            Végezetül a második réteg színeinek intenzitását módosítja egy
+            görbe alapján. A görbe pontjait pedig a <function>color-curve</function>
+            függvény tartalmazza.
+            <figure>
+                <title>Végeredmény</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Chrome/utolso.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Lehetőségünk van alapértelmezett értékeket megadni a felhasználónak. Erre a szólgál a 
+            programkód következő része:
+            <programlisting>
+(script-fu-register "script-fu-bhax-chrome"
+    "Chrome3"
+    "Creates a chrome effect on a given text."
+    "Norbert Bátfai"
+    "Copyright 2019, Norbert Bátfai"
+    "January 19, 2019"
+    ""
+    SF-STRING       "Text"      "Bátf41 Haxor"
+    SF-FONT         "Font"      "Sans"
+    SF-ADJUSTMENT   "Font size" '(100 1 1000 1 10 0 1)
+    SF-VALUE        "Width"     "1000"
+    SF-VALUE        "Height"    "1000"
+    SF-COLOR        "Color"     '(255 0 0)
+    SF-GRADIENT     "Gradient"  "Crown molding"    
+)
+            </programlisting>
+            Nem csak alapértelmezett adatok adhatók meg, hanem a script nevét is 
+            itt adhatjuk meg, amit a GIMP mutat majd, a script leírását és a szerzői
+            jogokat is ide írjuk. Azt, hogy a GIMP menüjében hol található a script
+            azt pedig a következő sorok határozzák meg:
+            <programlistin><![CDATA[
+(script-fu-menu-register "script-fu-bhax-chrome" 
+    "<Image>/File/Create/BHAX"
+)]]>
+            </programlistin>
+            Végezetül pedig lássuk, hogy milyen lett a programunk által elkészített
+            Chrome effekt.
+            <figure>
+                <title>Végeredmény</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Chrome/utolso.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>  
     </section>        
 
     <section>
