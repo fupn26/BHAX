@@ -428,11 +428,11 @@ cp *.scm /home/<user_name>/snap/gimp/165/.config/GIMP/2.10/scripts/]]>
             itt adhatjuk meg, amit a GIMP mutat majd, a script leírását és a szerzői
             jogokat is ide írjuk. Azt, hogy a GIMP menüjében hol található a script
             azt pedig a következő sorok határozzák meg:
-            <programlistin><![CDATA[
+            <programlisting><![CDATA[
 (script-fu-menu-register "script-fu-bhax-chrome" 
     "<Image>/File/Create/BHAX"
 )]]>
-            </programlistin>
+            </programlisting>
             Végezetül pedig lássuk, hogy milyen lett a programunk által elkészített
             Chrome effekt.
             <figure>
