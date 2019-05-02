@@ -11,11 +11,17 @@
  * @author Bátfai Norbert, nbatfai@inf.unideb.hu
  * @version 0.0.1
  */
+import java.util.*;
 public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
     /** A nagyítandó kijelölt területet bal felső sarka. */
     private int x, y;
     /** A nagyítandó kijelölt terület szélessége és magassága. */
     private int mx, my;
+    private List<Integer> zX = new ArrayList<>();
+    private List<Integer> zX2 = new ArrayList<>();
+    private List<Integer> zY = new ArrayList<>();
+    private List<Integer> zY2 = new ArrayList<>();
+    
     /**
      * Létrehoz egy a Mandelbrot halmazt a komplex sík
      * [a,b]x[c,d] tartománya felett kiszámoló és nygítani tudó
@@ -38,11 +44,42 @@ public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
             // Egér kattintással jelöljük ki a nagyítandó területet
             // bal felső sarkát:
             public void mousePressed(java.awt.event.MouseEvent m) {
+                if (m.getButton() == java.awt.event.MouseEvent.BUTTON1){
                 // A nagyítandó kijelölt területet bal felső sarka:
-                x = m.getX();
-                y = m.getY();
-                mx = 0;
-                my = 0;
+                    x = m.getX();
+                    y = m.getY();
+                    mx = 0;
+                    my = 0;
+                }
+                else if(m.getButton() == java.awt.event.MouseEvent.BUTTON3)
+                {
+                    double dx = (b-a)/szélesség;
+                    double dy = (d-c)/szélesség;
+                    double reC, imC, reZ, imZ, ujreZ, ujimZ;
+ 
+                    int iteracio = 0;
+ 
+                    reC = a+m.getX()*dx;
+                    imC = d-m.getY()*dy;
+ 
+                    reZ = 0;
+                    imZ = 0;
+                    iteracio = 0;
+ 
+                    while(reZ*reZ + imZ*imZ < 4 && iteracio < 255) {
+                        // z_{n+1} = z_n * z_n + c
+                        ujreZ = reZ*reZ - imZ*imZ + reC;
+                        ujimZ = 2*reZ*imZ + imC;
+                        zX.add((int)((reZ - a)/dx));
+                        zY.add( (int)((d - imZ)/dy));
+                        zX2.add((int)((ujreZ - a)/dx));
+                        zY2.add((int)((d - ujimZ)/dy));
+                        reZ = ujreZ;
+                        imZ = ujimZ;
+ 
+                        ++iteracio;
+                    }
+                }
                 repaint();
             }
             // Vonszolva kijelölünk egy területet...
@@ -70,7 +107,7 @@ public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
             public void mouseDragged(java.awt.event.MouseEvent m) {
                 // A nagyítandó kijelölt terület szélessége és magassága:
                 mx = m.getX() - x;
-                my = m.getY() - y;
+                my = mx;
                 repaint();
             }
         });
@@ -135,8 +172,14 @@ public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
             g.drawLine(0, sor, getWidth(), sor);
         }         
         // A jelző négyzet kirajzolása:
-        g.setColor(java.awt.Color.GREEN);
+        g.setColor(java.awt.Color.WHITE);
         g.drawRect(x, y, mx, my);
+        if (!zX.isEmpty())
+        {
+            for (int i = 0; i<zX.size(); ++i){
+                g.drawLine(zX.get(i), zY.get(i), zX2.get(i), zY2.get(i));
+            }
+        }
     }
     /**
      * Példányosít egy Mandelbrot halmazt nagyító obektumot.
