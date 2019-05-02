@@ -126,7 +126,7 @@ public class MandelbrotHalmaz extends java.awt.Frame implements Runnable {
                 java.awt.image.BufferedImage.TYPE_INT_RGB);
         java.awt.Graphics g = mentKép.getGraphics();
         g.drawImage(kép, 0, 0, this);
-        g.setColor(java.awt.Color.BLUE);
+        g.setColor(java.awt.Color.YELLOW);
         g.drawString("a=" + a, 10, 15);
         g.drawString("b=" + b, 10, 30);
         g.drawString("c=" + c, 10, 45);
