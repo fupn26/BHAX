@@ -11,6 +11,7 @@
  * @author Bátfai Norbert, nbatfai@inf.unideb.hu
  * @version 0.0.1
  */
+import java.awt.Color;
 public class MandelbrotHalmaz extends java.awt.Frame implements Runnable {
     /** A komplex sík vizsgált tartománya [a,b]x[c,d]. */
     protected double a, b, c, d;
@@ -210,9 +211,8 @@ public class MandelbrotHalmaz extends java.awt.Frame implements Runnable {
                 iteráció %= 256;
                 // így a halmaz elemeire 255-255 értéket használjuk,
                 // azaz (Red=0,Green=0,Blue=0) fekete színnel:
-                rgb = (255-iteráció)|
-                        ((255-iteráció) << 8) |
-                        ((255-iteráció) << 16);
+                Color bg = new Color(0, 255-iteráció, 0);
+                rgb = bg.getRGB();
                 // rajzoljuk a képre az éppen vizsgált pontot:
                 kép.setRGB(k, j, rgb);
             }
