@@ -784,7 +784,7 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
                         </imageobject>
                     </mediaobject>
             </figure>
-            Rengeteg figyelmeztetést ad vissza, de ezzel most nem kell törődni, hiszan a bináris fájl
+            Rengeteg figyelmeztetést ad vissza, de ezzel most nem kell törődni, hiszen a bináris fájl
             elkészült, melyet futtatunk, és elindul az utazásunk a végtelenbe.
             <figure>
                 <title>4. lépés</title>
@@ -819,9 +819,596 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
                     </mediaobject>
             </figure>
             Ahhoz, hogy részletesebb képet kapj a ránagyított területről, az "n" billentyűt
-            kell lenyomnod, mely kiszámolja a z-ket a megadott területen. Itt lehet látni, hogyan
-            mosósdik össze a Mandelbrot és a Biomorfos téma. A hatmadik kép, már majdnem olyan, mint
-            egy biomorf.
+            kell lenyomnod, mely kiszámolja a z-ket a megadott területen. Ahogy folyamatosan nagyítjuk,
+            észre vehetjük, hogy a újra meg újra Mandelbrot halmazokat kapunk.
+        </para>
+        <para>
+            Most hogy láttad, hogyan működik a program, nézzük meg a forrást. A 
+            szokásostól eltérően, most több fájlból áll a forrás. Ez azt a célt
+            szolgálja, hogy átláthatóbb legyen.
+        </para>
+        <para>
+            Elsőnek a <filename>frakablak.h</filename>-t dolgozzuk fel. Ez egy header
+            fájl. Ezeket szokás a <function>#include</function> kulcsszóval a 
+            programunkhoz fűzni, viszont eddig kizárólag előre elkészített header-öket
+            használtunk, de most egy sajátot írtunk. Legfontosabb dolog, hogy a 
+            a forrás szövegét egy keretbe kell foglalnunk, ez a keret így néz ki:
+            <programlisting language="c++">
+#ifndef FRAKABLAK_H
+#define FRAKABLAK_H
+        
+        ...
+          
+#endif 
+            </programlisting>
+            Az ezek között megjelenő szöveg viszont semmiben nem különbözik az 
+            eddig megszokott C++-os forrásoktól.
+            <programlisting language="c++"><![CDATA[
+#include <QMainWindow>
+#include <QImage>
+#include <QPainter>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include "frakszal.h"]]>
+            </programlisting>
+            Természetesen most is a header fájlok importálásával kezdünk. Itt 
+            észreveheted, hogy egyik sem láttuk még egyik forrásban sem. Ezek
+            mind a Qt headerjei. A <function>QMainWindow</function> tartalmazza
+            a programunk ablakának létrehozásához szükséges elemket. A <function>QImage</function>
+            segítségével tudunk létrehozni képeket, erőssége, hogy a pixeleket közvetlenül
+            tudjuk elérni. A <function>QPainter</function> arra szolgál, hogy a képet
+            színezhessük. A <function>QMouseEvent</function> és a <function>QKeyEvent</function>
+            segítségével tudjuk megoldnai, hogy az egér vagy billentyű használatával
+            folyamatokat indítsunk el a prohramban. Például, hogy az egérrel való kijelölés hatására
+            a program ránagyítson a halmazra. Az imént felsorolt Qt header-ök mind egy 
+            osztályt tartalmaznak, melyek neve megegyezik a header-ök nevével. A 
+            <filename>farktszal.h</filename>-ről pedig a későbbiekben részletesen
+            beszélünk.
+            <programlisting language="c++"><![CDATA[
+class FrakSzal;
+
+class FrakAblak : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    FrakAblak(double a = -2.0, double b = .7, double c = -1.35,
+              double d = 1.35, int szelesseg = 600,
+              int iteraciosHatar = 255, QWidget *parent = 0);
+    ~FrakAblak();
+    void vissza(int magassag , int * sor, int meret) ;
+    void vissza(void) ;
+    // A komplex sík vizsgált tartománya [a,b]x[c,d].
+    double a, b, c, d;
+    // A komplex sík vizsgált tartományára feszített
+    // háló szélessége és magassága.
+    int szelesseg, magassag;
+    // Max. hány lépésig vizsgáljuk a z_{n+1} = z_n * z_n + c iterációt?
+    // (tk. most a nagyítási pontosság)
+    int iteraciosHatar;
+
+protected:
+    void paintEvent(QPaintEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
+    void keyPressEvent(QKeyEvent*);
+
+private:
+    QImage* fraktal;
+    FrakSzal* mandelbrot;
+    bool szamitasFut;
+    // A nagyítandó kijelölt területet bal felsõ sarka.
+    int x, y;
+    // A nagyítandó kijelölt terület szélessége és magassága.
+    int mx, my;
+    std::vector<int> zX, zY, zX2, zY2;
+};]]>
+            </programlisting>
+            A header állományok deklarációkat tartalmaznak, tehát a függvények és
+            változók
+            definiálása nem itt történik. A <function>Frakszal</function> osztály
+            teljes deklarációját a <filename>frakszal.h</filename> tartalmazza. Csak
+            azért vol szükség arra, hogy deklarájuk itt, hogy az elemeit a 
+            <function>FrakAblak</function> osztály fel tudja használni. Ennek az 
+            osztálynak a szülő osztály a <function>QMainWindow</function>, ami 
+            annyit jelent, hogy minden elemét a <function>QMainWindow</function>
+            osztálynak, ami <function>public</function> részben van eltudjuk érni
+            egy <function>FrakAblak</function> objektumon keresztül is. A 
+            <function>Q_OBJECT</function> makró teszi lehetővé, hogy a program
+            kezelni tudja a Qt C++ kiegészítőit. Ezután pedig a <function>public</function>
+            elemeit deklaráljuk az osztálynak. A <function>public</function>
+            azt jelenti, hogy ezeket az osztályon kívül el tudjuk érni. Első, amit
+            deklarálni kell, az a konstruktor. Ez egy függvény, ami akkor hívódik meg,
+            amikor egy objektumot létrehozunk, neve mindig megegyezik az osztály nevével.
+            Ennek segítségével a változók értékét inicializáljuk alap értékkel, ha a 
+            felhasználó nem adna meg paramétereket. Ezt követ a destruktor, ami a
+            <function>~</function> jelről imserszik meg.
+            A többi eleme a <function>public</function> résznek pedig változók és
+            függvények. Ami érdekesebb az a <function>protected</function> rész, 
+            ez olyan elemet taratlmaz, amik csak az osztályból érehtőek el, vagy
+            a gyermek osztályokból. Itt vannak deklarálva azok a függvények, amivel
+            a billenytyű és egér által küldött jeleket feldolgozzuk. A <function>private</function>
+            rész pedig kizárólag az osztályból érhető el. Ezt azért alkalmazzák a 
+            programozók, hogy megvédjék az osztály fontosabb elemeit attól, hogy 
+            valaki az osztályon kívül módosítsa. Ezeknek az osztáylon kívüli elérésére
+            általában egy függvény segítségével nyújtanak lehetőséget a programozók, mely
+            csupán az értéküket adja vissza. Ezzel a header végére értünk, nézzük, hogy
+            milyen definíciók tartoznak az imént deklarált változókhoz.
+            <programlisting language="c++"><![CDATA[
+FrakAblak::FrakAblak(double a, double b, double c, double d,
+                     int szelesseg, int iteraciosHatar, QWidget *parent)
+                         : QMainWindow(parent)
+{
+    setWindowTitle("Mandelbrot halmaz");
+
+    szamitasFut = true;
+    x = y = mx = my = 0;
+    this->a = a;
+    this->b = b;
+    this->c = c;
+    this->d = d;
+    this->szelesseg = szelesseg;
+    this->iteraciosHatar = iteraciosHatar;
+    magassag = (int)(szelesseg * ((d-c)/(b-a)));
+
+    setFixedSize(QSize(szelesseg, magassag));
+    fraktal= new QImage(szelesseg, magassag, QImage::Format_RGB32);
+
+    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+    mandelbrot->start();
+}]]>
+            </programlisting>
+            Elsőnek a konstruktor nézzük meg. A <function>FrakAblak</function>
+            osztály konstruktorát a <function>::</function> hatóköroperátorral
+            tudjuk elérni.
+            Egy érdekesség, hogy a <function>FrakAblak</function>
+            konstruktor a <function>QMainWindow</function> osztály konstruktorát is 
+            meghívja. A <function>setWindowTitle</function> függvénnyel van lehetőségünk
+            beállítani a <function>QMainWindow</function> által létrehozott ablak nevét
+            beállítani. Amikor létrehozzuk a <function>FrakAblak</function> objektumot
+            a <function>szamitasFut</function> logikai értéket igazra állítjuk. Mivel 
+            kezdetben nincs kijelölt terület, ezért az <function>x,y</function> változókat,
+            melyek a kijelölt terület bal felső sarkát adják meg, nullára állítjuk. Ugyanígy
+            járunk el a <function>mx,my</function> változókkal is, melyek a terület szélességét
+            adják meg. Hogy jelöljük melyik változó név tartozik az objektumhoz, és melyik
+            a paraméterhez, ezért <function><![CDATA[this->]]></function> operátort
+            használjuk. Ez jelöli, hogy az objektum saját változójáról van szó. Tehát
+            ezen a részen átadjuk a paraméterek értékeit a megfele változóknak. Többek
+            között paraméterként adjuk meg a komplex számsík vizsgálandó területét, azt, hogy 
+            erre a területre milyen széles hálót feszítsünk ki. A magasságot viszont már ezek
+            alapján adjuk meg, és típuskényszerítést alkalmazunk, hogy egész számot kapjunk.
+            Ha már tudjuk a magasságot és a szélességet, az ablakot fix nagyságúra állítjuk
+            a <function>setFixedSize</function> függvénnyel. A <function>fraktal</function>
+            pointert ráállítjuk egy <function>QImage</function> objektumra, melyhez a
+            <function>new</function> operátort használjuk. A <function>mandelbrot</function>
+            pointer pedig egy <function>FrakSzal</function> objektumot fog címezni. Majd
+            a <function>start()</function> függvény segítségével elindítjuk a szál végrehajtását.
+            <programlisting language="c++"><![CDATA[
+FrakAblak::~FrakAblak()
+{
+    delete fraktal;
+    delete mandelbrot;
+}]]>
+            </programlisting>
+            A destruktorban pedig a <function>fraktal</function> és <function>mandelbrot</function>
+            pointerek által mutatatott területet szabadítjuk fel.
+            <programlisting language="c++"><![CDATA[
+void FrakAblak::paintEvent(QPaintEvent*) {
+    QPainter qpainter(this);
+    qpainter.drawImage(0, 0, *fraktal);
+    if(!szamitasFut) {
+        qpainter.setPen(QPen(Qt::white, 1));
+        qpainter.drawRect(x, y, mx, my);
+        if(!zX.empty()) //excuse me
+        {
+            for(int i=0; i<zX.size(); i++)
+            {
+                qpainter.drawLine(zX[i],zY[i],zX2[i],zY2[i]);
+            }
+ 
+        }
+
+    }
+    qpainter.end();
+}]]>
+            </programlisting>
+            A <function>paintEvent</function> függvény, ahogy a neve is mutatja a 
+            kép kirajzolásáért felelős.  Átadunk egy pointert, ami a kirajzolni
+            kívánt dologra mutat. Majd példányosítunk egy <function>QPainter</function>
+            objektumot, melynek átadjuk a paraméterként kapott pointert. Ezután a 
+            <function>drawImage</function> függvény segítségével kirajzoltatjuk 
+            a <function>farktal</function> által mutatott kép objektumot az
+            ablak (0,0)-ás koordinátájától kezdve. Ha nem fut éppen számítás, 
+            akkor a toll színét fehérre állítjuk, és kirajzolunk egy téglalapot
+            vele a megadott (x,y) koordinátából, a megadott mx*my-os méretben. Abban
+            az esetben, ha a <function>zX</function> vektor nem üres, akkor 
+            végig megyünk a vektoron és vonalakat rajzolunk ki az
+            (x,y) és (x2,y2) koordináták között. Végezetül pedig, mivel a 
+            <function>QPainter</function> objektumot mindig fel kell szabadítani,
+            ezért az <function>end()</function> tagfüggvénye segítségével ezt 
+            meg is tesszük.
+            <programlisting><![CDATA[
+ void FrakAblak::mousePressEvent(QMouseEvent* event) {
+    
+    if (event->button() == Qt::LeftButton)
+    {
+
+        // A nagyítandó kijelölt területet bal felsõ sarka:
+        x = event->x();
+        y = event->y();
+        mx = 0;
+        my = 0;
+    }
+    else if(event->button() == Qt::RightButton)
+    {
+               double dx = (b-a)/szelesseg;
+               double dy = (d-c)/magassag;
+               double reC, imC, reZ, imZ, ujreZ, ujimZ;
+ 
+               int iteracio = 0;
+ 
+               reC = a+event->x()*dx;
+               imC = d-event->y()*dy;
+ 
+               reZ = 0;
+               imZ = 0;
+               iteracio = 0;
+ 
+               while(reZ*reZ + imZ*imZ < 4 && iteracio < 255) {
+                   // z_{n+1} = z_n * z_n + c
+                   ujreZ = reZ*reZ - imZ*imZ + reC;
+                   ujimZ = 2*reZ*imZ + imC;
+                   zX.push_back((int)((reZ - a)/dx));
+                   zY.push_back( (int)((d - imZ)/dy));
+                   zX2.push_back((int)((ujreZ - a)/dx));
+                   zY2.push_back((int)((d - ujimZ)/dy));
+                   reZ = ujreZ;
+                   imZ = ujimZ;
+ 
+                   ++iteracio;
+                }
+    }
+
+    update();
+}]]>
+            </programlisting>
+            A <function>mousePressEvent</function> függvény azt határozza meg, hogy
+            mi történjen, ha felhasználó csak rákattint az egérrel képre. Paraméteréül
+            egy <function>QMouseEvent</function> objektumra mutató pointert kap.
+            Ennek az objektumnak a <function>button()</function> függvényével
+            tudjuk lekérdezni, hogy melyik gombot nyomta le a felhasználó. Ha a 
+            balt, akkor egy pixelre nagyítunk rá, vagyis vagy teli zöld, vagy teli
+            fekete lesz az ablak. Ezt onnan tudjuk, hogy a nagyítandó terület
+            méretét meghatározó változók nullára vannak állítva. Ha jobb gomb
+            kerül lenyomásra, akkor a memgadott pontból kezdődően kiszámoljuk az
+            z<subscript>n</subscript> komplex számokat, és ezeket berakjuk egy tömbbe.
+            Addig megyünk a <function>while</function> ciklusban, ameddig a
+            z<subscript>n</subscript> értéke kisebb, mint 2, vagy ameddig
+            nem érjük el az iterációs határt. Az itt kiszámolt pontokat 
+            fogja összekötni a <function>paintEvent()</function> függvény
+            <function>for</function> ciklusa futása során. Az <function>update()</function>
+            segítségével pedig frissítjük a kirajzolt képet, hogy azonnal változzon a 
+            felhasználó behatására.
+            <programlisting language="c++"><![CDATA[
+void FrakAblak::mouseMoveEvent(QMouseEvent* event) {
+
+    // A nagyítandó kijelölt terület szélessége és magassága:
+    mx = event->x() - x;
+    my = mx; // négyzet alakú
+
+    update();
+}]]>
+            </programlisting>
+            Ahhoz, hogy az egér mozgását kezeljük a <function>mouseMoveEvent</function>
+            függvényt definiáljuk. Ahogy <function>mousePressEvent</function> függvénynél
+            említettem, abban az esetben, ha csak a bal egérgombra nyomunk rá, akkor
+            csak egy pixelre nyagyítunk rá. Akkor nem tettem hozzá, hogy ez csak akkor igaz,
+            ha mozgatás nélkül engedjuk fel az egérgombot. Ha viszont mozgatjuk, akkor
+            a <function>mousePressEvent</function> függvényben megkapott x érték és a
+            az utolsó egér pozíció x koordinátája alapján meghatározzuk a nagyítandó
+            terület szélességét. Itt is meghívjuk a <function>update()</function> függvényt,
+            hogy egyből látható legyen a behatás. Hogy teljes legyen a kép még van egy függvény, 
+            ami azt kezeli, amikor elengedjük az egeret.
+            <programlisting language="c++"><![CDATA[
+ void FrakAblak::mouseReleaseEvent(QMouseEvent* event) {
+
+    if(szamitasFut)
+        return;
+
+    szamitasFut = true;
+
+    double dx = (b-a)/szelesseg;
+    double dy = (d-c)/magassag;
+
+    double a = this->a+x*dx;
+    double b = this->a+x*dx+mx*dx;
+    double c = this->d-y*dy-my*dy;
+    double d = this->d-y*dy;
+
+    this->a = a;
+    this->b = b;
+    this->c = c;
+    this->d = d;
+
+    delete mandelbrot;
+    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+    mandelbrot->start();
+
+    update();
+}]]> 
+            </programlisting>
+            Ha éppen fut a halmaz kiszámítása, akkor nem dolgozzuk fel 
+            gombelengedést, egyébként pedig beállítjuk az egér mozgatásával
+            meghatározott terület mérete alapján meghatározott síktartományt, amit
+            vizsgálunk. Az éppen kirajzolt ábrát pedig dobjuk, azaz a <function>mandelbrot</function>
+            pointer által mutatott objektumot töröljük. Majd foglalunk helyet egy újnak, 
+            aminek átadjuk a megújult paramétereket. Végezetül pedig elindítjuk a 
+            szálat, frissítünk.
+        </para>
+        <para>
+            Ezt most egy kicsit nehezen állhat össze a fejekben, de összegezzük, hogy
+            mi is történik. Amikor rákattintunk a bal egérgombra, akkor meghívódik a 
+            <function>mousePressEvent</function> függvény, mely az 
+            x és y koordinátákat beállítja az egér aktuális pozícójába. Abban az 
+            esetben, ha nem mozgatjuk az egeret, csak elegendjük a gombot, meghívódik
+            a <function>mouseReleaseEvent</function> függvény, az kiszámolja a megadott
+            koordináták és szélesség alapján a Mandelbrot halmazt, 
+            ami lényegében azt 
+            eredméynezi, hogy egy pixelre ránagyít a program. Ha mozgatjuk az egeret, 
+            akkor meghívódik a <function>mouseMoveEvent</function>, és ezzel 
+            párhuzamosan a <function>paintEvent</function> függvéyn, ami
+            folymatosan rajzolja azt a méretű négyzetet, amit az egér mozgatásával
+            megadunk. Ha felengedjük a gombot, <function>mouseReleaseEvent</function>
+            ránagyít az általunk meghatározott területre. Ugyan ezek a folyamatok
+            zajlanak le, akkor is, ha a jobb egérgombot nyomjuk le, azzal a különbséggel,
+            hogy akkor a z<subscript>n</subscript> számokat összeköti az adott ponttól
+            kezdve. Azt fontos látni, hogy nem konkrétan a <function>mouseReleaseEvent</function>
+            függvény nagyítja ki a képet, hanem a <function>vissza</function> függvény
+            a <function>FraktalSzal</function> objektum által visszadott értékek alapján.
+        </para>
+        <para>
+            A program abban az esetben, ha lenyomjuk az n billentyűt, akkor 
+            a program újraszámolja a Mandelbrot halmazt.Ennek a kezeléséért
+            a <function>kexPressEvent</function> függvény felelős. Ha 
+            a halamaz számítása fut, akkor nem csinál semmit, amúgy újra kiszámolja
+            a halmazt. Ha az n billentyűt lenyomjuk, akkor az iterációs határt a 
+            duplájára növeli. Ezzel pontosabb lesz a halmaz kiszámítása.
+            <programlisting language="c++"><![CDATA[
+void FrakAblak::keyPressEvent(QKeyEvent *event)
+{
+
+    if(szamitasFut)
+        return;
+
+    if (event->key() == Qt::Key_N)
+        iteraciosHatar *= 2  //bit shift: iteraciosHatar = iteraciosHatar << 1;
+    szamitasFut = true;
+
+    delete mandelbrot;
+    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+    mandelbrot->start();
+
+}]]>
+            </programlisting>
+            Ahhoz, hogy megjelenítsük az halmazt, a <function>vissza</function> 
+            függvényt fogjuk használni, ahogy már korábban említettem.
+            <programlisting language="c++"><![CDATA[
+void FrakAblak::vissza(int magassag, int *sor, int meret)
+{
+    for(int i=0; i<meret; ++i) {
+        QRgb szin = qRgb(0, 255-sor[i], 0);
+        fraktal->setPixel(i, magassag, szin);
+    }
+    update();
+}]]>
+            </programlisting>
+            A függvény megkapja paraméteréül az éppen kirajzolandó sor y 
+            koordinátáját, egy tömbre mutató pointert, ami az éppen aktuális
+            iteráció számát mutatja a Mandelbrot halmaz számolása során, és
+            az ablak szélességét. A <function>for</function> ciklus a kép pixeleit
+            beállítja a megfelelő színekre. Ehhez létrehoz egy <function>QRgb</function>
+            objektumot, amivel egy színt tárolunk el, majd pedig ezt a színt, és az aktuális
+            (x,y) koordinátákatátadjuk a <function>setPixel()</function> függvénynek.
+            <programlisting language="c++"><![CDATA[
+void FrakAblak::vissza(void)
+{
+    szamitasFut = false;
+    x = y = mx = my = 0;
+}]]>
+            </programlisting>
+            Van a programunkban egy másik <function>vissza</function> függvény. 
+            Ez nem zavarja meg a fordítót, mert a paraméterlista alapján
+            meg tudja őket különböztetni. Ez a függvény nem kér paramétert, 
+            csak visszaállítja a kijelölés értékeit nullára, és a 
+            <function>szamitasFut</function> változó értékét hamisra változtatja.
+            Ez akkor hívódik meg, amikor megtörténik a Mandelbrot halmaz 
+            kirajzolása.
+        </para>
+        <para>
+            Most nézzük meg, hogy a már emlegetett <function>FraktSzal</function>
+            osztály milyen feladatokért felelős. Ennek is elsőnek a 
+            deklarációját nézzük meg, amit a <filename>frakszal.h</filename>
+            tartalmaz.
+            <programlisting language="c++"><![CDATA[
+#include <QThread>
+#include <math.h>
+#include "frakablak.h"
+
+class FrakAblak;
+
+class FrakSzal : public QThread
+{
+    Q_OBJECT
+
+public:
+    FrakSzal(double a, double b, double c, double d,
+             int szelesseg, int magassag, int iteraciosHatar, FrakAblak *frakAblak);
+    ~FrakSzal();
+    void run();
+
+protected:
+    // A komplex sík vizsgált tartománya [a,b]x[c,d].
+    double a, b, c, d;
+    // A komplex sík vizsgált tartományára feszített
+    // háló szélessége és magassága.
+    int szelesseg, magassag;
+    // Max. hány lépésig vizsgáljuk a z_{n+1} = z_n * z_n + c iterációt?
+    // (tk. most a nagyítási pontosság)
+    int iteraciosHatar;
+    // Kinek számolok?
+    FrakAblak* frakAblak;
+    // Soronként küldöm is neki vissza a kiszámoltakat.
+    int* egySor;
+
+};]]>
+            </programlisting>
+            Az első header állományról tegyünk említést, a többi már úgyis ismerős.
+            A <function>QThread</function> szintén egy osztály, ami azt teszi
+            lehetővé, hogy programszálakat kezeljünk a programunkban. Ez az osztály
+            szülőosztálya a <function>FraktalSzal</function> osztályunknak. Itt is
+            alkalmazzuk a <function>Q_OBJECT</function> makrót, ami lehetővé teszi a
+            fordító számára a Qt-s kiegészítők felismerését. A <function>public</function>
+            részben megtalálható a konstruktor és a destruktor, valamint a 
+            <function>run()</function> függvény. A 
+            <function>protected</function> részben lévő változók pedig, már ismertek
+            a <function>FrakAblak</function> osztályból. Kivéve a <function>farkAblak</function>
+            pointert, ami egy pointer egy <function>FrakAblak</function> objektumra. Az 
+            <function>egySor</function> pedig egy egészre mutató mutató. Lássuk 
+            ezeknek a definiálását:
+            <programlisting language="c++"><![CDATA[
+FrakSzal::FrakSzal(double a, double b, double c, double d,
+                   int szelesseg, int magassag, int iteraciosHatar, FrakAblak *frakAblak)
+{
+    this->a = a;
+    this->b = b;
+    this->c = c;
+    this->d = d;
+    this->szelesseg = szelesseg;
+    this->iteraciosHatar = iteraciosHatar;
+    this->frakAblak = frakAblak;
+    this->magassag = magassag;
+
+    egySor = new int[szelesseg];
+}]]>
+            </programlisting>
+            A konstruktorban inicializáljuk a változók értékét a paraméterként kapott
+            értékekkel, és létrehozunk egy <function>szelesseg</function> értékével
+            megyegyező méretű, egész számokból álló tömböt, amire ráállítjuk az 
+            <function>egySor</function> pointert.
+            <programlisting language="c++"><![CDATA[
+FrakSzal::~FrakSzal()
+{
+    delete[] egySor;
+}
+]]>
+            </programlisting>
+            A destruktorban pedig szokás szerint felszabadítjuk az imént említett
+            pointer által mutatott tömböt. Azt, hogy tömbről van szó, explicit módon
+            ki kell írni.
+            <programlisting language="c++"><![CDATA[
+void FrakSzal::run()
+{
+    // A [a,b]x[c,d] tartományon milyen sûrû a
+    // megadott szélesség, magasság háló:
+    double dx = (b-a)/szelesseg;
+    double dy = (d-c)/magassag;
+    double reC, imC, reZ, imZ, ujreZ, ujimZ;
+    // Hány iterációt csináltunk?
+    int iteracio = 0;
+    // Végigzongorázzuk a szélesség x magasság hálót:
+    for(int j=0; j<magassag; ++j) {
+        //sor = j;
+        for(int k=0; k<szelesseg; ++k) {
+            // c = (reC, imC) a háló rácspontjainak
+            // megfelelõ komplex szám
+            reC = a+k*dx;
+            imC = d-j*dy;
+            // z_0 = 0 = (reZ, imZ)
+            reZ = 0;
+            imZ = 0;
+            iteracio = 0;
+            // z_{n+1} = z_n * z_n + c iterációk
+            // számítása, amíg |z_n| < 2 vagy még
+            // nem értük el a 255 iterációt, ha
+            // viszont elértük, akkor úgy vesszük,
+            // hogy a kiinduláci c komplex számra
+            // az iteráció konvergens, azaz a c a
+            // Mandelbrot halmaz eleme
+            while(reZ*reZ + imZ*imZ < 4 && iteracio < iteraciosHatar) {
+                // z_{n+1} = z_n * z_n + c
+
+                ujreZ = reZ*reZ - imZ*imZ + reC;
+                ujimZ = 2*reZ*imZ + imC;
+
+                reZ = ujreZ;
+                imZ = ujimZ;
+
+                ++iteracio;
+
+            }
+            // ha a < 4 feltétel nem teljesült és a
+            // iteráció < iterációsHatár sérülésével lépett ki, azaz
+            // feltesszük a c-rõl, hogy itt a z_{n+1} = z_n * z_n + c
+            // sorozat konvergens, azaz iteráció = iterációsHatár
+            // ekkor az iteráció %= 256 egyenlõ 255, mert az esetleges
+            // nagyítasok során az iteráció = valahány * 256 + 255
+
+            iteracio %= 256;
+
+            //a színezést viszont már majd a FrakAblak osztályban lesz
+            egySor[k] = iteracio;
+        }
+        // Ábrázolásra átadjuk a kiszámolt sort a FrakAblak-nak.
+        frakAblak->vissza(j, egySor, szelesseg);
+    }
+    frakAblak->vissza();
+
+}
+                ]]>
+            </programlisting>
+            A <function>run()</function> függvény számolja ki a Mandelbrot 
+            halmazt, és minden sor kiszámolása után meghívja a <function>vissza()</function>
+            függvényt, ami kirajzolja azt a sort az ablakba. A <function>for</function>
+            ciklus addig fut, ameddig az ablakban megjelenő összes sort ki nem számolta, 
+            vagyis ameddig a ciklusváltozó eléri a magasságot. Ezután pedig 
+            meghívódik a <function>vissza()</function> függvény, ami a kijelölés 
+            értékeit állítja vissza, és jelzi a <function>FrakAblak</function> 
+            objektumnak, hogy a számítás befejeződött.
+        </para>
+        <para>
+            Ezen hosszú elemzés végeztével pedig lássuk, mint is rejt magában a 
+            <function>main()</function> függvény, mely a <filename>main.cpp</filename>-ben
+            található.
+            <programlisting language="c++"><![CDATA[
+#include <QApplication>
+#include "frakablak.h"
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    
+    FrakAblak w1;
+    w1.show();
+                    
+    return a.exec();
+}]]>
+            </programlisting>
+            Ehhez a fájlhoz importáltuk a <function>QApplication</function>
+            headert, amire azért volt szükség, mert a <function>QApplication</function>
+            osztály teszi lehetővé, hogy grafikus felületű programokat kezeljünk.
+            A <function>main</function> függvényben példányosítunk egy 
+            objektumot, ami az imént említett osztályú. Létrehozunk egy
+            <function>FrakAblak</function> típusú objektumot w1 néven. Majd meghívjuk
+            ennek az objektumnak a <function>show()</function> függvényét. Jogosan
+            merül fel a kérdés, hpgy ez a függvény hol is van definiálva. A 
+            <function>QWidget</function> osztályban, melyet azért tudunk elérni, mert
+            a szülő osztálya a <function>QMainWindow</function>, ami a 
+            <function>FrakAblak</function> osztályunknak a szülő osztálya is.
+            Ez a függvény jeleníti meg az ablakot, amiben a program fut. Az 
+            <function>a</function> objektum <function>exec()</function> függvénye pedig
+            addig fut, ameddig a program be nem záródik. Ha minden rendben lefutott, akkor
+            nullával tér vissza, ellenkező esetben valamilyen hibakóddal. 
         </para>
     </section>                     
                                                                                                                                                                             
@@ -838,30 +1425,30 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
         <caution>
             <title>Megjegyzés</title>
             <para>
-                Telepíteni: sudo apt-get install openjdk-8-jdk 
+                Telepíteni: sudo apt-get install openjdk-8-jdk
+            </para>
+            <para>
+                Fordítás, futtatás:
+                <programlisting>
+javac MandelbrotHalmazNagyító.java
+java MandelbrotHalmazNagyító
+                </programlisting>
             </para>
         </caution>
         <para>
             Az előző feladatban készített nagyító Java implementációját
-            kell most elkészíteni. A forrás egy kicsit bugos, mivel amikor
-            nagyítasz. akkor új ablakban nyílik meg a nagyítás, melynek
-            mérete a kijelölt terület függvényében változik. Érdekesség
-            ebben a Java programban már includálva van
-            másik java program, a <filename>MandelbrotHalmaz.java</filename>.
-            Ezt a következő sorral érjük el:
-            <programlisting language="java">
-                public class MandelbrotHalmazNagyító extends MandelbrotHalmaz
-            </programlisting>
-            A Javaban nincs a már megszokott <function>#include</function>, helyette az <function>import</function>-ot
-            vagy jelen esetben az <function>extends</function>-et használjuk.
-            <figure>
-                <title>Fordítás, futtatás</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/fordit.png" format="PNG"/>
-                        </imageobject>
-                    </mediaobject>
-            </figure>
+            kell most elkészíteni. A program teljesen ugyanazokkal
+            a funkciókkal rendelkezik, mint a fentebb megismert C++-os
+            verzió, annyi különbséggel, hogy itt az "s" gomb lenyomásával
+            lehetőségünk van pillanatfelvételt készíteni a programról.
+            A kép bel felső sarkában láthatjuk az éppen vizsgált tartomány
+            koordinátáit, és az iterációs határt is. Az iterációs határ növelésére
+            ez a program egy másik lehetőséget is nyújt az "n" billentyűn kívül.
+            Az "m" gomb lenyomásával megtízszerezi a program az éppen aktuális
+            iterációs határt, mellyel a program újra számolja halmazt. Egy másik
+            újdonság az előzőhöz képest, hogy itt egy piros vonal jelöli azt, hogy
+            melyik sorban tart éppen a rajzolás. Nézzünk is meg néhány képet a 
+            programról:
             <figure>
                 <title>Mandelbrot</title>
                     <mediaobject>
@@ -894,8 +1481,15 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
                         </imageobject>
                     </mediaobject>
             </figure>
-            Az élesítést itt is az "n" billentyűvel tudod elérni.
         </para>
+        <para>
+            Most pedig nézzük meg a forrást. Most is több fájlunk van, egészen
+            pontosan 2. A <filename>MandelbrotHalmaz.java</filename> egy önmagában is
+            müködő program, ellentétben az előző feladatban megismert fájlokkal, mivel
+            azok teljesen egymásra épültek. Ez a forrás tartalmazza a MandelbrotHalmaz
+            kiszámításához szükséges algoritmust. Lássuk a forráskódját:
+            
+         </para>
     </section>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 </chapter>                
