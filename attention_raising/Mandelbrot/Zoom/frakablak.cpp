@@ -39,18 +39,59 @@ void FrakAblak::paintEvent(QPaintEvent*) {
     if(!szamitasFut) {
         qpainter.setPen(QPen(Qt::white, 1));
         qpainter.drawRect(x, y, mx, my);
+        if(!zX.empty()) //excuse me
+        {
+            for(int i=0; i<zX.size(); i++)
+            {
+                qpainter.drawLine(zX[i],zY[i],zX2[i],zY2[i]);
+            }
+ 
+        }
 
     }
     qpainter.end();
 }
 
 void FrakAblak::mousePressEvent(QMouseEvent* event) {
+    
+    if (event->button() == Qt::LeftButton)
+    {
 
-    // A nagyítandó kijelölt területet bal felsõ sarka:
-    x = event->x();
-    y = event->y();
-    mx = 0;
-    my = 0;
+        // A nagyítandó kijelölt területet bal felsõ sarka:
+        x = event->x();
+        y = event->y();
+        mx = 0;
+        my = 0;
+    }
+    else if(event->button() == Qt::RightButton)
+    {
+               double dx = (b-a)/szelesseg;
+               double dy = (d-c)/magassag;
+               double reC, imC, reZ, imZ, ujreZ, ujimZ;
+ 
+               int iteracio = 0;
+ 
+               reC = a+event->x()*dx;
+               imC = d-event->y()*dy;
+ 
+               reZ = 0;
+               imZ = 0;
+               iteracio = 0;
+ 
+               while(reZ*reZ + imZ*imZ < 4 && iteracio < 255) {
+                   // z_{n+1} = z_n * z_n + c
+                   ujreZ = reZ*reZ - imZ*imZ + reC;
+                   ujimZ = 2*reZ*imZ + imC;
+                   zX.push_back((int)((reZ - a)/dx));
+                   zY.push_back( (int)((d - imZ)/dy));
+                   zX2.push_back((int)((ujreZ - a)/dx));
+                   zY2.push_back((int)((d - ujimZ)/dy));
+                   reZ = ujreZ;
+                   imZ = ujimZ;
+ 
+                   ++iteracio;
+                }
+    }
 
     update();
 }
