@@ -45,6 +45,7 @@ private:
     int x, y;
     // A nagyítandó kijelölt terület szélessége és magassága.
     int mx, my;
+    std::vector<int> zX, zY, zX2, zY2;
 };
 
 #endif // FRAKABLAK_H
