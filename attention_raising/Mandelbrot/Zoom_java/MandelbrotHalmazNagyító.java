@@ -122,7 +122,7 @@ public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
                 java.awt.image.BufferedImage.TYPE_INT_RGB);
         java.awt.Graphics g = mentKép.getGraphics();
         g.drawImage(kép, 0, 0, this);
-        g.setColor(java.awt.Color.BLUE);
+        g.setColor(java.awt.Color.YELLOW);
         g.drawString("a=" + a, 10, 15);
         g.drawString("b=" + b, 10, 30);
         g.drawString("c=" + c, 10, 45);
@@ -132,8 +132,14 @@ public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
             g.setColor(java.awt.Color.RED);
             g.drawLine(0, sor, getWidth(), sor);
         }         
-        g.setColor(java.awt.Color.GREEN);
+        g.setColor(java.awt.Color.WHITE);
         g.drawRect(x, y, mx, my);
+        if (!zX.isEmpty())
+        {
+            for (int i = 0; i<zX.size(); ++i){
+                g.drawLine(zX.get(i), zY.get(i), zX2.get(i), zY2.get(i));
+            }
+        }
         g.dispose();        
         // A pillanatfelvétel képfájl nevének képzése:
         StringBuffer sb = new StringBuffer();
