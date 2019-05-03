@@ -8,13 +8,7 @@
     <section>
         <title><type>int **</type> háromszögmátrix</title>
         <para>
-           
-        </para>
-        <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Haromszogmatrix">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/Haromszogmatrix">itt</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -166,7 +160,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:<link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/EXOR">itt</link>                
+            Megoldás forrása:<link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/EXOR">itt</link>                
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -390,7 +384,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/EXOR">itt</link>                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/EXOR">itt</link>                
         </para>
         <para>
             <emphasis role = "strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -562,7 +556,7 @@
             Megoldás videó: <link xlink:href="https://youtu.be/Koyw6IH5ScQ">https://youtu.be/Koyw6IH5ScQ</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/NN_R">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/NN_R</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -723,7 +717,7 @@ compute(nn.exor, exor.data[,1:2])]]>
             Megoldás videó: <link xlink:href="https://youtu.be/XpBnR31BRJY">https://youtu.be/XpBnR31BRJY</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://github.com/nbatfai/nahshon/blob/master/ql.hpp#L64">https://github.com/nbatfai/nahshon/blob/master/ql.hpp#L64</link>                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Perceptron">https://github.com/nbatfai/nahshon/blob/master/ql.hpp#L64</link>                
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
