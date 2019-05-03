@@ -1488,7 +1488,506 @@ java MandelbrotHalmazNagyító
             müködő program, ellentétben az előző feladatban megismert fájlokkal, mivel
             azok teljesen egymásra épültek. Ez a forrás tartalmazza a MandelbrotHalmaz
             kiszámításához szükséges algoritmust. Lássuk a forráskódját:
-            
+            <programlisting language="java"><![CDATA[
+import java.awt.Color;
+public class MandelbrotHalmaz extends java.awt.Frame implements Runnable {
+    protected double a, b, c, d;
+    protected int szélesség, magasság;
+    protected java.awt.image.BufferedImage kép;
+    protected int iterációsHatár = 255;
+    protected boolean számításFut = false;
+    protected int sor = 0;
+    protected static int pillanatfelvételSzámláló = 0;]]>
+            </programlisting>
+            Az <function>import</function> kulcsszó segítségével tudjuk a szükséges 
+            osztáylokat hozzaádni a programunkhoz. Java-ban lényegében az egész
+            program egy osztálynak fele meg. Ennek megfelelően létrehozunk deklarálunk
+            egy osztályt <function>MandelbrotHalmaz</function> néven. Az <function>extends
+            </function> segítségével az osztályunkat kiegészítjük a <function>Frame</function>
+            osztállyal. Lényegében ez ahhoz hasonlít, mint a C++ forrásban egy 
+            szülő osztályt adtunk meg. A <function>Frame</function> osztály felelős
+            azért, hogy megalkossuk a programablakot. Az <function>implements</function>
+            kulcszsóval pedig implementáljuk a <function>Runnable</function> interfészt.
+            Ez abban különbözik egy osztálytól, hogy ebben nem tudjuk a deklarált elemeit
+            definiálni, csak az osztályon keresztül, ami implementálja. A
+            <function>Runnable</function> interfész amúgy a programszálakér felelős.
+            Minden osztálynak implementálnia kell, amelyeket egy szálon szeretnénk
+            futtatni. Láthatjuk, hogy itt is megjennek a már ismert változók, amik
+            meghatározzák a komplex számsík vizsgált [a,b]x[c,d] tartományát,
+            ennek a tartománynak a magasságát, szélességét és a Mandelbrot halmaz 
+            számítási pontosságát meghatározó iterációs határt is. Itt is van egy 
+            logikai változónk, a <function>számításFut</function>, mely azt
+            tárolja, hogy fut-e a halmaz számítása, vagy sem. Alapértelmezetten 
+            hamisra van állítva. Különleges lehet, hogy Java-ban nem lehet
+            csoportosítani a <function>public, private, protected</function>
+            elemeket. Mindegyik elé külön ki kell írni. Most nézzük meg
+            az osztály konstruktorát:
+            <programlisting language="java"><![CDATA[
+    public MandelbrotHalmaz(double a, double b, double c, double d,
+            int szélesség, int iterációsHatár) {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+        this.szélesség = szélesség;
+        this.iterációsHatár = iterációsHatár;
+        this.magasság = (int)(szélesség * ((d-c)/(b-a)));
+        kép = new java.awt.image.BufferedImage(szélesség, magasság,
+                java.awt.image.BufferedImage.TYPE_INT_RGB);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                setVisible(false);
+                System.exit(0);
+            }
+        });]]>
+            </programlisting>
+            Hasonlóan a C++-os forráshoz, itt is paraméterként kéri a számításhoz
+            szükséges változók értékét. Mivel Java-ban nincsenek pointerek, csak refernciák,
+            ezért az osztályunk változóit a <function>.</function> operátorral érjük el,
+            nem <function><![CDATA[->]]></function>. A magasságot kiszámítjuk a 
+            vizsgált terület és a megadott szélesség alapján. Majd példányosítunk
+            egy <function>BufferedImage</function> objektumot a <function>new</function>
+            operátorral, mely területet foglal a megadott objektumnak, és visszatér
+            egy referenciával. A <function>BufferedImage</function> osztály konstruktorának
+            meg kell adnunk a kép méretét és típusát.
+            Jelen esetben a képünk típusa <function>TYPE_INT_RGB</function>, ami 
+            azt jeenti, hogy RGB színeket használunk, és az egyes színkomponenseket
+            8-bites számokkal reprezentáljuk. Végül pedig meghívjuk a 
+            <function>Frame</function> osztály tagfüggvényét, a 
+            <function>addwindowListener()</function>-t. Ez a függvény azért felelős,
+            hogy kezelni tudjuk az ablakon történő behatásokat, most kifejezetten azt, hogy
+            az ablak záródjon be, ha az "x"-re kattintunk. A billentyűzetről érkező
+            bemenetket is a konstruktorban kezeljük.
+            <programlisting language="java"><![CDATA[
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if(e.getKeyCode() == java.awt.event.KeyEvent.VK_S)
+                    pillanatfelvétel();
+                else if(e.getKeyCode() == java.awt.event.KeyEvent.VK_N) {
+                    if(számításFut == false) {
+                        MandelbrotHalmaz.this.iterációsHatár += 256;
+                        számításFut = true;
+                        new Thread(MandelbrotHalmaz.this).start();
+                    }
+                } else if(e.getKeyCode() == java.awt.event.KeyEvent.VK_M) {
+                    if(számításFut == false) {
+                        MandelbrotHalmaz.this.iterációsHatár += 10*256;
+                        számításFut = true;
+                        new Thread(MandelbrotHalmaz.this).start();
+                    }
+                }
+            }
+        });]]>
+            </programlisting>
+            A feladat bevezetőjében már említettem, hogy ebben a forrásban
+            több billntyűt is kezelünk, egészen pontosan hármat. Ahhoz, hogy a
+            billentyűk lenyomását érzékelje a program a <function>addKeyListener</function>
+            függvényre van szükségünk. A konkrét lenyomásokat a program a 
+            <function>KeyAdapter()</function> osztály segítségével dolgozza fel. A 
+            <function>KeyListener</function> osztály tagfüggvényét, a <function>keyPressed</function>-et
+            használva el tudjuk érni, hogy pontosan melyik billentyű lett lenyomva, és annak 
+            függvényében utasításokat végrehajtani. Ha az "s" billentyűt nyomjuk le, akkor
+            meghívódik a <function>pillanatfelvétel()</function> függvény, "n" esetén
+            duplázzuk az iterációs határt, majd újra számoljuk a halmazt. Ugyan ezt tesszük
+            az "m" lenyomásakor is, csak akkor az iterációt a tízszeresére növeljük. 
+            <programlisting language="c++"><![CDATA[
+        // Ablak tulajdonságai
+        setTitle("A Mandelbrot halmaz");
+        setResizable(false);
+        setSize(szélesség, magasság);
+        setVisible(true);
+        // A számítás indul:
+        számításFut = true;
+        new Thread(this).start();
+    }]]>
+            </programlisting>
+            A konstruktor végén pedig az ablakot állítjuk be, amiben a 
+            program megjelenik. Majd elindítjuk a halmaz számítását.
+            <programlisting language="java">
+    public void paint(java.awt.Graphics g) {
+        // A Mandelbrot halmaz kirajzolása
+        g.drawImage(kép, 0, 0, this);
+        // Ha éppen fut a számítás, akkor egy vörös
+        // vonallal jelöljük, hogy melyik sorban tart:
+        if(számításFut) {
+            g.setColor(java.awt.Color.RED);
+            g.drawLine(0, sor, getWidth(), sor);
+        }
+    }
+            </programlisting>
+            A <function>paint()</function> egy metódus, mely arra szolgál, hogy az
+            aktuális halmazt kirajzoljuk az ablakba. Ez úgy zajlik, hogy paraméterként 
+            kap egy <function>Graphics</function> objektumot. Ennek a 
+            <function>drawImage</function> függvényének megadjuk, hogy milyen képet
+            szeretnénk kirajzolni, hova az ablakon belül, és melyik ablakba.
+            Egy piros vonallal pedig ábrázoljuk a számítás előrehaladását. Ehhez
+            elsőnek be kell állítani a színt, amit használnánk, ezt a <function>setColor</function>
+            tagfüggvénnyel tudjuk állítani. A <function>drawLine</function> függvény
+            pedig a megadott két pont közé húz egy egyenest.
+            <programlisting language="java"><![CDATA[
+    public void update(java.awt.Graphics g) {
+        paint(g);
+    }
+            ]]></programlisting>
+            Az alapértelmezett <function>update()</function> függvényt pedig felül
+            definiáljuk, annak érdekében, hogy az újraszámolás során ne fehéredjen ki 
+            a kép egy pillanatra. Az előző feladatban látott programhoz lépest újdonság a 
+            <function>pillanatfelvétel()</function> eljárás. Ennek segítségével maga
+            a program készít egy képet, nincs szükség a PrintScreen használatára.
+            <programlisting language="java"><![CDATA[
+    public void pillanatfelvétel() {
+        // Az elmentendő kép elkészítése:
+        java.awt.image.BufferedImage mentKép =
+                new java.awt.image.BufferedImage(szélesség, magasság,
+                java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.awt.Graphics g = mentKép.getGraphics();
+        g.drawImage(kép, 0, 0, this);
+        g.setColor(java.awt.Color.YELLOW);
+        g.drawString("a=" + a, 10, 15);
+        g.drawString("b=" + b, 10, 30);
+        g.drawString("c=" + c, 10, 45);
+        g.drawString("d=" + d, 10, 60);
+        g.drawString("n=" + iterációsHatár, 10, 75);
+        g.dispose();
+        // A pillanatfelvétel képfájl nevének képzése:
+        StringBuffer sb = new StringBuffer();
+        sb = sb.delete(0, sb.length());
+        sb.append("MandelbrotHalmaz_");
+        sb.append(++pillanatfelvételSzámláló);
+        sb.append("_");
+        // A fájl nevébe belevesszük, hogy melyik tartományban
+        // találtuk a halmazt:
+        sb.append(a);
+        sb.append("_");
+        sb.append(b);
+        sb.append("_");
+        sb.append(c);
+        sb.append("_");
+        sb.append(d);
+        sb.append(".png");
+        // png formátumú képet mentünk
+        try {
+            javax.imageio.ImageIO.write(mentKép, "png",
+                    new java.io.File(sb.toString()));
+        } catch(java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }]]> 
+            </programlisting>
+            A kép elkészítséhez szükség van arra, hogy létrehozzunk egy új
+            képobjektumot. Ezt nevezzük <function>mentkép</function>-nek.
+            Majd a képből készítünk egy grafikus objektumot a <function>getGraphics()</function>
+            függvény segítségével. Ezzel lehetővé tesszük, hogy a ki tdujuk rá írni a 
+            <function>kép</function>-ben tárolt halmazt, a szükséges értkéket.
+            Szöveget a képre a <function>drawString</function> függvénnyel tudjuk megtenni.
+            A <function>dispose()</function> pedig bezárja az ablakot, amiben a kép
+            tartalmának a kiírását végezzük. Majd a kép nevét adjuk meg. Ahogy a 
+            forrásban is látható, ez tartalmazza a halmaz nevét, hogy hanyadik pillanatképet
+            készítjük, és azt is, hogy melyik tartományban találtuk a halmazt.
+            Végezetül a <function>javax.imageio.ImageIO.write()</function> függvény
+            segítségével kiírjuk a <function>mentKép</function> tartalmát egy 
+            png fájlba. A célállományt a <function>java.io.File()</function>
+            segítségével hozzuk létre.
+            <programlisting language="java"><![CDATA[
+    public void run() {
+        double dx = (b-a)/szélesség;
+        double dy = (d-c)/magasság;
+        double reC, imC, reZ, imZ, ujreZ, ujimZ;
+        int rgb;
+        int iteráció = 0;
+        for(int j=0; j<magasság; ++j) {
+            sor = j;
+            for(int k=0; k<szélesség; ++k) {
+                // c = (reC, imC) a háló rácspontjainak
+                // megfelelő komplex szám
+                reC = a+k*dx;
+                imC = d-j*dy;
+                // z_0 = 0 = (reZ, imZ)
+                reZ = 0;
+                imZ = 0;
+                iteráció = 0;
+                while(reZ*reZ + imZ*imZ < 4 && iteráció < iterációsHatár) {
+                    // z_{n+1} = z_n * z_n + c
+                    ujreZ = reZ*reZ - imZ*imZ + reC;
+                    ujimZ = 2*reZ*imZ + imC;
+                    reZ = ujreZ;
+                    imZ = ujimZ;
+                    
+                    ++iteráció;
+                    
+                }
+    
+                iteráció %= 256;
+                Color bg = new Color(0, 255-iteráció, 0);
+                rgb = bg.getRGB();
+                kép.setRGB(k, j, rgb);
+            }
+            repaint();
+        }
+        számításFut = false;
+    }]]>
+            </programlisting>
+             A Mandelbrot halmaz kiszámolását a megadott tartományban a 
+            <function>run()</function> függvény végzi. Ez a <function>Runnable</function>
+            interfészben lett deklarálva, de nekünk kell definiálni. Maga az 
+            algoritmus a teljes másolata a fejeztben már többször leírtnak. Egyedüli
+            érdekesség a színezés beállítása. Deklarálunk ehhez egy <function>rgb</function>
+            nevű változót. A példányosítunk egy <function>Color</function> objektumot
+            <function>bg</function> néven, melyben eltároljuk a szükséges színt.
+            Ennek a színnek az RGB felépítése teljesen megyegyezik a C++-os verziójéval.
+            Ebből az objektumból a színt a <function>getRGB()</function> függvénnyel kapjuk
+            meg, ami egy RGB értékkel tér vissza, azaz egy egész számmal.Végül a 
+            <function>setRGB()</function> függvénnyel állítjuk be az egyes pixelek színét.
+            A <function>repaint()</function> függvény azért felelős, hogy újrarajzoljuk a 
+            halmazt a megváltozott értékek alapján. Ha végeztünk a halmaz számolásával, 
+            a <function>számításFut</function> értékét hamisra állítjuk.
+            <programlisting>
+    public static void main(String[] args) {
+        new MandelbrotHalmaz(-2.0, .7, -1.35, 1.35, 600, 255);
+    }
+            </programlisting>
+            A <function>main</function> függvényben pedig nem teszünk mást, csak
+            példányosítunk egy <function>MandelbrotHalmaz</function> objektumot.
+            Ezzel a <filename>MandelbrotHalmaz.java</filename> forrás végére értünk,
+            láthatjuk, hogy a nagyítás során végrehajtandó utasítások nagyrésze itt hajtódik
+            végre.
+         </para>
+         <para>
+             Nézzük meg, mit tartalmaz a <filename>MandelbrotHalmazNagyító.java</filename>
+             forrás fájl.
+             <programlisting language="java"><![CDATA[
+ import java.util.*;
+public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
+    private int x, y;
+    private int mx, my;
+    private List<Integer> zX = new ArrayList<>();
+    private List<Integer> zX2 = new ArrayList<>();
+    private List<Integer> zY = new ArrayList<>();
+    private List<Integer> zY2 = new ArrayList<>();]]>
+             </programlisting>
+             A <function>MandelbrotHalmazNagyító</function> osztályt kiegészítjük a 
+             már kkorábban taglalt <function>MandelbrotHalmaz</function> osztállyal.
+             Erre azért van szükség, mert a halmaz számolása abban az osztályban zajlik,
+             de maga a programablakot is ott kezeljük. Az <function>x,y</function>
+             változók a nagyítandó terület bal felső sarkát határozzák meg. A 
+             <function>mx, my</function> pedig a terület méretét. Az 
+             <function>zX, zX2, zY, zY2</function> listákban pedig a 
+             z<subscript>n</subscript> számokat tároljuk el. 
+             <programlisting language="java"><![CDATA[
+    public MandelbrotHalmazNagyító(double a, double b, double c, double d,
+        int szélesség, int iterációsHatár) {
+        super(a, b, c, d, szélesség, iterációsHatár);
+        setTitle("A Mandelbrot halmaz nagyításai");
+        // Egér kattintó események feldolgozása:
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            // Egér kattintással jelöljük ki a nagyítandó területet
+            // bal felső sarkát:
+            public void mousePressed(java.awt.event.MouseEvent m) {
+                if (m.getButton() == java.awt.event.MouseEvent.BUTTON1){
+                // A nagyítandó kijelölt területet bal felső sarka:
+                    x = m.getX();
+                    y = m.getY();
+                    mx = 0;
+                    my = 0;
+                }
+                else if(m.getButton() == java.awt.event.MouseEvent.BUTTON3)
+                {
+                    double dx = (b-a)/szélesség;
+                    double dy = (d-c)/szélesség;
+                    double reC, imC, reZ, imZ, ujreZ, ujimZ;
+ 
+                    int iteracio = 0;
+ 
+                    reC = a+m.getX()*dx;
+                    imC = d-m.getY()*dy;
+ 
+                    reZ = 0;
+                    imZ = 0;
+                    iteracio = 0;
+ 
+                    while(reZ*reZ + imZ*imZ < 4 && iteracio < 255) {
+                        // z_{n+1} = z_n * z_n + c
+                        ujreZ = reZ*reZ - imZ*imZ + reC;
+                        ujimZ = 2*reZ*imZ + imC;
+                        zX.add((int)((reZ - a)/dx));
+                        zY.add( (int)((d - imZ)/dy));
+                        zX2.add((int)((ujreZ - a)/dx));
+                        zY2.add((int)((d - ujimZ)/dy));
+                        reZ = ujreZ;
+                        imZ = ujimZ;
+ 
+                        ++iteracio;
+                    }
+                }
+                repaint();
+            }]]>
+             </programlisting>
+             Az osztály konstruktora érdekesnek tűnhet első látásra. A 
+             <function>super()</function> függvény segítségével meg tdujuk hívni a 
+             <function>MandelbrotHalmaz</function> osztály konstruktorát. Ezután 
+             hozzá tudunk férni az ablak beállításaihoz, tehát át tudjuk állítani a 
+             nevét a <function>setTitle()</function> függvénnyel. Ebben a részben 
+             valósítjuk meg az egér kezelését a programban. Ha a bal egérgombot
+             megnyomjuk, akkor a kurzor aktuális pozíciója beletöltődik a 
+             a kijelölendő terület bal felső sarkát meghatározó változókba, a 
+             terület méretét pedig nullázzuk. Ha pedig a jobb egérgomobt nyomjuk le, 
+             akkor a program kiszámolja attól a ponttól kezdve a z<subscript>n</subscript>
+             számokat, egsézen addig, míg el nem érjük az iterációs határt, vagy a 
+             z<subscript>n</subscript> értéke nem haladja meg a 2-őt. A kapott értékeket
+             pedig betöltkük a megfelelő listába. Végül meghívjuk a <function>repaint()</function>
+             függvényt.
+             <programlisting language="java"><![CDATA[
+        public void mouseReleased(java.awt.event.MouseEvent m) {
+                double dx = (MandelbrotHalmazNagyító.this.b
+                        - MandelbrotHalmazNagyító.this.a)
+                        /MandelbrotHalmazNagyító.this.szélesség;
+                double dy = (MandelbrotHalmazNagyító.this.d
+                        - MandelbrotHalmazNagyító.this.c)
+                        /MandelbrotHalmazNagyító.this.magasság;
+                // Az új Mandelbrot nagyító objektum elkészítése:
+                if(m.getButton() == java.awt.event.MouseEvent.BUTTON3){
+                    return;
+                    }
+                dispose();
+                new MandelbrotHalmazNagyító(MandelbrotHalmazNagyító.this.a+x*dx,
+                        MandelbrotHalmazNagyító.this.a+x*dx+mx*dx,
+                        MandelbrotHalmazNagyító.this.d-y*dy-my*dy,
+                        MandelbrotHalmazNagyító.this.d-y*dy,
+                        600,
+                        MandelbrotHalmazNagyító.this.iterációsHatár);
+            }
+        });]]>
+             </programlisting>
+             A konstruktor része még a egérgomb felengedését kezelő
+             függvény is. Ekkor állítjuk be a vizsgált tartomány 
+             hálósűrűségét meghatározó változókat, vagyis a <function>dx</function>
+             és <function>dy</function>-t. Különbséget kell tennünk abban, hogy 
+             melyik gombot engedtük fel, mert, ha a jobbot, akkor nem kell új
+             Mandelbrot halmazt létrehozni, vagyis <function>return</function>
+             kilépünk a függvényből. Ellenkező esetben bezárjuk a régi ablakot 
+             a <function>dipose()</function> segítségével, majd létrehozunk egy 
+             új <function>MandelbrotHalmazNagyító</function> objektumot, ami 
+             nyit egy új ablakot. Az új objektumot a nagyításra kijelölt terület alapján
+             határozzuk meg.
+             <programlisting language="java"><![CDATA[
+    addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            // Vonszolással jelöljük ki a négyzetet:
+            public void mouseDragged(java.awt.event.MouseEvent m) {
+                // A nagyítandó kijelölt terület szélessége és magassága:
+                mx = m.getX() - x;
+                my = mx;
+                repaint();
+            }
+        });]]>
+             </programlisting>
+             Ha az egerrel nem csak kattintunk, hanem húzunk is, akkor a 
+             kattintáskor lenullázott méret változókat az első és
+             az utolsó x érték különbségére módosítjuk. Mind a magasságot, 
+             mind a szélességet, ezzel garantálva, hogy mindig négyzetet jelöljünk ki.
+             Ennél is hívjuk a <function>repaint()</function> függvényt.
+             Ennek az osztálynak is van <function>pillanatfelvétel()</function>
+             függvény.
+             <programlisting language="java"><![CDATA[
+     public void pillanatfelvétel() {
+        // Az elmentendő kép elkészítése:
+        java.awt.image.BufferedImage mentKép =
+                new java.awt.image.BufferedImage(szélesség, magasság,
+                java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.awt.Graphics g = mentKép.getGraphics();
+        g.drawImage(kép, 0, 0, this);
+        g.setColor(java.awt.Color.YELLOW);
+        g.drawString("a=" + a, 10, 15);
+        g.drawString("b=" + b, 10, 30);
+        g.drawString("c=" + c, 10, 45);
+        g.drawString("d=" + d, 10, 60);
+        g.drawString("n=" + iterációsHatár, 10, 75);
+        if(számításFut) {
+            g.setColor(java.awt.Color.RED);
+            g.drawLine(0, sor, getWidth(), sor);
+        }         
+        g.setColor(java.awt.Color.WHITE);
+        g.drawRect(x, y, mx, my);
+        if (!zX.isEmpty())
+        {
+            for (int i = 0; i<zX.size(); ++i){
+                g.drawLine(zX.get(i), zY.get(i), zX2.get(i), zY2.get(i));
+            }
+        }
+        g.dispose();        
+        // A pillanatfelvétel képfájl nevének képzése:
+        StringBuffer sb = new StringBuffer();
+        sb = sb.delete(0, sb.length());
+        sb.append("MandelbrotHalmazNagyitas_");
+        sb.append(++pillanatfelvételSzámláló);
+        sb.append("_");
+        // A fájl nevébe belevesszük, hogy melyik tartományban
+        // találtuk a halmazt:
+        sb.append(a);
+        sb.append("_");
+        sb.append(b);
+        sb.append("_");
+        sb.append(c);
+        sb.append("_");
+        sb.append(d);
+        sb.append(".png");
+        // png formátumú képet mentünk
+        try {
+            javax.imageio.ImageIO.write(mentKép, "png",
+                    new java.io.File(sb.toString()));
+        } catch(java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }]]>
+             </programlisting>
+             Ez csak annyiban különbözik az előzőtől, hogy a számítás állapotát
+             jelző piros vonalat is kirajzolja, és a z<subscript>n</subscript>
+             számokat összekötő vonalakat is fehér színnel.
+             Erre azért volt szükség, mert pillanatfelvételt készítünk, így ha 
+             éppen fut a számítás, akkor meg kell jeleníteni a piros vonalat is.
+             Vagy ha kirajzoltattuk a z<subscript>n</subscript> számokat az ablakba, akkor
+             a képen is jelenjen ez meg.
+             <programlisting language="java"><![CDATA[
+    public void paint(java.awt.Graphics g) {
+        // A Mandelbrot halmaz kirajzolása
+         g.drawImage(kép, 0, 0, this);
+        // Ha éppen fut a számítás, akkor egy vörös
+        // vonallal jelöljük, hogy melyik sorban tart:         
+        if(számításFut) {
+            g.setColor(java.awt.Color.RED);
+            g.drawLine(0, sor, getWidth(), sor);
+        }         
+        // A jelző négyzet kirajzolása:
+        g.setColor(java.awt.Color.WHITE);
+        g.drawRect(x, y, mx, my);
+        if (!zX.isEmpty())
+        {
+            for (int i = 0; i<zX.size(); ++i){
+                g.drawLine(zX.get(i), zY.get(i), zX2.get(i), zY2.get(i));
+            }
+        }
+    }]]>
+             </programlisting>
+             Az osztály <function>paint</function> függvény felüldefiniálása is
+             azt a célt szolgálja, hogy az imént a pillanatfelvételnél
+             kirajzolt vonalakat az ablkban is kirajzoljuk. Egyrészt 
+             ki kell rajzolni a számítás előrehaladását jelző vonalat, ha 
+             éppen fut a halmaz számítása, ehhez piros szít használunk. Amikor
+             kijelöljük a területet az egérrel, akkor ki kell rajzolni a programnak
+             egy fehér négyzetet. Ezt a <function>drawRect()</function> függvény
+             hajtja végre. Végül abban az esetben, ha már legalább egy z<subscript>n</subscript>
+             számot kiszámoltunk, akkor az ezeket a pontokat összekötő egyeneseket
+             is ábrázoljuk.
+             <programlisting language="c++"><![CDATA[
+    public static void main(String[] args) {
+        // A kiinduló halmazt a komplex sík [-2.0, .7]x[-1.35, 1.35]
+        // tartományában keressük egy 600x600-as hálóval és az
+        // aktuális nagyítási pontossággal:
+        new MandelbrotHalmazNagyító(-2.0, .7, -1.35, 1.35, 600, 255);
+    }]]>
+             </programlisting> 
+             A <function>main</function> függvény pedig most is 
+             csak példányosít egy objektumot, jelen esteben egy 
+             <function>MandelbrotHalmazNagyító</function> osztályút.
          </para>
     </section>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
