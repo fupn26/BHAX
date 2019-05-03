@@ -93,6 +93,10 @@ public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
                         - MandelbrotHalmazNagyító.this.c)
                         /MandelbrotHalmazNagyító.this.magasság;
                 // Az új Mandelbrot nagyító objektum elkészítése:
+                if(m.getButton() == java.awt.event.MouseEvent.BUTTON3){
+                    return;
+                    }
+                dispose();
                 new MandelbrotHalmazNagyító(MandelbrotHalmazNagyító.this.a+x*dx,
                         MandelbrotHalmazNagyító.this.a+x*dx+mx*dx,
                         MandelbrotHalmazNagyító.this.d-y*dy-my*dy,
