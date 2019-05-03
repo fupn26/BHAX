@@ -1448,9 +1448,9 @@ java MandelbrotHalmazNagyító
             iterációs határt, mellyel a program újra számolja halmazt. Egy másik
             újdonság az előzőhöz képest, hogy itt egy piros vonal jelöli azt, hogy
             melyik sorban tart éppen a rajzolás. Nézzünk is meg néhány képet a 
-            programról:
+            programról:(A beépített pillanatfelvevő funkcióval készültek.)
             <figure>
-                <title>Mandelbrot</title>
+                <title></title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_1.png" format="PNG"/>
@@ -1458,7 +1458,7 @@ java MandelbrotHalmazNagyító
                     </mediaobject>
             </figure>
             <figure>
-                <title>Mandelbrot nagyítva</title>
+                <title></title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_2.png" format="PNG"/>
@@ -1466,7 +1466,7 @@ java MandelbrotHalmazNagyító
                     </mediaobject>
             </figure>
             <figure>
-                <title>Tovább nagyítva</title>
+                <title></title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_3.png" format="PNG"/>
@@ -1474,7 +1474,7 @@ java MandelbrotHalmazNagyító
                     </mediaobject>
             </figure>
             <figure>
-                <title>Még tovább javítva</title>
+                <title></title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Mandelbrot/Zoom_java/kep_4.png" format="PNG"/>
@@ -1483,8 +1483,8 @@ java MandelbrotHalmazNagyító
             </figure>
         </para>
         <para>
-            Most pedig nézzük meg a forrást. Most is több fájlunk van, egészen
-            pontosan 2. A <filename>MandelbrotHalmaz.java</filename> egy önmagában is
+            Most pedig nézzük meg a forrást, mely ismét több fájlból áll, egészen
+            pontosan 2-ből. A <filename>MandelbrotHalmaz.java</filename> egy önmagában is
             müködő program, ellentétben az előző feladatban megismert fájlokkal, mivel
             azok teljesen egymásra épültek. Ez a forrás tartalmazza a MandelbrotHalmaz
             kiszámításához szükséges algoritmust. Lássuk a forráskódját:
@@ -1590,7 +1590,7 @@ public class MandelbrotHalmaz extends java.awt.Frame implements Runnable {
             meghívódik a <function>pillanatfelvétel()</function> függvény, "n" esetén
             duplázzuk az iterációs határt, majd újra számoljuk a halmazt. Ugyan ezt tesszük
             az "m" lenyomásakor is, csak akkor az iterációt a tízszeresére növeljük. 
-            <programlisting language="c++"><![CDATA[
+            <programlisting language="java"><![CDATA[
         // Ablak tulajdonságai
         setTitle("A Mandelbrot halmaz");
         setResizable(false);
@@ -1741,7 +1741,7 @@ public class MandelbrotHalmaz extends java.awt.Frame implements Runnable {
             A <function>repaint()</function> függvény azért felelős, hogy újrarajzoljuk a 
             halmazt a megváltozott értékek alapján. Ha végeztünk a halmaz számolásával, 
             a <function>számításFut</function> értékét hamisra állítjuk.
-            <programlisting>
+            <programlisting language="java">
     public static void main(String[] args) {
         new MandelbrotHalmaz(-2.0, .7, -1.35, 1.35, 600, 255);
     }
@@ -1977,7 +1977,7 @@ public class MandelbrotHalmazNagyító extends MandelbrotHalmaz {
              hajtja végre. Végül abban az esetben, ha már legalább egy z<subscript>n</subscript>
              számot kiszámoltunk, akkor az ezeket a pontokat összekötő egyeneseket
              is ábrázoljuk.
-             <programlisting language="c++"><![CDATA[
+             <programlisting language="java"><![CDATA[
     public static void main(String[] args) {
         // A kiinduló halmazt a komplex sík [-2.0, .7]x[-1.35, 1.35]
         // tartományában keressük egy 600x600-as hálóval és az
