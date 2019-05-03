@@ -58,7 +58,7 @@ pip install matplotlib
                 MNIST mintát olvasunk be.
             </para>
             <para>
-                Módosított forrás:
+                Módosított forrás:<link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST">itt</link>
             </para>
         </caution>
         <para>
@@ -416,7 +416,7 @@ for step in range(max_steps):
             Megoldás videó: <link xlink:href="https://youtu.be/bAPSu3Rndi8">https://youtu.be/bAPSu3Rndi8</link>      
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/Microsoft/malmo/releases">itt</link>              
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
