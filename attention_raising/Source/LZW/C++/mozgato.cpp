@@ -92,12 +92,7 @@ public:
     }
     ~LZWBinFa ()
     {
-        if (gyoker != nullptr)
-        {
-            szabadit (gyoker->egyesGyermek ());
-            szabadit (gyoker->nullasGyermek ());
-            delete(gyoker);
-        }
+        szabadit(gyoker);
     }
     LZWBinFa (LZWBinFa&& forras)
     {
