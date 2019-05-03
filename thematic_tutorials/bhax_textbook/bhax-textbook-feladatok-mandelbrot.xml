@@ -160,9 +160,6 @@ int main (int argc, char *argv[])
     <section>
         <title>A Mandelbrot halmaz a <filename>std::complex</filename> osztállyal</title>
         <para>
-            Megoldás videó:
-        </para>
-        <para>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Mandelbrot">itt</link>               
         </para>
         <para>
@@ -736,10 +733,6 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
             <para>
                 Telepíteni: sudo apt-get install libqt4-dev
             </para>
-        </caution>
-        <caution>
-            <title>Megjegyzés</title>
-            <para>A feladat megoldásában tutorként részt vett Racs Tamás</para>
         </caution>
         <para>
             A program a QT GUI-t használja, ennek segítségével tudjuk elkészíteni a 
