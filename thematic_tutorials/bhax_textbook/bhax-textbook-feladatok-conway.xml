@@ -15,7 +15,7 @@
             Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2018/10/10/myrmecologist">https://bhaxor.blog.hu/2018/10/10/myrmecologist</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Myrmecologist">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Myrmecologist">itt</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -309,10 +309,7 @@ signals:
             valósítsa meg a sikló-kilövőt!
         </para>
         <para>
-            Megoldás videó: 
-        </para>
-        <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Siklokilovo/Java">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/Siklokilovo/Java">itt</link>               
         </para>
         <caution>
             <title>Megjegyzés</title>
@@ -629,10 +626,7 @@ signals:
             Most Qt C++-ban!
         </para>
         <para>
-            Megoldás videó: 
-        </para>
-        <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Siklokilovo/QT">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/Siklokilovo/QT">itt</link>               
         </para>
         <caution>
             <title>Használat</title>
@@ -860,10 +854,7 @@ void SejtSzal::idoFejlodes() {
         <para>
         </para>
         <para>
-            Megoldás videó: 
-        </para>
-        <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/BrainB">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/BrainB">itt</link>               
         </para>
         <caution>
             <title>Használata előtt</title>
