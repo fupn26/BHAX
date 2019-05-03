@@ -14,10 +14,7 @@
             nincs eltéve kiszámolt szám.
         </para>
         <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Pol%C3%A1rGen">itt</link>               
         </para>
         <para>
             Tanulságok, tapasztalatok, magyarázat... térj ki arra is, hogy a JDK forrásaiban a Sun programozói
@@ -192,10 +189,7 @@ public class PolarGenerator
             Valósítsd meg C-ben az LZW algoritmus fa-építését!
         </para>
         <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW">itt</link>               
         </para>
         <para>
             Az LZW algoritmus egy tömörítő eljárás, melyet többek között a 
@@ -475,10 +469,7 @@ rszoras (BINFA_PTR fa)
             Járd be az előző (inorder bejárású) fát pre- és posztorder is!
         </para>
         <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW">itt</link>               
         </para>
         <para>
             Az előző feladatban taglalt program módosítását fogjuk ebben a 
@@ -560,10 +551,7 @@ kiir (BINFA_PTR elem)
             osztálya. A gyökér csomópont legyen kompozícióban a fával!
         </para>
         <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW/C++">itt</link>               
         </para>
         <para>
             C-ben már megismertük az LZW algoritmust, most pedig át kell azt írni
@@ -1044,10 +1032,7 @@ main (int argc, char *argv[])
             fával!
         </para>
         <para>
-            Megoldás videó: 
-        </para>
-        <para>
-            Megoldás forrása:  
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW/C++">itt</link> 
         </para>
         <para>
             Az előző feladatban részletesen taglaltuk, hogy hogyan is épül fel a
@@ -1109,42 +1094,29 @@ LZWBinFa ()
             értékadásra alapozva!
         </para>
         <para>
-            Megoldás videó: 
-        </para>
-        <para>
-            Megoldás forrása:  
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW/C++">itt</link> 
         </para>
         <caution>
             <title>Megjegyzés</title>
             <para>A feladat megoldásában tutoráltként részt vett Országh Levente.</para>
         </caution>
         <para>
-            A feladathoz ahhoz a programhoz nyúlunk vissza, amely esetén a gyökét tag
+            A feladatban ahhoz a programhoz nyúlunk vissza, amely esetén a gyökét tag
             volt. Ezen elvégezve az apróbb módosításokat, már készen is van a mozgatókonstruktor.
             <programlisting language="c++"><![CDATA[
-     LZWBinFa ( LZWBinFa && regi ) {
-          std::cout << "LZWBinFa move ctor" << std::endl;
-
-          gyoker.ujEgyesGyermek ( regi.gyoker.egyesGyermek() );
-          gyoker.ujNullasGyermek ( regi.gyoker.nullasGyermek() );
-
-          regi.gyoker.ujEgyesGyermek ( nullptr );
-          regi.gyoker.ujNullasGyermek ( nullptr );
-
-     }
-     LZWBinFa& operator = (LZWBinFa && regi)
-     {
-         if (this == &regi)
-             return *this;
-         
-         gyoker.ujEgyesGyermek ( regi.gyoker.egyesGyermek() );
-         gyoker.ujNullasGyermek ( regi.gyoker.nullasGyermek() );
-
-         regi.gyoker.ujEgyesGyermek ( nullptr );
-         regi.gyoker.ujNullasGyermek ( nullptr );
-          
-         return *this;
-     }]]>
+     LZWBinFa (LZWBinFa&& forras) //mozgató konstruktor
+    {
+        std::cout<<"Move ctor\n";
+        gyoker = nullptr;
+        *this = std::move(forras); //ezzel kényszerítjük ki, hogy a mozgató értékadást használja
+        
+    }
+    LZWBinFa& operator= (LZWBinFa&& forras) //mozgató értékadás
+    {
+        std::cout<<"Move assignment ctor\n";
+        std::swap(gyoker, forras.gyoker);
+        return *this;
+    }]]>
             </programlisting>
             Ehhez meg kell csinálnunk a mozgató konstruktort és a mozgató értékadást.
             Mind a kettőnek hasonló a szintaktikája, ami annyit tesz, hogy a
@@ -1165,7 +1137,7 @@ LZWBinFa ()
             kinulláztuk.
         </para>
         <para>
-            Ha már tudjuk, hogy hogyan kell megcsinálni a mozgató konstruktor úgy,
+            Ha már tudjuk, hogy hogyan kell megcsinálni a mozgató konstruktort úgy,
             hogy a <function>gyoker</function> kompozícióban van, lássuk ennek a
             feladatnak a megoldását mutatóval. Észrevehetően sokkal egyszerűbb lesz.
             <programlisting language="c++"><![CDATA[
@@ -1217,15 +1189,12 @@ LZWBinFa ()
             <programlisting language="c++"><![CDATA[
     ~LZWBinFa ()
     {
-        if (gyoker != nullptr)
-        {
-            szabadit (gyoker->egyesGyermek ());
-            szabadit (gyoker->nullasGyermek ());
-            delete(gyoker);
-        }
+        szabadit(gyoker);
     }]]>
             </programlisting>
-            Ezzel a kikötéssel tudjuk biztosítani a program helyes működését.
+            Hiszen a <function>szabadit()</function> függvény csak akkor
+            kezdi el felszabadítani az egyes és nullás gyermekeket, ha 
+            az átadott pointer nem null pointer.
         </para>
     </section>                     
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
