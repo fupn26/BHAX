@@ -14,7 +14,7 @@
             Megoldás videó: <link xlink:href="https://youtu.be/z6NJE2a1zIA">https://youtu.be/z6NJE2a1zIA</link>
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/GIMP_Lisp">itt</link>              
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -144,7 +144,7 @@
             Megoldás videó: <link xlink:href="https://youtu.be/OKdAkI_c7Sc">https://youtu.be/OKdAkI_c7Sc</link>      
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://bit.ly/2DFLPe6">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/GIMP_Lisp/Chrome">itt</link>               
         </para>
         <caution>
             <title>Használat</title>
@@ -456,7 +456,7 @@ cp *.scm /home/<user_name>/snap/gimp/165/.config/GIMP/2.10/scripts/]]>
             Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2019/01/10/a_gimp_lisp_hackelese_a_scheme_programozasi_nyelv">https://bhaxor.blog.hu/2019/01/10/a_gimp_lisp_hackelese_a_scheme_programozasi_nyelv</link>      
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://bit.ly/2VCaEBY">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/GIMP_Lisp/Mandala">itt</link>               
         </para>
         <caution>
             <title>Használat</title>
