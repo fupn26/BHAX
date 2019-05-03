@@ -234,7 +234,6 @@ public class game_of_life extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.clearRect(0, 0, 1000, 1000);
             for(int i=0;i<1000;i+=diff)
             {
                 g.drawLine(i, 0, i, 1000);
