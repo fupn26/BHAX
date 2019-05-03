@@ -11,10 +11,7 @@
             Írj olyan C++ programot, amely kiszámolja a Mandelbrot halmazt!
         </para>
         <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Mandelbrot">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Mandelbrot">itt</link>               
         </para>
         <para>
             Mielőtt a Mandelbrot halmazzal foglalkoznánk, elsőnek tisztázzuk, hogy
@@ -166,7 +163,7 @@ int main (int argc, char *argv[])
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Mandelbrot">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Mandelbrot">itt</link>               
         </para>
         <para>
             Az előző feladatot fogjuk megoldani, csak most egy kicsit másképpen. Ahogy láttad,
@@ -295,7 +292,7 @@ int main (int argc, char *argv[])
             Megoldás videó: <link xlink:href="https://youtu.be/IJMbgRzY76E">https://youtu.be/IJMbgRzY76E</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf</link>
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Biomorf">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf</link>
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -464,7 +461,7 @@ main ( int argc, char *argv[] )
             Megoldás videó: <link xlink:href="https://youtu.be/gvaqijHlRUs">https://youtu.be/gvaqijHlRUs</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/CUDA">itt</link> 
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/CUDA">itt</link> 
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -719,7 +716,7 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
         </para>
             
         <para>
-            Megoldás forrása:<link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Mandelbrot/Zoom">itt</link>  
+            Megoldás forrása:<link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Mandelbrot/Zoom">itt</link>  
         </para>
 
         <para>
@@ -1415,7 +1412,7 @@ int main(int argc, char *argv[])
     <section>
         <title>Mandelbrot nagyító és utazó Java nyelven</title>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Mandelbrot/Zoom_java">itt</link> 
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Mandelbrot/Zoom_java">itt</link> 
         </para>
         <para>
             <emphasis role = "strong">
