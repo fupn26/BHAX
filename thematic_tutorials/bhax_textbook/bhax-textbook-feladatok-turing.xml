@@ -12,7 +12,7 @@
             100 százalékban minden magot!
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/V%C3%A9gtelen%20ciklus">itt</link>               
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/V%C3%A9gtelen%20ciklus">itt</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -208,7 +208,7 @@ false]]></screen>
             Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2018/08/28/10_begin_goto_20_avagy_elindulunk">https://bhaxor.blog.hu/2018/08/28/10_begin_goto_20_avagy_elindulunk</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/V%C3%A1ltoz%C3%B3%20felcser%C3%A9l%C3%A9se">itt</link>
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/V%C3%A1ltoz%C3%B3%20felcser%C3%A9l%C3%A9se">itt</link>
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -250,7 +250,7 @@ false]]></screen>
             Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2018/08/28/labdapattogas">https://bhaxor.blog.hu/2018/08/28/labdapattogas</link>
         </para>
         <para>
-            Megoldás forrása:<link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Labdapattog%C3%A1s">itt</link>
+            Megoldás forrása:<link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/Labdapattog%C3%A1s">itt</link>
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -351,7 +351,7 @@ false]]></screen>
             Megoldás videó: <link xlink:href=""></link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/Sz%C3%B3hossz">itt</link>
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/Sz%C3%B3hossz">itt</link>
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -445,7 +445,7 @@ false]]></screen>
             Megoldás videó: <link xlink:href=""></link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/fupn26/bhax/tree/master/attention_raising/Source/PageRank">itt</link>
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/PageRank">itt</link>
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -539,7 +539,7 @@ false]]></screen>
             Megoldás videó: <link xlink:href="https://youtu.be/xbYhp9G6VqQ">https://youtu.be/xbYhp9G6VqQ</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/blob/master/attention_raising/Primek_R">https://gitlab.com/nbatfai/bhax/blob/master/attention_raising/Primek_R</link>
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Primek_R">https://gitlab.com/nbatfai/bhax/blob/master/attention_raising/Primek_R</link>
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -606,7 +606,7 @@ false]]></screen>
             Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2019/01/03/erdos_pal_mit_keresett_a_nagykonyvben_a_monty_hall-paradoxon_kapcsan">https://bhaxor.blog.hu/2019/01/03/erdos_pal_mit_keresett_a_nagykonyvben_a_monty_hall-paradoxon_kapcsan</link>
         </para>
         <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/MontyHall_R">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/MontyHall_R</link>
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/MontyHall_R">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/MontyHall_R</link>
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -674,7 +674,7 @@ false]]></screen>
                 valtoztatesnyer = which(kiserlet==valtoztat)             
             ]]>
             </programlisting>
-            A for cikluson belül feltöltjük a valtoztat vektort minden esetben azzal az ajtóval, amire a játékos muatat, ha újra választ. Ezutána a valtoztatesnyer vektorbe betöltjük azonak az elemeknek
+            A for cikluson belül feltöltjük a <function>valtoztat</function> vektort minden esetben azzal az ajtóval, amire a játékos muatat, ha újra választ. Ezutána a valtoztatesnyer vektorbe betöltjük azonak az elemeknek
             az indexét, melyeknek az értéke megegyezik mind a kiserlet, mind a valtoztat tömbben. Ha ezzel megvagyunk, már csak ki kell print-elni a valtoztatesnyer és a nemvaltoztatesnyer vektorok hosszát, és
             ezzel megtudjuk, hogy melyik lesz a nagyobb. Természetesen az előbbi, ahogy már azt említettem.
         </para>
