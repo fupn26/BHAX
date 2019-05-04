@@ -274,7 +274,7 @@ public class game_of_life extends JFrame {
         while(gol.ra.running)
         {
             if(!gol.ra.edit_mode)gol.update();
-            try{Thread.sleep(200);}
+            try{Thread.sleep(120);}
             catch(Exception ex)
             {
 
