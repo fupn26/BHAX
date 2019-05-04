@@ -258,7 +258,7 @@ if __name__ == '__main__':
             A program elején importáltuk az <function>argparser</function>
             könyvtárat. Ezt arra tudjuk használni, hogy kapcsolókat tudjunk
             létrehozni a programunk számára. Jelen esetben a <function>--data_dir</function>
-            kapcsoló használatával mg tudjuk adni, hogy hol tárolj a program a 
+            kapcsoló használatával meg tudjuk adni, hogy hol tárolja a program a 
             tanuláshoz szükséges állományokat. 
         </para>
     </section>        
