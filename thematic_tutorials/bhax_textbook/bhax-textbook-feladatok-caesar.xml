@@ -842,7 +842,7 @@ int main (int argc, char **argv)
                         </imageobject>
                     </mediaobject>
             </figure>
-            Fontos figyelembe venned, hogy nem mindig fogja ugyan azt az értéket adni, szóval
+            Fontos figyelembe venned, hogy nem mindig fogja ugyanazt az értéket adni, szóval
             nem kell kétségbe esni, ha nem ugyan az jön ki, mint a képen.
         </para>
     </section>        
