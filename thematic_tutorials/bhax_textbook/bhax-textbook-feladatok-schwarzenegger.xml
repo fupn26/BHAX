@@ -15,7 +15,10 @@
         </para>
         <caution>
             <title>Megjegyzés</title>
-            <para>A feladat megoldásában tutoráltként részt vett: Stiegelmayer Máté</para>
+            <para>
+                A feladat megoldásában turorként részt vett: Halász Dávid
+                A feladat megoldásában tutoráltként részt vett: Stiegelmayer Máté
+            </para>
         </caution>
         <para>
             Megoldás forrása: <link xlink:href="https://github.com/tensorflow/tensorflow/releases/tag/v0.9.0">https://github.com/tensorflow/tensorflow/releases/tag/v0.9.0</link> (/tensorflow-0.9.0/tensorflow/examples/tutorials/mnist/), <link xlink:href="https://progpater.blog.hu/2016/11/13/hello_samu_a_tensorflow-bol">https://progpater.blog.hu/2016/11/13/hello_samu_a_tensorflow-bol</link>  
