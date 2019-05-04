@@ -397,14 +397,6 @@ cp *.scm /home/<user_name>/snap/gimp/165/.config/GIMP/2.10/scripts/]]>
             Végezetül a második réteg színeinek intenzitását módosítja egy
             görbe alapján. A görbe pontjait pedig a <function>color-curve</function>
             függvény tartalmazza.
-            <figure>
-                <title>Végeredmény</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="../../attention_raising/GIMP_Lisp/Chrome/utolso.png" format="PNG" scale="150"/>
-                        </imageobject>
-                    </mediaobject>
-            </figure>
             Lehetőségünk van alapértelmezett értékeket megadni a felhasználónak. Erre a szólgál a 
             programkód következő része:
             <programlisting>
