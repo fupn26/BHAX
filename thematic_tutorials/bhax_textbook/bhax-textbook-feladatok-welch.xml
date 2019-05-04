@@ -553,6 +553,12 @@ kiir (BINFA_PTR elem)
         <para>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW/C++">itt</link>               
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>
+                A feladat megoldásában tutoráltként részt vett: Halász Dávid
+            </para>
+        </caution>
         <para>
             C-ben már megismertük az LZW algoritmust, most pedig át kell azt írni
             C++-ra. Maga az átalakítás nem nagyon bonyolult, de azért nézzük
