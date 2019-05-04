@@ -28,7 +28,11 @@
             eltárolva. Ezt sokszor képfelisemrő programok tanítására szokták
             felhasználni, ahogy mi is tesszük ebben a feladatban. Magát a 
             programot python nyelven fogjuk megírni, de szükségünk lesz még a 
-            TensorFlow telepítésére is.
+            TensorFlow telepítésére is. A TensorFlow egy olyan szoftverkönyvtár, amit
+            gépi tanáshoz használnak. Magát a számításokat egy irányított gráfként lehet elképzelni.
+            Vannak csúcsok, amik műveleteket szimbolizálnak, rendelkezhetnek több bemenettel is.
+            Az adatok a csúcsokba az élek mentén történik, ezen haladnak a tensorok, melyek
+            tetszőleges dimenziójú vektorok. A gép tanításához pedig a softmax függvényt fojuk felhasználni.
         </para>
         <caution>
             <title>TensorFlow telepítése</title>
@@ -91,7 +95,9 @@ tf.logging.set_verbosity(tf.logging.ERROR)]]>
             </programlisting>
             Ezt a részt azért kellett kiegészíteni az utolsó két sorral,
             mert enélkül a program hibát dobott. Ahogy látható, ezen a 
-            részen importáljuk a TensorFlow szoftver könyvtárat.
+            részen importáljuk a TensorFlow szoftver könyvtárat. A 
+            <function>matplotlib.pyplot</function> könyvtárra azért van
+            szükség, hogy a képet ki tudjuk írni egy fájlba.
             <programlisting>
 #  def readimg():
 #    file = tf.read_file("sajat8a.png")
@@ -193,9 +199,70 @@ cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = 
             </programlisting>
             Az újabb TensorFlow verzió más szintaktikát alkalmaz, ezért volt szükség az
             átalakításra.
-            
-            Ahogy a neurális hálózatoknál megtanultuk, itt is tanítani kell a 
-            hálózatot. Ehhez a TensorFlow eszköztárát használjuk:
+        </para>
+        <para>
+            A programunk azon alapszik, hogy beolvasunk 28x28-as
+            képeket, és ezekről eldönti, hogy milyen szám van rajtuk.
+            Ezeket a képeket vektorrá alakítjuk, így kapunk 784 dimenziós
+            álló vektorokat. Az MNIST adatbázisban található képekhez
+            tartozik egy címke, ami azt tartalmazza, hogy milyen szám van a képen.
+            Ez a címke, egy 10 elemű vektor, amiben nullák vannak és egy 1-es.
+            Az 1-es pozíciója határozza meg, hogy milyen számról van szó. Azt, hogy
+            miylen valószínűséggel találja el a programunk a számot, a softmax függvény segítségével
+            tudjuk meg, ez egy listát ad, az egyezés valószínűségéről. Az értékek nulla és
+            egy között váltakoznak,összességében 1 az összegük. A softmax regresszió
+            2 lépésből áll. Elsőnek ki kell számolnunk egy evidenciát. Ez egy szám, 
+            amely az bemeneti adatnak az osztályba tartozását reprezentálja. Végezetül
+            az evidencia képlete:
+        </para>
+        <para>
+            Σ<subscript>j</subscript> W<subscript>i,j</subscript>x<subscript>j</subscript> + b<subscript>i</subscript>
+        </para>
+        <para>
+            A képletben a <function>W</function> jelöli az i-dik osztály súlyát, <function>b</function>
+            a torzítási értéket, <function>x</function> pedig a bemenetet.
+            Majd az így kiszámított összeget adjuk át a <function>softmax</function> függvénynek.
+            Ezeket az utasításokat hajtjuk végre a <function>main</function> első részében.
+            <programlisting><![CDATA[
+  x = tf.placeholder(tf.float32, [None, 784]) # Nx784 mátrix
+  W = tf.Variable(tf.zeros([784, 10])) #784x10 mátrix
+  b = tf.Variable(tf.zeros([10])) #10x1 mátrix(vektor)
+  y = tf.matmul(x, W) + b         # Nx10 mátrix]]>
+            </programlisting>
+            Tehát a bemenetet reprezentáló <function>x</function>-nél
+            létrehozunk egy tensort. Megadjuk a beolvasandó képek mind
+            784 dimenziós vektork, a None pedig azt jelöli, hogy tetszöleges számú
+            bemenetünk lehet. A súlyokat és a hibaértékeket pedig nullára állítjuk
+            elsőnek. A <function>malmul</function> segítségével megvalósítjuk a 
+            mátrix szorzást és a mátrix összeadást. Az így kapott több dimenziós
+            vektort pedig az <function>y</function> változóban tároljuk. Ezzel
+            elkészítettük a modellünket. A modell tanítsásához a 
+            keresztantrópia hibafüggvényt fojuk használni. Erre azért van szükség, 
+            mert meg kell határoznunk a programnak, hogy mi a jó modell. Ennek pont 
+            az ellentétét adjuk meg a keresztantrópia segítségével.
+            A függvény a következő:
+        </para>
+        <para>
+            H<subscript>y'</subscript>(y)=Σ<subscript>i</subscript> y'<subscript>i</subscript>log(y<subscript>i</subscript>)  
+        </para>
+        <para>
+            Tehát az <function>y</function> jelöli, hogy modellunk által jósolt valószínűség eloszlást, a <function>y'</function>
+            pedig a valódit.
+            <programlisting>
+                y_ = tf.placeholder(tf.float32, [None, 10]) # Nx10 mátrix
+            </programlisting>
+            A <function>y_</function> egy újabb tensor, ami pedig a valódi valószínűségeket fogja tárolni.
+            Ezutá pedig már implementálhatjuk a keresztanrtópia hibafüggvényt:
+            <programlisting>
+  cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = y_, logits = y))
+  train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+            </programlisting>
+            A <function>train_step</function> változóban pedig egy folymatot tárolunk, amit
+            a <function>tf.train.GradientDescentOptimizer(0.5).minimize()</function> ad vissza.
+            A folyamat itt egy csomópontot jelent, ami tensorokon műveleteket hajt végre.
+            Ez egy grádiens módszeren alapuló optimalizálás, mely segítségével 
+            csökkenthetjük a hibaszázalékot.
+            Ezek után interaktív session-be léptetjük a modellt.
             <programlisting>
   sess = tf.InteractiveSession()
   # Train
@@ -208,8 +275,9 @@ cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = 
       print(i/10, "%")
   print("----------------------------------------------------------")
             </programlisting>
-            A tanításhoz létrehozunk egy interaktív session-t, mely
-            az alapértlemezett session lesz a tanítás során. A 
+            A <function>tf.initialize_all_variables().run(session=sess)</function>
+            segítségével inicializáljuk a változókat.
+            Majd
             <function>for</function> cikluson belül 1000-szer
             végrehajtjuk a tanítást a pontosabb eredmény érdekében, folyamat 
             előrehaladását 
@@ -237,16 +305,28 @@ cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = 
   print("-- Ezt a halozat ennek ismeri fel: ", classification[0])
   print("----------------------------------------------------------")
             </programlisting>
-            Első lépésként megtudjuk, hogy a modell mennyire pontos. Ezt 
-            a felhasználóval tudatjuk. Majd megnyitjuk az első képet, és
+            Első lépésként megtudjuk, hogy a modell mennyire pontos.
+            Ehhez elsőnek összehasonlítjuk a legnagyobb értékeinek az indexét az
+            <function>y</function> és <function>y_</function> vektoroknak.
+            Az indexeket a <function>tf.argmax()</function> függvény adja meg.
+            Ennek az értékét adjuk át paraméterként a <function>tf.equal()</function>
+            függvénynek. Ez egy listát ad vissza, hamis és igaz értékkel. Ezeket
+            az értékeket lebegőpontos számmá alakítjuk a <function>tf.cast()</function>
+            segítségével, majd kiszámoljuk a lista eleminek átlag értékét a <function>tf.reduce_mean()</function>
+            függvény segítségével, ami a pontosságát adja a modellünknek.
+            Ezt 
+            a felhasználóval tudatjuk, úgy hogy kiszámoljuk a pontosságot
+            a tesztelt adatokra nézve, mely eredményt a <function>sess.run()</function>
+            függvény adja vissza.
+            Majd megnyitjuk az első képet, és
             ha a felhasználó bezárja az ablakot, akkor megtudjuk a program
             melyik számra tippel. Eddig tesztelésem során nem hibázott, szóval
             elég nagy eséllyel eltalálja. A program, amúgy 90%-os ponotossággal
-            dolgozik, ez teszi lehetővé a jó eredméynt.
+            dolgozik, ez teszi lehetővé a jó eredményt.
             A képeket az MNIST adatbázisból töltjük be, a <function>matplotlib</function>
             könyvtár segítségével rajzoltatjuk ki a képet a felhasználó elé, majd
             elmentjük a képet egy fájlba.  Azt, hogy minek ismerte fel a 
-            program a képet, a <function>calssification</function> tömbben tároljuk el.
+            program a képet, a <function>calssification</function> listában tároljuk el.
             <programlisting>
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -259,7 +339,7 @@ if __name__ == '__main__':
             könyvtárat. Ezt arra tudjuk használni, hogy kapcsolókat tudjunk
             létrehozni a programunk számára. Jelen esetben a <function>--data_dir</function>
             kapcsoló használatával meg tudjuk adni, hogy hol tárolja a program a 
-            tanuláshoz szükséges állományokat. 
+            tanuláshoz szükséges állományokat.
         </para>
     </section>        
 
