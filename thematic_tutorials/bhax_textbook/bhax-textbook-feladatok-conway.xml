@@ -717,6 +717,10 @@ g.fillRect(i+2, j+2, diff-3, diff-3);]]>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/Siklokilovo/QT">itt</link>               
         </para>
         <caution>
+            <title>Passzolva</title>
+            <para></para>
+        </caution>
+        <caution>
             <title>Használat</title>
             <para>
                 <programlisting>
@@ -944,6 +948,10 @@ void SejtSzal::idoFejlodes() {
         <para>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/BrainB">itt</link>               
         </para>
+        <caution>
+            <title>Passzolva</title>
+            <para></para>
+        </caution>
         <caution>
             <title>Használata előtt</title>
             <para>
