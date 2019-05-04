@@ -342,12 +342,12 @@ signals:
         <para>
             A szabályok a következők:
             <programlisting>
-                1. szabály: Egy sejt csak akkor marad életbe, ha 2 vagy 3 szomszédja van.
-                2. szabály: Ha egy sejtnek 3-nál több szomszédja van, túlnépesedés miatt
+1. szabály: Egy sejt csak akkor marad életbe, ha 2 vagy 3 szomszédja van.
+2. szabály: Ha egy sejtnek 3-nál több szomszédja van, túlnépesedés miatt
                 meghal. Ha pedig 2-nél kevesebb a szomszédai száma, akkor
                 pedig az elszigetelődés miatt hal meg.
-                3. szabály: Egy sejt megszületik, ha az üres cellának 3 élő sejt
-                található a szomszédos cellákban.
+3. szabály: Egy sejt megszületik, ha az üres cellának pontosan 3 élő sejt
+                található a szomszédos celláiban.
             </programlisting>
             Ezen szabályok megadásával elképesztő animációkat kapunk,
             de mi most kifejezetten egyre, a siklókilövőre koncentrálunk.
@@ -385,11 +385,14 @@ signals:
             A <function>game_of_life</function> osztálynak a 
             <function>JFrame</function> a szülőosztálya. A 
             <function>JFrame</function> osztályra azért van szükség,
-            hogy az ablak, amiben a prograunk fut, megjelenjen.
+            hogy az ablak, amiben a programunk fut, megjelenjen.
             Deklarálunk egy <function>RenderArea</function> objektumot,
-            melynek segítségével az ablak specifikációját adjuk meg.
+            mellyel a hálót és a sejteket fogjuk kirajzolni.
             A <function>game_of_life()</function> konstruktorban pont
-            ezeket állítjuk be. Megadjuk az ablak nevét, a méretét. Beállítjuk
+            ezeket állítjuk be. A <function>super()</function> függvénnyel
+            meghívjuk a szülő osztály konstruktorát, ezután be tudjuk 
+            személyre tudjuk szabni a programablakot.
+            Megadjuk az ablak nevét, a méretét. Beállítjuk
             azt, hogy hogyan záródjon be a program alapértelmezetten, és az
             átméretezhetőséget kikapcsoljuk, mivel fix abalkmérettel
             dolgozunk. Az <function>ra</function> objektumot hozzáadjuk
@@ -398,7 +401,7 @@ signals:
             koordinátáit. Végül pedig meghatározzuk, hol legyen az origó, 
             ahonnan a koordinátákat kirajzoljuk.
             <programlisting language="java"><![CDATA[
-	    for (int i = 0; i < siklokilovo.length; ++i)
+	for (int i = 0; i < siklokilovo.length; ++i)
         {
           ra.entities.get(min_o + siklokilovo[i][1]).set(min_s+ siklokilovo[i][0],!ra.entities.get(min_o + siklokilovo[i][1]).get((min_s+ siklokilovo[i][0])));
                 this.update(this.getGraphics());  
@@ -408,13 +411,24 @@ signals:
         ra.edit_mode = false;
         ra.running = true;]]>
             </programlisting>
-            A <function>for</function> ciklusban kirajzoljuk az egyes
-            sejteket a képernyő megadott pontjaira.
+            A <function>for</function> ciklusban az <function>ra</function>
+            objektum <function>entities</function> listájának átadjuk a 
+            kiinduló sejtek pozícióját. Majd meghívjuk az <function>update</function>
+            függvényt, amely frissíti az ablak tartalmát. Ez a függvény egy 
+            tagfüggvénye a <function>JComponent</function> osztálynak. Azért tudjuk elérni, 
+            mert a <function>RenderArea</function> osztályunknak az őse a
+            <function>JPanel</function> osztály, aminek az őse a <function>JComponent</function>.
+            Abban 
+            különbözik a miénktől, hogy paraméteréül kér egy 
+            <function>Graphics</function> osztályú objektumot.
+            Ilyen objektumot
+            a <function>getGraphics()</function> függvénnyel tudunk készíteni az
+            ablakunkból. 
             Az <function>edit_mode</function>-ra azért van szükség, mert
             a program képes lenne egyedi ábrák használatára is, de ez most
             nem része a feladatnak. A <function>running</function>
             pedig jelzi, hogy a program fut.
-            <programlisting language="c++"><![CDATA[
+            <programlisting language="java"><![CDATA[
 	public void update() {
         ArrayList<ArrayList<Boolean>> entities = new ArrayList<ArrayList<Boolean>>();// = ra.entities;
         int size1 = ra.entities.size();
@@ -563,7 +577,6 @@ signals:
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.clearRect(0, 0, 1000, 1000);
             for(int i=0;i<1000;i+=diff)
             {
                 g.drawLine(i, 0, i, 1000);
@@ -597,21 +610,95 @@ signals:
         
     }]]>
             </programlisting>
-            A <function>RenderArea</function> osztály segítségével 
-            történik a sejtek kirajzolása, a rácsháló megjelenítése,
-            és a billentyűzet kezelést is ez az osztály implementálja,
-            és az egérkezelést is, csak most azt nem használjuk, ezért
-            a likelt forrásban azt kikommentelve találod. A
-            <function><![CDATA[@override]]></function> címke segítségével
-            az alatta lévő függvényt nem kell a programban deklarálni.
+            A <function>RenderArea</function> osztály a <function>JPanel</function>
+            osztály gyermeke, éa implementálja a <function>KeyListener</function>
+            interfészt. Az intefész és az osztály között annyi a különbség, 
+            hogy az interfészben nincsenek definiálva a tagfüggvények. Azokat
+            nekünk kell definiálni a saját osztályunkon belül.  
+            Az osztály konstruktorában meghívjuk a <function>JPanel</function>
+            konstruktorát. Eközött és a JFrame között annyi a különbség, hogy a 
+            <function>JFrame</function> osztály a fő abalkot alakítja ki, a 
+            <function>JPanel</function> pedig ebbe az ablakba illeszkedik bele.
+            Beállitjuk a panel szélességét, amely a fő abalkéval egyenlő, a 
+            <function>setSize()</function> segítségével. A <function>setVisible(true)</function>
+            láthatóvá teszi a panelt. Beállítjuk a az előtér és a háttér színét 
+            feketére és fehérre. A <function>diff</function> a kirajzolandó
+            háló sűrűségét határozza meg. Hozzáadjuk a panelhez a 
+            billentyűzet kezelését, és a kétdimenziós listánkban minden 
+            elem logikai értékét hamisra állítjuk. Tehát alap esetben minden
+            sejt halott. 
+            A
+            <function><![CDATA[@override]]></function> címkével azt jelöljük, hogy 
+            a függvény nem az osztályban van deklarálva, hiszen a <function>KeyListener</function>
+            deklarálja azokat. Mivel implementáltuk ezt az interfészt, ezért minden
+            tagfüggvényét kötelezően definiálnunk kel, ezért láthatod, hogy néhány
+            függvény nem csinál semmit. Mi azt kezeljük, amikor a felhasználó 
+            felengedi az egyik billentyűt, erre szolgál a <function>KeyReleased</function>
+            függvény. Ezek közül a "q" billentyű kezelése lényeges, mivel a program
+            jelenleg nem képes iteraktívitásra. Ha képes lenne, akkor az "e" billentyűvel
+            lépnénk ki a szerkesztő módból. A "c" pedig a kijelölt négyzeteket tisztította volna, 
+            ha előről szeretnénk kezdeni a szerkesztést. A "q" billentyűvel ki tudunk lépni a programból.
+            A <function>paintComponent</function> szintén egy felüldefiniált függvény, ez a
+            <function>JPanel</function> osztály tagfüggvénye. A függvény elsőnek 
+            a <function>super.paintComponent</function> függvényt hívja meg. Ez újra
+            rajzolja a panelt úgy, mintha mi nem módosítottunk volna a tagfüggvényen.
+            Ez azért hasznos, mert így nem kell nekünk az egészet kirajzolni, csak
+            azt a részt, amit módosítani szeretnénk. Tehát ha mi az 1000x1000-es panelből
+            csak egy 500x500-as rész újrarajzolására szeretnénk használni
+            a <function>paintComponent</function>-et, akkor a maradék részt az 
+            alapértelmezett <function>paintComponent</function> kirajzolja nekünk.
+            Mi ezt a függvényt  a rácsháló kirajzolására használjuk, plusz a 
+            sejteket is ezzel ábrázoljuk. A hálót simán a <function>drawLine()</function>
+            függvénnyel ábrázoljuk. A sejteket viszont úgy, hogy nem a teljes
+            négyzetet töltjük ki, hanem adunk neki egy fehér keretet.
+            <programlisting language="java"><![CDATA[
+ if(entities.get(i/diff).get(j/diff))
+        {
+            g.setColor(Color.BLACK);
+                    
+        }
+ else
+        {
+            g.setColor(Color.WHITE);
+        }
+                    
+g.fillRect(i+2, j+2, diff-3, diff-3);]]>
+            </programlisting>  
         </para>
         <para>
-            Végezetül a <function>main</function>-ben deklarálunk egy
+            Végezetül a <function>main</function>-ben példányosítunk egy
             <function>game_of_life</function> objektumot, majd addig 
             jelenítjük meg az újabb állapotokat, ameddig a felhasználó
             le nem nyomja a "q" billentyűt, vagy be nem zárja a programot.
-        </para>
-        <figure>
+            <programlisting language="java"><![CDATA[
+    public static void main(String args[])
+    {
+        game_of_life gol = new game_of_life();
+        while(gol.ra.running)
+        {
+            if(!gol.ra.edit_mode)gol.update();
+            try{Thread.sleep(120);}
+            catch(Exception ex)
+            {
+
+            }
+            gol.ra.update(gol.ra.getGraphics());
+        }
+        gol.dispose();
+    }]]>
+            </programlisting>
+            A <function>while</function> cikluson belül hívjuk meg a 
+            saját <function>update()</function> függvényünket, mellyel 
+            újraszámoljuk a sejtek állapotát, és pozícióját. Majd 
+            a szálat altatjuk 120 miliszekundumig. Ez az utasítás azért került
+            egy kivételkezelő blokkba, mert enélkül a Java fordító hibát dobott.
+            A ciklus utolsó utasítása, hogy meghívjuk a másik <function>update()</function>
+            függvényt, melynek segítségével frissítjuk az ablak tartalmát. A program
+            futásának végeztével, pedig a <function>dipose()</function> függvénnyel
+            bezárjuk az ablakot. Ez akkor hívódik meg, amikor a "q" gomb lenyomásával a
+            <function>running</function> változó hamisra változik, vagyis kilépünk a 
+            <function>while</function> ciklusból. 
+            <figure>
                 <title>Siklókilövő</title>
                 <mediaobject>
                     <imageobject>
@@ -619,6 +706,7 @@ signals:
                     </imageobject>
                 </mediaobject>
             </figure>
+         </para>
     </section>        
     <section>
         <title>Qt C++ életjáték</title>
@@ -836,7 +924,7 @@ void SejtSzal::idoFejlodes() {
     racsIndex = (racsIndex+1)%2;
 }]]>
             </programlisting>
-            Magát a konkrét szabályokat a <function>idoFejlodes</function>
+            Magát a konkrét szabályokat az <function>idoFejlodes</function>
                     eljárás tartatja be, itt dől el, hogy egy sejt milyen állapotba
                     kerül.
             <figure>
