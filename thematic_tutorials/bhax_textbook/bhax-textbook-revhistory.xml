@@ -34,4 +34,196 @@
             Aktualizálás, javítások.
         </revremark>
     </revision>
+    <revision>
+        <revnumber>0.0.5</revnumber>
+        <date>2019-03-01</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Turing feladatsor kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.0.6</revnumber>
+        <date>2019-03-08</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Chomsky feladatsor kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.0.6</revnumber>
+        <date>2019-03-15</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Ceasar feladatsor kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.0.7</revnumber>
+        <date>2019-03-22</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Mandelbrot feladatsor kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.0.8</revnumber>
+        <date>2019-03-29</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Welch feladatsor kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.0.9</revnumber>
+        <date>2019-03-30</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Kernighan olvasónapló hozzáadva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.0</revnumber>
+        <date>2019-04-05</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Conway feladatsor kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.1</revnumber>
+        <date>2019-04-08</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló <![CDATA[K&R]]> fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.2</revnumber>
+        <date>2019-04-10</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló <![CDATA[Pici könyv]]> fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.3</revnumber>
+        <date>2019-04-13</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Schwarzenegger feladatsor kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.4</revnumber>
+        <date>2019-04-15</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló <![CDATA[K&R]]> és BME fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.5</revnumber>
+        <date>2019-04-16</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló Pici fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.6</revnumber>
+        <date>2019-04-17</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló BME fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.7</revnumber>
+        <date>2019-04-19</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló BME fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.8</revnumber>
+        <date>2019-04-20</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló Pici fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.1.9</revnumber>
+        <date>2019-04-21</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló BME fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.2.0</revnumber>
+        <date>2019-04-25</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló BME fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.2.1</revnumber>
+        <date>2019-04-26</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Olvasónapló Pici fejezete frissitve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.2.2</revnumber>
+        <date>2019-04-30</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Chaitin fejezet kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.2.3</revnumber>
+        <date>2019-05-02</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Mandelbrot fejezet Java zoom része kiegészítve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.2.4</revnumber>
+        <date>2019-05-03</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Mandelbrot fejezet Qt zoom része kiegészítve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.2.5</revnumber>
+        <date>2019-05-03</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Schwarzenegger fejezet Mély MNIST része passzolva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.2.6</revnumber>
+        <date>2019-05-04</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Conway ÉLetjátékának Java része kiegészítve
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.2.7</revnumber>
+        <date>2019-05-04</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Hibák javítása
+        </revremark>
+    </revision>
 </revhistory>
