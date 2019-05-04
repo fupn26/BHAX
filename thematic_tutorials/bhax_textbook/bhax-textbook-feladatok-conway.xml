@@ -717,10 +717,6 @@ g.fillRect(i+2, j+2, diff-3, diff-3);]]>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/Siklokilovo/QT">itt</link>               
         </para>
         <caution>
-            <title>Passzolva</title>
-            <para></para>
-        </caution>
-        <caution>
             <title>Használat</title>
             <para>
                 <programlisting>
@@ -768,14 +764,8 @@ public:
     void vissza(int racsIndex);
 
 protected:
-    // Két rácsot használunk majd, az egyik a sejttér állapotát
-    // a t_n, a másik a t_n+1 idõpillanatban jellemzi.
     bool ***racsok;
-    // Valamelyik rácsra mutat, technikai jellegû, hogy ne kelljen a
-    // [2][][]-ból az elsõ dimenziót használni, mert vagy az egyikre
-    // állítjuk, vagy a másikra.
     bool **racs;
-    // Megmutatja melyik rács az aktuális: [rácsIndex][][]
     int racsIndex;
     // Pixelben egy cella adatai.
     int cellaSzelesseg;
@@ -792,12 +782,157 @@ private:
 
 };]]>
             </programlisting>
-            A <function>sejtablak.cpp</function> és 
-            <function>sejtablak.h</function>-ban található a 
-            <function>SejtAblak</function> osztály, ez felelős
-            a program kirajzolásáért a képernyőre. A <filename>sejtablak.cpp</filename>
-            fájlból a siklókilövő implementációját emelném ki, ebben 
-            egy kicsit mást megoldást használtunk.
+            A <filename>sejtablak.h</filename>
+            fájlban előre deklaráljuk a <function>Sejtszal</function>
+            osztályt, erre azért van szükség, hogy használni tudjuk
+            az elemeit a <function>SejtAblak</function> osztályban.
+            A <function>SejtAblak</function> osztály a <function>QMainWindow</function>
+            osztály leszármazottja, ezért elérheti annak a tagfüggvényeit.
+            A <function>Q_OBJECT</function> makróval tesszük lehetővé, hogy a 
+            fordító kezelni tudja a Qt-s kiegészítéseket. A <function>public</function>
+            részben található a konstruktor és a destruktor deklarációja. Itt definiáljuk
+            a sejteket állapotát jelző változókat is, és a <function>vissza</function> függvényt. Ezek az osztályon kívül is elérhetőek.
+            A <function>protected</function> rész az, amelyet a leszármazott osztályok is
+            elérhetnek. Két logikia tipusra mutató mutatónk van, <function>racsokra</function>
+            azért van szükség, mert 2 rácsot használunk, egyik tartalmazza az aktuális
+            állapotot, a másik pedig az eggyel későbbit. Ezek valamelyikére mutata a
+            <function>racs</function> mutató. A <function>racsIndex</function> azt 
+            jelöli, hogy melyik rácsot használjuk éppen. A cellák méretét
+            a <function>cellaSzelesseg</function> és <function>cellaMagassag</function>
+            változók tárolják. A <function>paintEvent</function> egy <function>QMainWindow</function>-beli
+            tagfüggvény, mellyel az aktuális rácsot rajzoljuk ki. A <function>siklokilovo</function>
+            és a <function>siklo</function> függvények azt adják meg, hogy melyik pontjai legyenek
+            élő sejtek a rácsnak, ahhoz, hogy a program kirajzoljon egy siklót, vagy egy siklókilövőt.
+            A <function>private</function> részben pedig egy <function>Sejtszal</function> objektumra
+            mutató pointert deklarálunk. 
+            A <filename>sejtablak.cpp</filename> fájl tartalmazza az osztály 
+            tagfüggvényinek a definiálását. Elsőnek lássuk a konstruktort:
+            <programlisting language="c++"><![CDATA[
+SejtAblak::SejtAblak(int szelesseg, int magassag, QWidget *parent)
+    : QMainWindow(parent)
+{
+    setWindowTitle("A John Horton Conway-féle életjáték");
+
+    this->magassag = magassag;
+    this->szelesseg = szelesseg;
+
+    cellaSzelesseg = 6;
+    cellaMagassag = 6;
+
+    setFixedSize(QSize(szelesseg*cellaSzelesseg, magassag*cellaMagassag));
+
+    racsok = new bool**[2];
+    racsok[0] = new bool*[magassag];
+    for(int i=0; i<magassag; ++i)
+        racsok[0][i] = new bool [szelesseg];
+    racsok[1] = new bool*[magassag];
+    for(int i=0; i<magassag; ++i)
+        racsok[1][i] = new bool [szelesseg];
+
+    racsIndex = 0;
+    racs = racsok[racsIndex];
+    // A kiinduló racs minden cellája HALOTT
+    for(int i=0; i<magassag; ++i)
+        for(int j=0; j<szelesseg; ++j)
+            racs[i][j] = HALOTT;
+    // A kiinduló racsra "ELOlényeket" helyezünk
+    //siklo(racs, 2, 2);
+    sikloKilovo(racs, 5, 60);
+
+
+    eletjatek = new SejtSzal(racsok, szelesseg, magassag, 120, this);
+    eletjatek->start();
+
+}]]>
+            </programlisting>
+            A konstruktor egy magasságot, egy szélességet, és egy 
+            <function>QWidget</function> objektumra mutató pointert kér paramétereként.
+            A <function>QWidget</function> osztály adja az alapját a felhasználói felületet
+            létrehozó objektumoknak.
+            Érdekesség, hogy meghívja a <function>QMainWindow</function> osztály 
+            konstruktorát is, aminek paraméterül átadja a pointert. Ennek köszönhetően
+            be tudjuk állítani az ablak nevét a <function>setWindowTitle</function> függvéynnel.
+            A <function>this</function> az aktuális objektumra mutató pointer. Ezért
+            ennek segítségével adjuk meg, hogy minek a változóját szeretnénk definiálni. Ha
+            nem használnánk, akkor nem tudna a fordító különbséget tenni az azonos nevű változók között.
+            A <function>cellaSzelesseg</function> és <function>cellaMagassag</function>
+            változóknál erre nincs szükség, azok értékét 6-ra állítjuk. A <function>setFixedSize</function>
+            függvénnyel beállítjuk az ablak méretét. Ehhez <function>QSize</function>
+            osztályt használjuk, ami egy kétdimenziós vektornak a méretét adja vissza.
+            Ezután létrehozzuk a két rácsot, a <function>racsIndexet</function> nullára
+            állítjuk, és a <function>racs</function> mutatót ráállítjuk a index által
+            meghatározott rácsra. Ezt a rácsot feltöltjük csupa halott sejttel. Meghívjuk
+            a <function>sikloKilovo</function> függvényt és példányosítunk egy <function>Sejtszal</function>
+            objektumot, és elindítjuk a programszálat a <function>start()</function> függvénnyel.
+            Ezt azért tehetjük meg, mert a <function>SejtSzal</function> osztály leszármazottja a
+            <function>QThread</function> osztálynak.
+            <programlisting language="c++"><![CDATA[
+void SejtAblak::paintEvent(QPaintEvent*) {
+    QPainter qpainter(this);
+
+    // Az aktuális
+    bool **racs = racsok[racsIndex];
+    
+    // racsot rajzoljuk ki:
+    for(int i=0; i<magassag; ++i) { // végig lépked a sorokon
+        for(int j=0; j<szelesseg; ++j) { // s az oszlopok
+            // Sejt cella kirajzolása
+            if(racs[i][j] == ELO)
+                qpainter.fillRect(j*cellaSzelesseg, i*cellaMagassag,
+                                  cellaSzelesseg, cellaMagassag, Qt::black);
+            else
+                qpainter.fillRect(j*cellaSzelesseg, i*cellaMagassag,
+                                  cellaSzelesseg, cellaMagassag, Qt::white);
+            qpainter.setPen(QPen(Qt::gray, 1));
+
+            qpainter.drawRect(j*cellaSzelesseg, i*cellaMagassag,
+                              cellaSzelesseg, cellaMagassag);
+        }
+    }
+
+    qpainter.end();
+}]]>
+            </programlisting>
+            A <function>paintEvent</function> függvény felelős azért, hogy a 
+            sejteket kirajzoljuk az ablakba. Elsőnek példányosítunk egy 
+            <function>QPainter</function> objektumot, ez az osztály felelős azért, 
+            hogy rajzolni tudjunk. A <function>racsIndex</function> függvényében
+            eldöntjük, hogy melyik rácsban rajzolunk. Elsőnek egy négyzetet
+            kitöltünk fehérrel, ha halott, és feketével, ha élő az ott lévő sejt.
+            Ehhez a <function>fillRect</function> függvényt használjuk. Majd a 
+            <function>setPen</function> függvénnyel a átállítjuk a rajzoló eszköz színét
+            szürkére, és 1 pixeles vastagságra. Ezzeket az értékeket a <function>QPen</function>
+            osztály segítségével adjuk át a függvénynek. Végül szürke színnel körbe rajzoljuk
+            a négyzetet.
+            <programlisting language="c++"><![CDATA[
+SejtAblak::~SejtAblak()
+{
+    delete eletjatek;
+
+    for(int i=0; i<magassag; ++i) {
+        delete[] racsok[0][i];
+        delete[] racsok[1][i];
+    }
+
+    delete[] racsok[0];
+    delete[] racsok[1];
+    delete[] racsok;
+
+
+}]]>
+            </programlisting>
+            A destruktor segítségével felszabadítjuk a pointerek által mutatott tárterületet,
+            vagyis a rácsokat és a <function>Sejtszal</function> objektumot, amire
+            az <function>eletjatek</function> mutat.
+            <programlisting language="c++">
+void SejtAblak::vissza(int racsIndex)
+{
+    this->racsIndex = racsIndex;
+    update();
+}
+            </programlisting>
+            A <function>vissza</function> függvény segítségével állítjuk át a <function>racsIndex</function> változót. Majd frissítjük
+            az ablak tartalmát.
             <programlisting language="c++"><![CDATA[
 void SejtAblak::sikloKilovo(bool **racs, int x, int y) {
 
@@ -856,11 +991,9 @@ void SejtAblak::sikloKilovo(bool **racs, int x, int y) {
 
 }]]>
             </programlisting>
-            A koordinátákat ezúttal nem egy tömbben tároljuk, hanem
-            egyesével kirajzoljuk az összes sejtet a megfelelő pontokra.
-            Egy másik különbség, hogy a Java-s példában a konstruktor készítette
-            el a siklókilövőhöz szükséges ábrát, itt egy külön eljárást írtunk ezen
-            funkcionalitás megoldására.
+            A <function>siklokilovo</function> függvény pedig 
+            élőre állítja <function>racs</function> mutató által mutaott rács
+            megfelelő tagjait.
             <programlisting language="c++"><![CDATA[
 #include <QThread>
 #include "sejtablak.h"
@@ -892,11 +1025,73 @@ protected:
 
 };]]>
             </programlisting>
-            A <filename>sejtszal.h</filename> és a 
-            <filename>sejtszal.cpp</filename> fájlok tartalmazzák
-            a <function>SejtSzal</function> osztályt, mely a 
-            szabályok implementálását tartalmazza. Itt zajlik az
-            egyes sejtek elhalálozása, születése és életben maradása.
+            A <filename>sejtszal.h</filename> headerben definiáljuk a <function>Sejtszal</function>
+            osztályt, de a <function>SejtAblak</function> osztályt is előre deifiniáljuk.
+            A <function>Sejtszal</function> osztály a <function>QThread</function> osztály
+            gyermeke, mely segítségével programszálaakat kezelhetünk. Itt is használjuk a 
+            <function>Q_OBJECT</function> makrót. A <function>protected</function> részben
+            deklarálunk egy változót a rácsok kezelésére, a rács szélességét és magasságát
+            is eltároljuk ebben az osztályban. A <function>racsIndex</function>-re szintén
+            szükség van. Hogy ne legyen túl gyors a sejtautomata, ezért beállítunk egy 
+            bizonyos várakozási időt, ezt az értéket a <function>vvarakozas</function>
+            változóban tároljuk. Az <function>idoFejlodes</function> függvény segítségével
+            implementáljuk a Conway-féle szabályokat, és az alapján eldöntjük a sejt állapotát.
+            Hogy megkapjuk az adott sejt szomszédainak számát, deklarálujuk a <function>szomszedokSzama</function>
+            függvényt. Végül pedig deklarálunk egy <function>SejtAblak</function> objektumra mutató pointert.
+            <programlisting language="c++"><![CDATA[
+SejtSzal::SejtSzal(bool ***racsok, int szelesseg, int magassag, int varakozas, SejtAblak *sejtAblak)
+{
+    this->racsok = racsok;
+    this->szelesseg = szelesseg;
+    this->magassag = magassag;
+    this->varakozas = varakozas;
+    this->sejtAblak = sejtAblak;
+
+    racsIndex = 0;
+}]]>
+            </programlisting>
+            A <function>Sejtszal</function> osztály konstruktora paramétereként kéri a kér rácsot, azok szélességét, és magasságát, valamint a várkozási időt és
+            egy pointert egy <function>SejtAblak</function> objektumra. A paraméterként kapott értékeket átadjuk az osztály tagváltozóinak, és a <function>racsIndex</function>
+            változót nullázzuk.
+            <programlisting><![CDATA[
+int SejtSzal::szomszedokSzama(bool **racs,
+                              int sor, int oszlop, bool allapot) {
+    int allapotuSzomszed = 0;
+    // A nyolcszomszédok végigzongorázása:
+    for(int i=-1; i<2; ++i)
+        for(int j=-1; j<2; ++j)
+            // A vizsgált sejtet magát kihagyva:
+            if(!((i==0) && (j==0))) {
+        // A sejttérbõl szélének szomszédai
+        // a szembe oldalakon ("periódikus határfeltétel")
+        int o = oszlop + j;
+        if(o < 0)
+            o = szelesseg-1;
+        else if(o >= szelesseg)
+            o = 0;
+
+        int s = sor + i;
+        if(s < 0)
+            s = magassag-1;
+        else if(s >= magassag)
+            s = 0;
+
+        if(racs[s][o] == allapot)
+            ++allapotuSzomszed;
+    }
+
+    return allapotuSzomszed;
+}]]>
+            </programlisting>
+            A <function>szomszedokSzama</function> függvény egy adott rács adott pontjának szomszádait viszgálja. 
+            Paraméterként egy logikai változót is kap, ezzel tudjuk meghatározni, hogy élő vagy halott szomszédokat
+            keresünk. Egy sejtnek nyolc szomszédja lehet, tehát ezeken megyünk végig. Magát a sejet nem viszgáljuk, ezért
+            van az <function>if</function> feltétel. Egyéb esetben, ha az <function>o</function> változó értéke kisebb, mint 0, akkor
+            átugrunk az utolsó oszlopra. Ha az <function>o</function> nagyobb, mint nulla, akkor pedig az első oszlopra ugrunk. Ugyanezt
+            a megoldást alkalmazzuk a sorokra is. Majd megvizsgáljuk, hogy a rács <function>s</function>. sorában és
+            <function>o</function>. oszlopában milyen állapotú sejt található. Ha ez megegyezik a keresett <function>allapot</function>-tal, akkor
+            növeljük a <function>allapotuSzomszed</function> változó értékét 1-el. A függvény peig ennek a változónak a végső
+            értékével fog visszatérni.
             <programlisting language="c++"><![CDATA[
 void SejtSzal::idoFejlodes() {
 
@@ -917,7 +1112,7 @@ void SejtSzal::idoFejlodes() {
                     racsUtana[i][j] = SejtAblak::HALOTT;
             }  else {
                 /* Halott halott marad, ha három élõ
-             szomszedja van, különben élõ lesz. */
+             szomszedja van,akkor élõ lesz. */
                 if(elok==3)
                     racsUtana[i][j] = SejtAblak::ELO;
                 else
@@ -930,7 +1125,27 @@ void SejtSzal::idoFejlodes() {
             </programlisting>
             Magát a konkrét szabályokat az <function>idoFejlodes</function>
                     eljárás tartatja be, itt dől el, hogy egy sejt milyen állapotba
-                    kerül.
+            kerül. Elsőnek meghatározzuk, hogy melyik rácsból váltunk melyikbe. Majd
+            ezalapján a <function>racsUtana</function> rácsba betöltjük a sejtállapotokat. 
+            Ahhoz, hogy ezt megtegyük, tudnunk kell, hogy az egyes sejteknek a <function>racsElotte</function>
+            rácsban milyen szomszédai voltak. Ehhez meghívjuk az imént taglalt <function>szomszedokSzama</function> függvényt.
+            A szabályokat a Java-s feladatban már tisztáztuk, szóval azt most nem részletezzük. A végén a rácsindexet átállítja 
+            az éppen aktuálisan frissített rácsra.
+            <programlisting language="c++"><![CDATA[
+void SejtSzal::run()
+{
+    while(true) {
+        QThread::msleep(varakozas);
+        idoFejlodes();
+        sejtAblak->vissza(racsIndex);
+    }
+
+}]]>
+            </programlisting>
+            A <function>run()</function> függvényt felüldefiniáljuk. Egy végtelen ciklust hozunk létre. Ebben elsőnek altatjuk az éppen futó
+            programszálat, a <function>varakozas</function> változóban megadott ideig, majd meghívjuk a <function>idoFejlodes</function> függvényt.
+            Végezetül pedig a <function>sejtAblak</function> objektum <function>vissza</function> függvényének átadjuk az éppen frissített rács 
+            indexét, hogy az megjenelítse az ablakban az aktuális állapotot.
             <figure>
                 <title>Siklókilövő</title>
                 <mediaobject>
