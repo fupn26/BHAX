@@ -723,6 +723,7 @@ std::cout << (float) delta / CLOCKS_PER_SEC << " sec" << std::endl;
             <title>Megjegyzés</title>
             <para>
                 A feladat megoldásában tutorként részt vett Racs Tamás.
+                Tutorálként pedig Halász Dávid.
             </para>
         </caution>
         <para>
