@@ -6,7 +6,7 @@
         </keywordset>
     </info>
     <section>
-        <title><type>int **</type> háromszögmátrix</title>
+        <title><type>double **</type> háromszögmátrix</title>
         <para>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/bhax/tree/master/attention_raising/Source/Haromszogmatrix">itt</link>               
         </para>
@@ -48,14 +48,14 @@
                         </imageobject>
                     </mediaobject>
             </figure>
-            A könnyebb megértés érdekében vegyük sorra, hogy mi is van az ábrán. Legfelül látjuk az <function><![CDATA[int **tm]]></function> mutatót, ez a deklaráció. Azért áll 4 négyzetből, mert az
-            int típusú változók 4 bájtosak. És ez a mutató egy <function><![CDATA[int*]]></function>-ra mutat, vagyis annak a memóriacímére, a memóriacím kerül be a kék oválisba.
+            A könnyebb megértés érdekében vegyük sorra, hogy mi is van az ábrán. Legfelül látjuk az <function><![CDATA[double **tm]]></function> mutatót, ez a deklaráció. Azért áll 4 négyzetből, mert az
+            <function>double</function> típusú változók 8 bájtosak. És ez a mutató egy <function><![CDATA[double*]]></function>-ra mutat, vagyis annak a memóriacímére, a memóriacím kerül be a kék oválisba.
             Ezután láthatod a <function>tm+1</function>-et, ez azt jelenti, hogy a <function>tm</function> mutató "eggyel" arrébb mutat, vagyis 4 bájttal árrébb. 
             A <function><![CDATA[*(tm+1)]]></function>-el pedig a benne lévő értéket kaojuk meg. Ezzel ekvivalens jelölés, mely talán jobban érthető, ha úgy képzeljük el ezt,
             mintha egy tömb lenne. Tehát a <function>tm+1</function> értelmezhető így: <function><![CDATA[&tm[1]]]></function>, vagyis a <function>tm</function> tömb második elemének
             memóriacímeként. Ebből következik, hogy a <function><![CDATA[*(tm+1)]]></function> pedig a <function><![CDATA[tm[1]]]></function>, mely nem más, mint a <function>tm</function> tömb második elemének
-            az értéke. Mivel még mindig a pointereknél tartunk, ezért ez az érték szintén egy memóriacím lesz, mégpedig egy int típusú változójé. És ezzel megérkeztünk a 
-            változók szintjére, ahol már nincsenek pointerek. Ha azt akarod tudni, hogy mi a <function><![CDATA[*(tm+1)]]></function> által mutatott int értéke, akkor egyszerű a dolgunk,
+            az értéke. Mivel még mindig a pointereknél tartunk, ezért ez az érték szintén egy memóriacím lesz, mégpedig egy <function>double</function> típusú változójé. És ezzel megérkeztünk a 
+            változók szintjére, ahol már nincsenek pointerek. Ha azt akarod tudni, hogy mi a <function><![CDATA[*(tm+1)]]></function> által mutatott <function>double</function> értéke, akkor egyszerű a dolgunk,
             csak elé rakunk még egy csillagot, tehát <function><![CDATA[*(*(tm+1))]]></function>. Értelem szerűen, itt úgy tudsz a következő elemre mutatni, hogy +1-et hozzáadsz, vagyis
             <function><![CDATA[*(tm+1)+1]]></function>, ennek az értékét pedig <function><![CDATA[*(*(tm+1)+1)]]></function>. Ebben az esetben is használhatod a tömbös analógiát. Mivel a mátrix lényegében
             egy két dimenziós tömb, ezért ábrázolhatod így is <function><![CDATA[&tm[1][1]]]></function> a memóriacímet, és <function>tm[1][1]</function>-el az értékét.
@@ -71,17 +71,17 @@
                 main ()
                 {               
                     int nr = 5;
-                    int **tm;]]>
+                    double **tm;]]>
             </programlisting>
             Az elején, ahogy már megszoktad includálj a megfelelő header fájlokat, az stdio.h ismerős
             lehet, ez kell a <function>printf</function> használatához, és most megismerkedünk
             az stdlib.h-val, mely a <function>malloc</function> utasítás használatához lesz szükséges.
-            Az <function>nr</function> tartalmazza az oszlopok számát, ls itt deklarájuk a
+            Az <function>nr</function> tartalmazza az oszlopok számát, és itt deklarájuk a
             <function><![CDATA[**tm]]></function> pointert is.
             <programlisting language="c"><![CDATA[
                 printf("%p\n", &tm);
     
-                if ((tm = (int **) malloc (nr * sizeof (int *))) == NULL)
+                if ((tm = (double **) malloc (nr * sizeof (double *))) == NULL)
                 {
                     return -1;
                 }
@@ -90,23 +90,23 @@
             </programlisting>
             Ebben a részben a <function>printf</function> kiírja a tm memóriacímét, majd az if feltételén belül, a <function>tm</function>-et ráállítjuk a malloc által
             foglalt 5*8 bájtnyi táterületre. A malloc egy pointert ad vissza, ami a lefoglalt tárra mutat, <function>void *</function> típusút, tehát bármely típust
-            vissza tud adni típuskényszerítéssel. Jelen esetben ez <function>**int</function> visszaadására kényszerítjük. Majd az if feltételeként megvizsgáljuk, hogy
+            vissza tud adni típuskényszerítéssel. Jelen esetben ez <function>double **</function> visszaadására kényszerítjük. Majd az if feltételeként megvizsgáljuk, hogy
             tudott-e lefoglalni területet a malloc, ha nem, akkor visszatérünk hibával. Ha a tárfoglalás sikerült, akkor kíírjuk a lefoglalt tár címét.
             Ha az ábrát visszanézed, most tartunk a második sorban.
             <programlisting language="c"><![CDATA[
                  for (int i = 0; i < nr; ++i)
                  {
-                       if ((tm[i] = (int *) malloc ((i + 1) * sizeof (int))) == NULL)
+                       if ((tm[i] = (double *) malloc ((i + 1) * sizeof (double))) == NULL)
                        {
                             return -1;
                         }
 
                 }]]>
             </programlisting>
-            A <function>for</function> cikluson belül "létrehozzuk" az ábra szerinti második sor elemeit, melyek <function>int *</function> típusúak. A ciklusban 0-tól megyünk 4-ig, egyesével
+            A <function>for</function> cikluson belül "létrehozzuk" az ábra szerinti második sor elemeit, melyek <function>double *</function> típusúak. A ciklusban 0-tól megyünk 4-ig, egyesével
             lépkedve. A <function>tm</function> mutatót itt úgy kezeljük, mint egy tömböt, és a tm által mutatott mutatókahoz foglalunk tártetületet, és ráállítjuk őket. Éredemes megfigyelni,
-            hogy mindegyikhez i+1-szer 4 bájtot foglalunk le, és a malloc <function>int *</function>-ot ad vissza. Itt is megvizsgáljuk, hogy sikerült-e a foglalás, hanem hibával
-            térünk vissza. Most kész a másdik sor, és mindegyik <function>int *</function> egy harmadik sorban lévő <function>int</function>-ek csopoortjának első elemére mutat, mindegyik más
+            hogy mindegyikhez i+1-szer 4 bájtot foglalunk le, és a malloc <function>double *</function>-ot ad vissza. Itt is megvizsgáljuk, hogy sikerült-e a foglalás, hanem hibával
+            térünk vissza. Most kész a másdik sor, és mindegyik <function>double *</function> egy harmadik sorban lévő <function>double</function>-ek csopoortjának első elemére mutat, mindegyik más
             csoportra.
             <programlisting language="c"><![CDATA[
                 printf("%p\n", tm[0]);    
@@ -122,7 +122,7 @@
                     printf ("\n");
                 }]]>
             </programlisting>
-            Kiíratjuk a harmadik sor első int csoportjának első elemének a memóriacímét. Majd a for cikluson belül értéket adunk a harmadik sori <function>int</function>-eknek. Az
+            Kiíratjuk a harmadik sor első <function>double</function> csoportjának első elemének a memóriacímét. Majd a for cikluson belül értéket adunk a harmadik sori <function>double</function>-eknek. Az
             <function>i</function>-vel megyünk a 4-ig, vagyis <function>nr-1</function>-ig, <function>j</function>-vel pedig mindig 0-tól i-ig. Az i jelöli a sorok számét, a j pedig
             az oszlopokét. Mártix minden eleméhez a sorszám*(szorszám+1)/2+oszlopszám, és ezzel megkapjuk a feladat legelején felvázolt mátrixot, amit a következő <function>for</function>
             -ban már csak elemenként kiíratunk.
