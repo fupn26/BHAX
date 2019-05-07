@@ -1104,7 +1104,7 @@ LZWBinFa ()
         </para>
         <caution>
             <title>Megjegyzés</title>
-            <para>A feladat megoldásában tutoráltként részt vett Országh Levente.</para>
+            <para>A feladat megoldásában tutoráltként részt vett Országh Levente és Stigi Máté.</para>
         </caution>
         <para>
             A feladatban ahhoz a programhoz nyúlunk vissza, amely esetén a gyökét tag
@@ -1187,7 +1187,7 @@ LZWBinFa ()
         
     }]]>
             </programlisting>
-            Jelenleg ez konstruktorunk, de ez hibás. Gondoljunk arra, hogy a 
+            Jelenleg ez destruktorunk, de ez hibás. Gondoljunk arra, hogy a 
             forrásunk gyökerét kinulláztuk, és ezután meg szeretnénk
             hívni a szabadít függvényt annak a gyökérnek az egyes és nullás
             gyermekére, aki nem is mutat már semmire. Tehát ezeket az utasításokat
