@@ -250,4 +250,12 @@
             Conway Qt siklókilövő kiegészítve
         </revremark>
     </revision>
+    <revision>
+        <revnumber>0.3.1</revnumber>
+        <date>2019-05-07</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Háromszögmátrix és Mozgató konstruktor feladat javítva
+        </revremark>
+    </revision>
 </revhistory>
