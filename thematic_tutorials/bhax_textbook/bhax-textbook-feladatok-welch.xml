@@ -1169,7 +1169,8 @@ LZWBinFa ()
             ahova az erdeti fánkat akarjuk mozgatni, a gyökér mutatóját kinullázzuk,
             majd pedig meghívjuk a mozgató értékadást, úgy hogy az argumentumként 
             átadott fát egyenlővé tesszük a cél fával, természetesen jobbértértékké
-            alakítva. A mozgató értékadásban pedig megcseréljük a cél fa gyökerének
+            alakítva. A jobbértékké alakítást oldja meg a <function>move()</function> függvény. 
+            A mozgató értékadásban pedig megcseréljük a cél fa gyökerének
             és a forrás fa gyökerének az értékét, melyben a <function>swap</function>
             van segítségünkre. 
             Ezzel megoldjuk a forrás fa kinullázását egy lépésben. Ha csak ennyit
