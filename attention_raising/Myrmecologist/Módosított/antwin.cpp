@@ -75,7 +75,7 @@ void AntWin::screenshot()
     
     QPainter qpainter;
     qpainter.begin(image);
-    grid = grids[gridIdx];
+//    grid = grids[gridIdx];
 
     for ( int i=0; i<height; ++i ) {
         for ( int j=0; j<width; ++j ) {
