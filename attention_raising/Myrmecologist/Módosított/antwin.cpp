@@ -73,7 +73,6 @@ AntWin::AntWin ( int width, int height, int delay, int numAnts,
 void AntWin::screenshot()
 {
     
-    image->fill(Qt::white);
     QPainter qpainter;
     qpainter.begin(image);
     grid = grids[gridIdx];
