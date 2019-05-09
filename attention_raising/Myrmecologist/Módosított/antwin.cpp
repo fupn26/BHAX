@@ -70,68 +70,9 @@ AntWin::AntWin ( int width, int height, int delay, int numAnts,
     antThread->start();
 
 }
-void AntWin::screenshot()
+void AntWin::rendering(QPaintDevice* objektum)
 {
-    
-    QPainter qpainter;
-    qpainter.begin(image);
-//    grid = grids[gridIdx];
-
-    for ( int i=0; i<height; ++i ) {
-        for ( int j=0; j<width; ++j ) {
-
-            double rel = 255.0/max;
-            qpainter.fillRect ( j*cellWidth, i*cellHeight,
-                                cellWidth, cellHeight,
-                                QColor ( 255,
-                                         255 - grid[i][j]*rel,
-                                         255 - grid[i][j]*rel) );
-            
-
-            if ( grid[i][j] != min )
-            {
-                qpainter.setPen (
-                    QPen (
-                        QColor ( 255,
-                                 255 - grid[i][j]*rel, 255-grid[i][j]*rel),
-                        1 )
-                );
-
-                qpainter.drawRect ( j*cellWidth, i*cellHeight,
-                                    cellWidth, cellHeight );
-            }
-
-
-
-            qpainter.setPen (
-                QPen (
-                    QColor (0,0,0 ),
-                    1 )
-            );
-
-            qpainter.drawRect ( j*cellWidth, i*cellHeight,
-                                cellWidth, cellHeight );
-
-        }
-    }
-
-    for ( auto h: *ants) {
-        qpainter.setPen ( QPen ( Qt::black, 1 ) );
-
-        qpainter.drawRect ( h.x*cellWidth+1, h.y*cellHeight+1,
-                            cellWidth-2, cellHeight-2 );
-
-    }
-    qpainter.end();
-    
-}
-
-void AntWin::paintEvent ( QPaintEvent* )
-{
-    QPainter qpainter ( this );
-    //qpainter.drawImage(0,0,*image);
-
-    grid = grids[gridIdx];
+     QPainter qpainter ( objektum );
 
     for ( int i=0; i<height; ++i ) {
         for ( int j=0; j<width; ++j ) {
@@ -187,6 +128,19 @@ void AntWin::paintEvent ( QPaintEvent* )
     }
 
     qpainter.end();
+}
+
+
+void AntWin::screenshot()
+{
+    
+    rendering(image);   
+}
+
+void AntWin::paintEvent ( QPaintEvent* )
+{
+    grid = grids[gridIdx];
+    rendering(this);
 }
 
 AntWin::~AntWin()
