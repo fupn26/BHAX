@@ -77,6 +77,7 @@ public:
     //void pillanatfelvetel(QPaintEvent*);
     //void keyPressEvent(QKeyEvent*);
     void screenshot();
+    void rendering(QPaintDevice* objektum);
 
 private:
 
