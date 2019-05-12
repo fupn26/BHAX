@@ -36,6 +36,7 @@ protected:
     void mouseMoveEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
     void keyPressEvent(QKeyEvent*);
+    void screenshot();
 
 private:
     QImage* fraktal;
