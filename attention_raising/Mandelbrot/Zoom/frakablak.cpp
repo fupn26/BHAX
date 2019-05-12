@@ -131,6 +131,23 @@ void FrakAblak::mouseReleaseEvent(QMouseEvent* event) {
 
     update();
 }
+void FrakAblak::screenshot()
+{
+    QPainter draw(fraktal);
+    draw.setPen(QColor(255,255,0));
+    QString a_s = "a="+QString::number(a);
+    QString b_s = "b="+QString::number(b);
+    QString c_s = "c="+QString::number(c);
+    QString d_s = "d="+QString::number(d);
+    QString n_s = "n="+QString::number(iteraciosHatar);
+    
+    draw.drawText(10,15,a_s);
+    draw.drawText(10,30,b_s);
+    draw.drawText(10,45,c_s);
+    draw.drawText(10,60,d_s);
+    draw.drawText(10,75,n_s);
+    
+}
 
 void FrakAblak::keyPressEvent(QKeyEvent *event)
 {
@@ -138,13 +155,18 @@ void FrakAblak::keyPressEvent(QKeyEvent *event)
     if(szamitasFut)
         return;
 
-    if (event->key() == Qt::Key_N)
+    if (event->key() == Qt::Key_N){
         iteraciosHatar *= 2;
-    szamitasFut = true;
-
-    delete mandelbrot;
-    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
-    mandelbrot->start();
+        szamitasFut = true;
+        
+        delete mandelbrot;
+        mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+        mandelbrot->start();
+    }
+    else if (event->key() == Qt::Key_S){
+        screenshot();
+        fraktal -> save("image.png");
+    }
 
 }
 
