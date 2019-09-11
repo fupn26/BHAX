@@ -62,7 +62,7 @@
     
     <section>
         <title>
-            <emphasis role='green'>deprecated - Hello, Android!</emphasis>
+            <emphasis role='cadiumgreen'>deprecated - Hello, Android!</emphasis>
         </title>
         <para>
             Élesszük fel a <link xlink:href="https://github.com/nbatfai/SamuEntropy/tree/master/cs">https://github.com/nbatfai/SamuEntropy/tree/master/cs</link> projektjeit és vessünk össze

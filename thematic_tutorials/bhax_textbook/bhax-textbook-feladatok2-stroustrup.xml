@@ -7,8 +7,10 @@
     </info>
 
     <section>
-        <title>A BPP algoritmus Java megvalósítása</title>
+        <title>JDK osztályok</title>
         <para>
+            Írjunk olyan Boost C++ programot (indulj ki például a fénykardból) amely kilistázza a JDK összes
+            osztályát (miután kicsomagoltuk az src.zip állományt, arra ráengedve)!
         </para>
         <para>
             Megoldás videó:
@@ -22,9 +24,28 @@
     </section>        
 
     <section>
-        <title>Java osztályok a Pi-ben</title>
+        <title>Másoló-mozgató szemantika</title>
         <para>
-            Az előző feladat kódját fejleszd tovább: vizsgáld, hogy Vannak-e Java osztályok a Pi hexadecimális kifejtésében!
+            Kódcsipeteken (copy és move ctor és assign) keresztül vesd össze a C++11 másoló és a mozgató
+            szemantikáját, a mozgató konstruktort alapozd a mozgató értékadásra!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>
+    
+    <section>
+        <title>Hibásan implementált RSA törése</title>
+        <para>
+            Készítsünk betű gyakoriság alapú törést egy hibásan implementált RSA kódoló:
+            <link xlink:href="https://arato.inf.unideb.hu/batfai.norbert/UDPROG/deprecated/Prog2_3.pdf">https://arato.inf.unideb.hu/batfai.norbert/UDPROG/deprecated/Prog2_3.pdf (71-73 fólia)</link> által
+            készített titkos szövegen.
         </para>
         <para>
             Megoldás videó:
@@ -37,5 +58,33 @@
         </para>
     </section>        
         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+
+    <section>
+        <title>Változó argumentumszámú ctor</title>
+        <para>
+            Készítsünk olyan példát, amely egy képet tesz az alábbi projekt Perceptron osztályának bemenetére
+            és a Perceptron ne egy értéket, hanem egy ugyanakkora méretű „képet” adjon vissza. (Lásd még a 4
+            hét/Perceptron osztály feladatot is.)
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+
+    <section>
+        <title>Összefoglaló</title>
+        <para>
+            Az előző 4 feladat egyikéről írj egy 1 oldalas bemutató „”esszé szöveget!
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+
 </chapter>                

@@ -7,8 +7,12 @@
     </info>
 
     <section>
-        <title>A BPP algoritmus Java megvalósítása</title>
+        <title>Port scan</title>
         <para>
+            Mutassunk rá ebben a port szkennelő forrásban a kivételkezelés szerepére!
+        </para>
+        <para>
+            <link xlink:href="https://www.tankonyvtar.hu/hu/tartalom/tkt/javat-tanitok-javat/ch01.html#id527287">https://www.tankonyvtar.hu/hu/tartalom/tkt/javat-tanitok-javat/ch01.html#id527287</link>
         </para>
         <para>
             Megoldás videó:
@@ -22,9 +26,10 @@
     </section>        
 
     <section>
-        <title>Java osztályok a Pi-ben</title>
+        <title>AOP</title>
         <para>
-            Az előző feladat kódját fejleszd tovább: vizsgáld, hogy Vannak-e Java osztályok a Pi hexadecimális kifejtésében!
+            Szőj bele egy átszövő vonatkozást az első védési programod Java átiratába! (Sztenderd védési
+            feladat volt korábban.)
         </para>
         <para>
             Megoldás videó:
@@ -37,5 +42,62 @@
         </para>
     </section>        
         
+    <section>
+        <title>
+            <emphasis role="cadiumgreen">Android Játék</emphasis>
+        </title>
+        <para>
+            Írjunk egy egyszerű Androidos „játékot”! Építkezzünk például a 2. hét „Helló, Android!” feladatára!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
+
+    <section>
+        <title>Junit teszt</title>
+        <para>
+            A <link xlink:href="https://progpater.blog.hu/2011/03/05/labormeres_otthon_avagy_hogyan_dolgozok_fel_egy_pedat">https://progpater.blog.hu/2011/03/05/labormeres_otthon_avagy_hogyan_dolgozok_fel_egy_pedat</link>
+            poszt kézzel számított mélységét és szórását dolgozd be egy Junit tesztbe (sztenderd védési feladat
+            volt korábban).
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+    <section>
+        <title>
+            <emphasis role="blue">OSCI</emphasis>
+        </title>
+        <para>
+            Készíts egyszerű C++/OpenGL-es megjelenítőt, amiben egy kocsit irányítasz az úton. A kocsi
+            állapotát minden pillanatban mentsd le. Ezeket add át egy Prolog programnak, ami egyszerű reflex
+            ágensként adjon vezérlést a kocsinak, hasonlítsd össze a kézi és a Prolog-os vezérlést. Módosítsd
+            úgy a programodat, hogy ne csak kézzel lehessen vezérelni a kocsit, hanem a Prolog reflex ágens
+            vezérelje!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
+
 </chapter>                

@@ -33,11 +33,11 @@
 
 
 
-<xsl:template match="emphasis[@role='green']">
+<xsl:template match="emphasis[@role='cadiumgreen']">
         <xsl:param name="content">
             <xsl:apply-templates/>
         </xsl:param>
-        <xsl:text>{\color{cadmiumgreen}</xsl:text> <!--add extra color: add to xcolor.sty \definecolor{colorname}{RGB}{R,G,B}
+        <xsl:text>{\color{cadmiumgreen}</xsl:text> <!--add extra color: add to xcolor.sty \definecolor{colorname}{RGB}{R,G,B}-->
         <xsl:copy-of select="$content"/>
         <xsl:text>}</xsl:text>
 </xsl:template>

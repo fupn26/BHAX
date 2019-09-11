@@ -7,8 +7,11 @@
     </info>
 
     <section>
-        <title>A BPP algoritmus Java megvalósítása</title>
+        <title>MNIST</title>
         <para>
+            Az alap feladat megoldása, +saját kézzel rajzolt képet is ismerjen fel,
+            <link xlink:href="https://progpater.blog.hu/2016/11/13/hello_samu_a_tensorflow-bol">https://progpater.blog.hu/2016/11/13/hello_samu_a_tensorflow-bol</link> Háttérként ezt vetítsük le:
+            https://prezi.com/0u8ncvvoabcr/no-programming-programming/
         </para>
         <para>
             Megoldás videó:
@@ -22,9 +25,10 @@
     </section>        
 
     <section>
-        <title>Java osztályok a Pi-ben</title>
+        <title>Deep MNIST</title>
         <para>
-            Az előző feladat kódját fejleszd tovább: vizsgáld, hogy Vannak-e Java osztályok a Pi hexadecimális kifejtésében!
+            Mint az előző, de a mély változattal. Segítő ábra, vesd össze a forráskóddal a
+            <link xlink:href="https://arato.inf.unideb.hu/batfai.norbert/NEMESPOR/DE/denbatfai2.pdf">https://arato.inf.unideb.hu/batfai.norbert/NEMESPOR/DE/denbatfai2.pdf</link> 8. fóliáját!
         </para>
         <para>
             Megoldás videó:
@@ -37,5 +41,80 @@
         </para>
     </section>        
         
+    <section>
+        <title>
+            <emphasis role="cadiumgreen">CIFAR-10</emphasis>
+        </title>
+        <para>
+            Az alap feladat megoldása, +saját fotót is ismerjen fel,
+            <link xlink:href="https://progpater.blog.hu/2016/12/10/hello_samu_a_cifar-10_tf_tutorial_peldabol">https://progpater.blog.hu/2016/12/10/hello_samu_a_cifar-10_tf_tutorial_peldabol</link>
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+           <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+    <section>
+        <title>Android telefonra a TF objektum detektálója</title>
+        <para>
+            Telepítsük fel, próbáljuk ki!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+           <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
+
+    <section>
+        <title>SMNIST for Machines</title>
+        <para>
+            Készíts saját modellt, vagy használj meglévőt, lásd: <link xlink:href="https://arxiv.org/abs/1906.12213">https://arxiv.org/abs/1906.12213</link>
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+           <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
+
+    <section>
+        <title>Minecraft MALMO-s példa</title>
+        <para>
+            A <link xlink:href="https://github.com/Microsoft/malmo">https://github.com/Microsoft/malmo</link> felhasználásával egy ágens példa, lásd pl.:
+        </para>
+        <para>
+            <link xlink:href="https://youtu.be/bAPSu3Rndi8">https://youtu.be/bAPSu3Rndi8</link>,
+        </para>
+        <para>
+            <link xlink:href="https://bhaxor.blog.hu/2018/11/29/eddig_csaltunk_de_innentol_mi">https://bhaxor.blog.hu/2018/11/29/eddig_csaltunk_de_innentol_mi</link>,
+        </para>
+        <para>
+            <link xlink:href="https://bhaxor.blog.hu/2018/10/28/minecraft_steve_szemuvege">https://bhaxor.blog.hu/2018/10/28/minecraft_steve_szemuvege</link>
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+           <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
+
 </chapter>                

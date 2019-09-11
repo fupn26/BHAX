@@ -46,7 +46,7 @@
         
     <section>
         <title>
-            <emphasis role="green">l334d1c45</emphasis>
+            <emphasis role="cadiumgreen">l334d1c45</emphasis>
         </title>
         <para>
             Írj olyan OO Java vagy C++ osztályt, amely leet cipherként működik, azaz megvalósítja ezt a betű
@@ -67,7 +67,7 @@
 
     <section>
         <title>
-            <emphasis role="green">Full screen</emphasis>
+            <emphasis role="cadiumgreen">Full screen</emphasis>
         </title>
         <para>
             Készítsünk egy teljes képernyős Java programot!
