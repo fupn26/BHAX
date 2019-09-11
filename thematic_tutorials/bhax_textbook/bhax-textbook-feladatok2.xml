@@ -15,14 +15,84 @@
         
     </partintro>
     
-    <xi:include href="bhax-textbook-feladatok2-arroway.xml">
+    <xi:include href="bhax-textbook-feladatok2-bernerslee.xml">
         <xi:fallback>
             <para>
-                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
+                <emphasis>XInclude: bhax-textbook-feladatok2-bernerslee.xml file not found</emphasis>
             </para>
         </xi:fallback>
     </xi:include>     
     
+    <xi:include href="bhax-textbook-feladatok2-arroway.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-arroway.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
     
+    <xi:include href="bhax-textbook-feladatok2-liskov.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-liskov.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+    
+    <xi:include href="bhax-textbook-feladatok2-mandelbrot.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-mandelbrot.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+    
+    <xi:include href="bhax-textbook-feladatok2-chomsky.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-chomsky.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+    
+    <xi:include href="bhax-textbook-feladatok2-stroustrup.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-stroustrup.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+    
+    <xi:include href="bhax-textbook-feladatok2-godel.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-godel.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+    
+    <xi:include href="bhax-textbook-feladatok2-nevtelen.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-nevtelen.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+    
+    <xi:include href="bhax-textbook-feladatok2-schwarzenegger.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-schwarzenegger.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+    
+    <xi:include href="bhax-textbook-feladatok2-calvin.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-feladatok2-calvin.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
             
 </part>  

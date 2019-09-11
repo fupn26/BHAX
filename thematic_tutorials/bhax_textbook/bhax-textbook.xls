@@ -12,5 +12,34 @@
 <xsl:param name="latex.class.options">12pt</xsl:param>
 <xsl:param name="doc.collab.show">2</xsl:param>
 <xsl:param name="highlight.source" select="1"/>
+
+<xsl:template match="emphasis[@role='red']">
+        <xsl:param name="content">
+            <xsl:apply-templates/>
+        </xsl:param>
+        <xsl:text>{\color{red}</xsl:text>
+        <xsl:copy-of select="$content"/>
+        <xsl:text>}</xsl:text>
+</xsl:template>
+
+<xsl:template match="emphasis[@role='blue']">
+        <xsl:param name="content">
+            <xsl:apply-templates/>
+        </xsl:param>
+        <xsl:text>{\color{blue}</xsl:text>
+        <xsl:copy-of select="$content"/>
+        <xsl:text>}</xsl:text>
+</xsl:template>
+
+
+
+<xsl:template match="emphasis[@role='green']">
+        <xsl:param name="content">
+            <xsl:apply-templates/>
+        </xsl:param>
+        <xsl:text>{\color{cadmiumgreen}</xsl:text> <!--add extra color: add to xcolor.sty \definecolor{colorname}{RGB}{R,G,B}
+        <xsl:copy-of select="$content"/>
+        <xsl:text>}</xsl:text>
+</xsl:template>
       
 </xsl:stylesheet>

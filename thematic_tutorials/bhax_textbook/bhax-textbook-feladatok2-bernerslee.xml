@@ -1,0 +1,47 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Berners-Lee!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+
+    <section>
+        <title>C++ és Java összehasonlítása</title>
+        <caution>
+            <title>Feladat megoldásához szükséges források</title>
+            <para>
+                C++: Benedek Zoltán, Levendovszky Tihamér Szoftverfejlesztés C++ nyelven
+            </para>
+            <para>
+                Java: Nyékyné Dr. Gaizler Judit et al. Java 2 útikalauz programozóknak 5.0 I-II. 
+            </para>
+        </caution>
+        <para>
+            Ebből a két könyvből pár oldalas esszé jellegű kidolgozást kérek, Java és C++
+            összehasonlítás mentén, pl. kb.: kifejezés fogalom ua., Javában minden objektum
+            referencia, mindig dinamikus a kötés, minden függvény virtuális, klónozás stb.
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
+
+    <section>
+        <title>Gyors prototípus-fejlesztés Python és Java nyelven</title>
+        <caution>
+            <title>Feladat megoldásához szükséges források</title>
+            <para>
+                Python: Forstner Bertalan, Ekler Péter, Kelényi Imre: Bevezetés a mobilprogramozásba
+            </para>
+        </caution>
+        <para>
+           Itt a kijelölt oldalakból egy 1 oldalas élmény-olvasónaplóra gondoltam.
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
+        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                
