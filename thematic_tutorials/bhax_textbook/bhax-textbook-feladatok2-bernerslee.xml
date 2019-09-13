@@ -32,7 +32,7 @@
         <caution>
             <title>Feladat megoldásához szükséges források</title>
             <para>
-                Python: Forstner Bertalan, Ekler Péter, Kelényi Imre: Bevezetés a mobilprogramozásba
+                Python: Forstner Bertalan, Ekler Péter, Kelényi Imre: Bevezetés a mobilprogramozásba(35-51. oldal)
             </para>
         </caution>
         <para>
@@ -40,6 +40,91 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A Python programozási nyelv Guido van Rossum nevéhez fűződik, aki 1990-ben alkotta meg. Alapjába véve
+            ez a nyelv egy nagyon magas programozási nyelv. Könnyen tanulható, ezért nagyon könnyen lehet vele komolyabb
+            programokat írni, akár kezdő programozóknak is. 
+        </para>
+        <para>
+            A már korábban elterjedt C, C++, Java nyelvekhez képest nagy előnye, hogy nics szükség fordításra.
+            A forrásból az értelmező azonnal képes futtatni a programot. Ez a tulajdonásga abból következik,
+             hogy a Python az egy szkriptnyelv. A komolyabb problémák megoldása érdekében rengeteg csomagot és
+            beépített eljárást tartalmaz. A Python kiváló lehetőséget nyújt prototípusok tesztelésére, mellyel a
+            Java, C, C++ programunkban használt felhasználói felület, eljárások, funkciók tesztetlhetők.
+            A fejlesztők életét jelentősen megkönnyíti a standar Python kódkönyvtár, mely modulokat tartalmaz
+            fájlkezeléshez, hálózatkezeléshez, rendzserhívásokhoz és felhasználói felület kialakításához is.
+        </para>
+        <para>
+            A Python nyelv szintaxisa jelentősen egyszerűsített, mivel behúzás alapú. Tehát nincs szükség
+            kapcsoszárójelekre a blokk elejének és végének jelöléséhez. A blokk addig tart ameddig az értelmező
+            nem talál egy kisebb behúzású sort. Érdekesség még, hogy az utasításokat nem kell ";"-vel elválasztani,
+            azok végét a sor vége jelzi. Persze előfordulhat, hogy egy utasítás nem fér ki egy sorba, ezt az
+            értelmezőnek egy a sor végére írt "\"-jellel jelölhetjük. Ha nem zárunk be egy zárójelet, akkor is 
+            a következő sort az utasítás folytatásának veszi.  
+        </para>
+        <para>
+            Python-ban az adatokat objektumok reprezentálják. A C, C++, Java nyelvekhez hasonlóan az adatokon
+            végrehajtható műveletek az objektum típusától függnek. Eltérés ezzel szemben, hogy nem kell explicit
+            módon megadni az objektum típusát, azt az értelmező "kitalálja". Az adattípusok többsége a fentebb
+            említett nyelvekhez hasonló. Ennél érdekesebb az ennesek, listák és szótárak használata. Mindháromra
+            igaz, hogy az objektumoknak nem kell azonos típusúnak lennie, szemben a C/C++-ból ismert tömbökkel,
+            vektrorokkal. Az ennesek lényegében objektumok gyűjteményei, melyeket veszzővel választunk el. Ezeket
+            sima zárójelek közé írjuk. A listák egy rendezett sorozatai az objektuoknak, melyeket szintén vesszővel
+            válsztunk el, és szögletes zárójellel határolunk. Az elemeket a listában az indexükkel azonosítjuk.
+            A szótárak pedig az objektumok mellett kulcsokat is tartalmaznak, ezekkel tudjuk az egyes elemeket
+            azonosítani. Ebben a nylevben a változók objektumokra mutató referenciák. Mivel a változóknak nincs
+            típusuk, ezért bármilyen objektumra mutathatnak. Az értékadás a már ismert "="-lel történik. A 
+            változóhozzárendeléseket a <function>del</function> kulszcsóval tehetjük meg. Az hátramaradt objektumokat
+            a <function>garbage collector</function> törli. Pythonban is léteznek globális és lokális változók.
+            Egy lokális változót a <function>global</function> kulcszóval tehetünk globálissá. A beépitett típusok
+            között létezik típuskonverzió. Szekvenciákkal, ide tartotnak a listák, sztingek ennesek, műveleteket
+            hajthatunk végre, beépített függvényeket alkalmazhatunk.
+        </para>
+        <para>
+            A Python biztosítja a hagyomáynos programnyelvi eszközöket. Tudunk kíirni szövegetket, változók értékét
+            a konzolra. Létrehozhatunk if elágazásokat. Ebben eltérés, hoyg az <function>else if</function> ágat
+            <function>elif</function>-el jelöljük. A nyelv támogatja a ciklusokat, tehát a <function>while</function>,
+            <function>for</function> ciklusok gond nélkül létrehozhatók. Egyedül a szintaktikájukban térnek el a 
+            C/C++-os társaikétól. A <function>for</function> cilusok esetén érdemes megemlíteni az <function>xrange</function>
+            függvényt, mellyel megadhatjuk, hoyg mettől meddig szeretnénk futtani a ciklusváltozót, és azt is, hogy 
+            milyen lépésközzel. Készíthetünk címkéket is, melyet a <function>label</function> kulcszsóval jelölünk, és
+            a <function>goto</function> utasítással tudjuk a vezérlést átugratni rá. Létezik egy másik kulcszsó is, a
+            <function>comefrom</function>. Ennek a segítségével a cimkéből vissza lehet ugrani a hozzá tartotó
+            <function>comefrom</function> részhez. 
+        </para>
+        <para>
+            A függvényeket a <function>def</function> kulcszsóval tudjuk definiálni. Ezeknek lehetnek
+            paramétereik, melyek csak érték szerint adhatók át, kivéve a listákat, szótárakat, melyeken
+            való módosítás a híváshelyen lévő objektumra is végrehajtódik. A visszatérési értéküket nem 
+            kell expliciten megadni, ahogy már a változóknál megszoktuk. Csak egy érékkel tudnak visszatérni,
+            de lehet akár ennesekkel is.
+        </para>
+        <para>
+            Mivel a Python támogatja az objektumorientált eljárásokat, ezért létrehozhatunk osztályokat is, melyet a 
+            szokásos <function>class</function> kulcsszóval definiálunk. Jelentős különbség nincs a C/C++-ban megszokott
+            osztályok alapvető működéséhez képest. Viszont Python-ban nem használhatunk <function>private</function>,
+            <function>public</function>, <function>protected</function> címkéket. Ezeket a tagváltozó nevével tudjuk
+            helyettesíteni. Ha nem rakunk aláhúzást elé, akkor publikus lesz. Abban az esetben, ha egy aláhúzás van a
+            változó név elején, akkor <function>protected</function>, kettő esetén pedig <function>private</function>
+            tagváltozóról beszélünk. Az osztály konstruktorát az <function>__init__</function> függvény 
+            adja. Ennek első paramétere a <function>self</function>, vagyis maga a létrehozandó objektum.
+        </para>
+        <para>
+            Mint már említettem a Python a fejlesztés megkönnyítése érdekében modulokat tartalmaz. Ezeken
+            belül vannak olyanok, melyek kifejezettena a mobilos fejlesztést segítik. Biztosítják a
+            felhasználói felület kezelését(<function>appuifw</function>), hálózetkezelést(<function>messaging</function>,
+            de a kamera(<function>camera</function>) elérését is megoldják. A <function>sysinfo</function>
+            modul segítségével lekérdezhetjük a telefon adatait, az <function>audio modul</function>
+            segítségével pedig hangfelvételeket hozhatunk létre, és azok lejátszását is biztosítja.
+            Létrehozhatunk saját modulokat is, melyeket a programunkba importálhatunk.
+        </para>
+        <para>
+            A kivételkezelés is egy ismert fogalom a Python nyelvben. A vizsgált blokkot, ahonnan a kivétel érkezhet,
+            a <function>try</function> címkével jelöljük. Hiba esetén a vezérlés az <function>except</function>
+            címkével jelölt blokkra ugrik. Lehet megadni <function>else</function> ágat is, plusz az 
+            <function>else</function> és <function>except</function> helyett használhatjuk a
+            <function>finally</function> címkét, melyhez tartozó kódrész főleg "takarításra" szolgál.
         </para>
     </section>        
         
