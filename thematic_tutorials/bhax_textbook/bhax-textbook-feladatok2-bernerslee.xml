@@ -25,6 +25,100 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            A Java nyelv a C++ továbbgondolásának tekinthető. Az egyik 
+            legfontosabb különbség, hogy a Java interpreteres nyelv, tehát nem
+            klaszzikus fordítással nyerünk ki a forrásfájlból gépi kódot, hanem
+            a Java interpreter segítségével. Viszont ez nem egy hagyományos
+            értelembe vett gépi kódot hoz létre, hanem a Java Virtual Machine
+            számára futtatható állományt. A JVM azt egyik legnagyobb előnye a 
+            Javanak, mert ennek segítségével a bármely platformon elérhető, és 
+            hordozható kódot tudunk írni.  
+        </para>
+        <para>
+            A Java és a C++ alapvető szintaxisa nagyon hasonlít. Érdekesség
+            ellenben, hogy a Java-ban nincs meg a klasszikus main-fájl, ami
+            a tartalmazza a program futásához szükséges <function>main</function>
+            függvényt. Ugyanis ez a függvény egy osztályba van beágyazva. Ez annak
+            a következménye, hogy Java-ban minden metódus, változó valamilyen osztálynak
+            a tagja. A <function>main</function> függvényt <function>public</function>-nak
+            és <function>static</function>-ank kell deklarálni. Nem lehet
+            visszatérési értéke, ennek következtében <function>void</function>,
+            szemben a C++-szal. Egy másik eltérés, hogy a paraméterlistája 
+            <function>String</function>-ek tömbje, melyben nem szerepel 
+            magának a programnak a neve, csak a parancssori argumentumok.
+        </para>
+        <para>
+            Java-ban a típusokat két fő csoportra oszthatjuk, ezek a primitív és
+            a nem primitív típusok. A primitív típusok magát az értéket tárolják.
+            Ezzel szemben a nem primitív típusok objektumhivatkozások. A Java
+            nyelv lehetővé teszi a primitív típusok "objektumosítását". Tehát
+            az <function>int</function> típust helyettesíthetjük <function>Integer</function>
+            típussal. Jelen esetben az <function>Integer</function> egy 
+            csomagoló osztály. A Java 5-ös verziójától lehetővé vált az ezen
+            típusok közötti automatikus be- és kicsomagolás. Nem létezik a 
+            <function>char*</function> Java-ban, ehelyett egy beépített az
+            osztályt használhatunk, a <function>String</function>-et. A C++-al
+            ellentétben a tömbök nem a pointerek másik megnyilvánulási formái, hanem
+            ezek is valódi típusok. Ennek köszönhetően elérhető a méretüket
+            lekérdező függvény is, így nem szükséges azt tárolni egy másik
+            változóban.  
+        </para>
+        <para>
+            Osztályt a <function>class</function> kulcsszóval tudunk 
+            deklarálni, ahogy azt már C++-ban megszoktuk. Minden osztály a 
+            az <function>Object</function> osztály leszármazottja Java-ban.
+            Fontos megjegyezni, hogy nem engedélyezett ellenben a többszörös
+            öröklődés. A szűlőre a <function>super</function> refernciával
+            hivatkozhatunk. Az osztály tagjainak láthatóságát egyenként kell beállítni.
+            A C++-ban megszokott destruktorra Java-ban nincs zükség, mivel azt
+            az automatikus szemétgyűjtögető helyettesíti. A másoló konstruktor
+            helyett Javaban lehetőségünk van a <function>clone</function>
+            metódus használatára. Ez alapesetben sekély másolást hajt végre,
+            ezért szükséges bizonyos esetekben az adattagok külön lemásolása
+            azok elkülönítése. Csak azok az osztályok támogatják a 
+            másolást, amelyek implementálják a <function>Cloneable</function>
+            interfészt.
+            Mivel Java-ban, amikor
+            példányosítunk egy objektumot, akkor egy objektumhivatkozást hozunk
+            létre, ami egy adott tárterületen lévő objektumra mutat. Fontos 
+            megjegyezni, hogy Java-ban nincsenek már pointerek, csak refernciák
+            használata engedélyezett. Sablon osztályok helyett a Java bevezeti a
+            generikusok fogalmát. A legfontosabb tulajdonsága a típustörlés,
+            melynek lényege, hogy a paraméteres típust egy nem paraméteres
+            típusra. Erre azért volt szükség, hogy a korábbi Java verziókkal
+            való kompatibilitás ne sérüljön. 
+        </para>
+        <para>
+            Az osztályok örökölhetnek a szülőosztálytól tagfüggvényeket. Bizonyos
+            esetekben pedig előfordul, hogy ezeket szükséges felüldefiniálni.
+            Ehhez C++-ban a <function>virtual</function> kulcsszóra volt szükség,
+            viszont erre a Java-ban már nincs szükség. Ez annak dinamikus kötésnek 
+            köszönhetően. Tehát az interpreter a dinamikus taghoz tartozó
+            implementácóját használja a metódusnak. A dinamikus tag fogalom
+            azzal van összefüggésben, hogy a poliformizmusnak miatt, 
+            olyan helyen ahol állhat a gyermek, ott állhat a szülő osztályú objektum
+            is. Ennek köszönhetően előfordulhat, hogy például egy szülő 
+            osztáylú objektumreferncia hivatkozhat gyermek osztályú objektumra,
+            és viszont. 
+        </para>
+        <para>
+            C++-ban ahhoz, hogy extra saját vagy beépített osztályokat
+            metódusokat lehessen elérni, header fájlokat kellett a forrásunkba
+            inklúdálni. Java-ban nincsenek header állományok, helyettük vannak
+            csomagok, melyeket az <function>import</function> kulcszóval tudjuk
+            hozzáadni a forráshoz. Csomagokat mi is hozhatunk létre, ehhez a 
+            fájl legelején a <function>package <![CDATA[[<név>]]></function>
+            sort kell beírni. Többféleképpen importálhatunk.
+            Lehetőségünk van a teljes osztályt, de még a publikus metódusait is
+            hozzáadni. Fontos megjegyezni, hogy sz importálásra nem feltétlenül
+            van szükség, csak tisztábbá teszi a kódot. Lehetőség van teljes
+            fájlelérési úttal elérni egy csomag tartalmát. Annyi könnyebséget
+            biztosít az interpreter, hogy elég az egyes mappákat, almappákat 
+            pontokkal elválasztani. Ezeknek a csomagoknak köszönhetően
+            Java-ban könnyen lehet hálózatkezelést, felhasználói felületet
+            készíteni.
+        </para>
     </section>        
 
     <section>
