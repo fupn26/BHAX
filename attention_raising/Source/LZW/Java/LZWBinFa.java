@@ -83,11 +83,6 @@ class LZWBinFa
     {
         fa = gyoker;
     }
-//    ~LZWBinFa ()
-//    {
-//        szabadit (gyoker.egyesGyermek ());
-//        szabadit (gyoker.nullasGyermek ());
-//    }
 
     /* Tagfüggvényként túlterheljük a << operátort, ezzel a célunk, hogy felkeltsük a
      hallgató érdeklődését, mert ekkor így nyomhatjuk a fába az inputot: binFa << b; ahol a b
@@ -161,16 +156,7 @@ class LZWBinFa
         // ha nem mondta meg a hívó az üzenetben, hogy hova írjuk ki a fát, akkor a
         // sztenderd out-ra nyomjuk
         kiir (gyoker, new java.io.BufferedWriter(new java.io.OutputStreamWriter(System.out)));
-//        kiir (gyoker, new java.io.FileWriter(new java.io.OutputStreamWriter(System.out)));
     }
-    /* már nem használjuk, tartalmát a dtor hívja
-  void szabadit (void)
-  {
-    szabadit (gyoker.egyesGyermek ());
-    szabadit (gyoker.nullasGyermek ());
-    // magát a gyökeret nem szabadítjuk, hiszen azt nem mi foglaltuk a szabad tárban (halmon).
-  }
-  */
 
     /* A változatosság kedvéért ezeket az osztálydefiníció (class LZWBinFa {...};) után definiáljuk,
      hogy kénytelen légy az LZWBinFa és a :: hatókör operátorral minősítve definiálni :) l. lentebb */
@@ -218,11 +204,6 @@ class LZWBinFa
       - globális függvényként: operator<<(kiFile, binFa) és pont ez látszik a következő sorban:
 
      */
-//    friend std::ostream & operator<< (std::ostream & os, LZWBinFa & bf)
-//    {
-//        bf.kiir (os);
-//        return os;
-//    }
     public void kiir (java.io.BufferedWriter os)
     {
         melyseg = 0;
@@ -242,9 +223,6 @@ class LZWBinFa
             balNulla = null;
             jobbEgy = null;
         }
-//        ~Csomopont ()
-//        {
-//        };
         // Aktuális csomópont, mondd meg nékem, ki a bal oldali gyermeked
         // (a C verzió logikájával műxik ez is: ha nincs, akkor a null megy vissza)
         public final Csomopont nullasGyermek ()
@@ -319,18 +297,6 @@ class LZWBinFa
             }
         }
     }
-//    void szabadit (Csomopont * elem)
-//    {
-//        // Nem létező csomóponttal nem foglalkozunk... azaz ez a rekurzió leállítása
-//        if (elem != NULL)
-//        {
-//            szabadit (elem->egyesGyermek ());
-//            szabadit (elem->nullasGyermek ());
-//            // ha a csomópont mindkét gyermekét felszabadítottuk
-//            // azután szabadítjuk magát a csomópontot:
-//            delete elem;
-//        }
-//    }
 			// ha esetleg egyszer majd kiterjesztjük az osztályt, mert
     // akarunk benne valami újdonságot csinálni, vagy meglévő tevékenységet máshogy... stb.
     // akkor ezek látszanak majd a gyerek osztályban is
@@ -390,88 +356,6 @@ class LZWBinFa
 
 // Egyébként a melyseg, atlag és szoras fgv.-ek a kiir fgv.-el teljesen egy kaptafa.
 
-//public int LZWBinFa.getMelyseg()
-//{
-//    melyseg = maxMelyseg = 0;
-//    rmelyseg (&gyoker);
-//    return maxMelyseg - 1;
-//}
-
-//double
-//LZWBinFa::getAtlag (void)
-//{
-//    melyseg = atlagosszeg = atlagdb = 0;
-//    ratlag (&gyoker);
-//    atlag = ((double) atlagosszeg) / atlagdb;
-//    return atlag;
-//}
-//
-//double
-//LZWBinFa::getSzoras (void)
-//{
-//    atlag = getAtlag ();
-//    szorasosszeg = 0.0;
-//    melyseg = atlagdb = 0;
-//
-//    rszoras (&gyoker);
-//
-//    if (atlagdb - 1 > 0)
-//        szoras = std::sqrt (szorasosszeg / (atlagdb - 1));
-//    else
-//        szoras = std::sqrt (szorasosszeg);
-//
-//    return szoras;
-//}
-
-//void
-//LZWBinFa::rmelyseg (Csomopont * elem)
-//{
-//    if (elem != NULL)
-//    {
-//        ++melyseg;
-//        if (melyseg > maxMelyseg)
-//            maxMelyseg = melyseg;
-//        rmelyseg (elem->egyesGyermek ());
-//        // ez a postorder bejáráshoz képest
-//        // 1-el nagyobb mélység, ezért -1
-//        rmelyseg (elem->nullasGyermek ());
-//        --melyseg;
-//    }
-//}
-//
-//void
-//LZWBinFa::ratlag (Csomopont * elem)
-//{
-//    if (elem != NULL)
-//    {
-//        ++melyseg;
-//        ratlag (elem->egyesGyermek ());
-//        ratlag (elem->nullasGyermek ());
-//        --melyseg;
-//        if (elem->egyesGyermek () == NULL && elem->nullasGyermek () == NULL)
-//        {
-//            ++atlagdb;
-//            atlagosszeg += melyseg;
-//        }
-//    }
-//}
-//
-//void
-//LZWBinFa::rszoras (Csomopont * elem)
-//{
-//    if (elem != NULL)
-//    {
-//        ++melyseg;
-//        rszoras (elem->egyesGyermek ());
-//        rszoras (elem->nullasGyermek ());
-//        --melyseg;
-//        if (elem->egyesGyermek () == NULL && elem->nullasGyermek () == NULL)
-//        {
-//            ++atlagdb;
-//            szorasosszeg += ((melyseg - atlag) * (melyseg - atlag));
-//        }
-//    }
-//}
 
 // teszt pl.: http://progpater.blog.hu/2011/03/05/labormeres_otthon_avagy_hogyan_dolgozok_fel_egy_pedat
 // [norbi@sgu ~]$ echo "01111001001001000111"|./z3a2
@@ -535,16 +419,9 @@ public static void main (String[] args)
     // "*((*++argv)+1)"...
 
     // a kiírás szerint ./lzwtree in_file -o out_file alakra kell mennie, ez 4 db arg:
-    System.out.println("Args length = " + args.length);
-    System.out.println("Args 1 = " + args[0]);
-    System.out.println("Args 2 = " + args[1].charAt(1));
-    System.out.println("Args 3 = " + args[2]);
-    
-    boolean test = (args.length != 3);
-    System.out.println(test);
 
     
-    if (test == true)
+    if (args.length != 3)
     {
         // ha nem annyit kapott a program, akkor felhomályosítjuk erről a júzetr:
         usage ();
@@ -566,26 +443,13 @@ public static void main (String[] args)
     // ha igen, akkor az 5. előadásból kimásoljuk a fájlkezelés C++ változatát:
 //    std::fstream beFile (inFile, std::ios_base::in);
 try {
-        System.out.println("Open file");
         java.io.FileInputStream beFile = new java.io.FileInputStream(inFile);
         java.io.DataInputStream beFile_datastream = new java.io.DataInputStream(beFile);
         java.io.BufferedReader beFile_bufferedreader = new java.io.BufferedReader(new java.io.InputStreamReader(beFile_datastream));
-        System.out.println("file opened");
 // fejlesztgetjük a forrást: http://progpater.blog.hu/2011/04/17/a_tizedik_tizenegyedik_labor
         
-//        if (beFile.) {
-//            std::cout << inFile << " nem letezik..." << std::endl;
-//            usage();
-//            return -3;
-//        }
-//        std::fstream kiFile( * ++argv, std::ios_base::out
-        System.out.println("Set write stream");
         java.io.FileWriter kiFile = new java.io.FileWriter(args[2]);
         java.io.BufferedWriter kiFile_bufferedwriter = new java.io.BufferedWriter(kiFile);
-        System.out.println("Done");
-//        java.io.BufferedWriter std_out = new java.io.BufferedWriter(new java.io.OutputStreamWriter(System.out));
-//        String b = new String();		// ide olvassik majd a bejövő fájl bájtjait
-        System.out.println("Create LZW object");
         LZWBinFa binFa = new LZWBinFa(); // s nyomjuk majd be az LZW fa objektumunkba
         
 //
@@ -593,7 +457,6 @@ try {
 //        // majd nézni... :) l. az említett 5. ea. C -> C++ gyökkettes átírási példáit
         int c;
         while ((c = beFile_bufferedreader.read()) != -1){
-//            b += (char) c;
             if (c == 0x0a) {
                 break;
             }
@@ -629,9 +492,7 @@ try {
         for (int i = 0; i < 8; ++i) {
             // maszkolunk eddig..., most már simán írjuk az if fejébe a legmagasabb helyiértékű bit vizsgálatát
             // csupa 0 lesz benne a végén pedig a vizsgált 0 vagy 1, az if megmondja melyik:
-            System.out.println(c & 0x80);
             if ((c & 0x80) == 128) // ha a vizsgált bit 1, akkor az '1' betűt nyomjuk az LZW fa objektumunkba
-//           if (c == 1) // ha a vizsgált bit 1, akkor az '1' betűt nyomjuk az LZW fa objektumunkba
             {
                 binFa.hozzarendel('1');
             } else // különben meg a '0' betűt:
@@ -642,21 +503,7 @@ try {
         }
 
     }
-//
-//    //std::cout << binFa.kiir (); // így rajzolt ki a fát a korábbi verziókban de, hogy izgalmasabb legyen
-//    // a példa, azaz ki lehessen tolni az LZWBinFa-t kimeneti csatornára:
-//
-////    kiFile << binFa;		// ehhez kell a globális operator<< túlterhelése, lásd fentebb
-////    // (jó ez az OO, mert mi ugye nem igazán erre gondoltunk, amikor írtuk, mégis megy, hurrá)
-////
-////    kiFile << "depth = " << binFa.getMelyseg () << std::endl;
-////    kiFile << "mean = " << binFa.getAtlag () << std::endl;
-////    kiFile << "var = " << binFa.getSzoras () << std::endl;
-//
-//    binFa.kiir(kiFile_bufferedwriter);
-//    kiFile_bufferedwriter.write("depth = " + binFa.getMelyseg() + '\n');
-//    kiFile_bufferedwriter.write("mean = " + binFa.getAtlag()+ '\n');
-//    kiFile_bufferedwriter.write("var = " + binFa.getSzoras() + '\n');
+
 
     binFa.kiir(kiFile_bufferedwriter);
     kiFile_bufferedwriter.write("depth = " + binFa.getMelyseg() + '\n');
@@ -668,9 +515,7 @@ try {
     beFile_datastream.close ();
     beFile_bufferedreader.close();
     beFile.close();
-    } catch (Exception e) {//Catch exception if any
-//        java.lang.Throwable.StackTraceElement[] stack = e.getStackTrace();
-//        System.err.println("Error: " + e.getStackTrace().toString());
+    } catch (Exception e) {
         for (StackTraceElement elem : e.getStackTrace()) {
             System.err.println(elem);
         }
