@@ -276,5 +276,14 @@
             Python könyves olvasónapló kidolgozva
         </revremark>
     </revision>
+    
+    <revision>
+        <revnumber>0.3.4</revnumber>
+        <date>2019-09-19</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Második rész első fejezet PolárGen feladata befejzve és LZWBinFa feladata elkezdve
+        </revremark>
+    </revision>
 
 </revhistory>

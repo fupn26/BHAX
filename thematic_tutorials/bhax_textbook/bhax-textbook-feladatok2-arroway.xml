@@ -21,10 +21,148 @@
             Ugyanezt írjuk meg C++ nyelven is! (lásd még UDPROG repó: source/labor/polargen)                
         </para>
         <para>
-            Megoldás forrása:
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Pol%C3%A1rGen">itt</link>
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A korábbi fejezetben már megismertük mind a C++, mind a Java forrást. Most azt fogjuk megnézni, hogy a hivatalos Java
+            <function>random</function> szám generátor mennyiben hasonlít a mi megoldásunkra. 
+        </para>
+        <para>
+            Elsőnek nézzük ár újra a Java forrást,
+            <programlisting language="java"><![CDATA[
+public class PolarGenerator
+{
+    boolean nincsTarolt = true;
+    double tarolt;
+    
+    public PolarGenerator()
+    {
+        nincsTarolt = true;
+    }
+    
+    public double kovetkezo() 
+    {
+        if(nincsTarolt)
+        {
+            double u1, u2, v1, v2, w;
+            do{
+                u1 = Math.random();
+                u2 = Math.random();
+                v1 = 2* u1 -1;
+                v2 = 2* u2 -1;
+                w = v1*v1 + v2*v2;
+            } while (w>1);
+            
+            double r = Math.sqrt((-2 * Math.log(w) / w));
+            tarolt = r * v2;
+            nincsTarolt = !nincsTarolt;
+            return r * v1;
+        }
+        else
+        {
+            nincsTarolt = !nincsTarolt;
+            return tarolt;
+        }
+}
+            ]]></programlisting>
+        </para>
+        <para>
+            Tehát a program annyit csinál, hogy generál 2 random számot. Az egyiket eltárolja, a másikat pedig visszaadja.
+            Elsőnek meg kell viszgálni, hogy van-e tárolt elem. Ehhez szükségünk van a <function>nincsTarolt</function>
+            logikai változóra, mely alapértelmezetten igaz. Majd a <function>double</function> függvény, abban az esetben
+            ha ez a változó igaz értékű, akkor kiszámolja a két random számot. Eltárolja az egyiket, majd a
+            <function>nincsTarolt</function>-t hamisra állítja. Így elkerülhetjük azt, hogy a programnak feleslegesen kelljen
+            újra random számot generálnia. 
+        </para>
+        <para>
+            Most, hogy láttuk, hogyan működik a saját Polár generátorunk, nézzük, hogy a OpenJDK <filename>Random.java</filename>
+            forrásában, hogyan oldották meg ezt.
+            <programlisting language="java"><![CDATA[
+    private double nextNextGaussian;
+    private boolean haveNextNextGaussian = false;
+                
+    public synchronized double nextGaussian() {
+        // See Knuth, ACP, Section 3.4.1 Algorithm C.
+        if (haveNextNextGaussian) {
+            haveNextNextGaussian = false;
+            return nextNextGaussian;
+        } else {
+            double v1, v2, s;
+            do {
+                v1 = 2 * nextDouble() - 1; // between -1 and 1
+                v2 = 2 * nextDouble() - 1; // between -1 and 1
+                s = v1 * v1 + v2 * v2;
+            } while (s >= 1 || s == 0);
+            double multiplier = StrictMath.sqrt(-2 * StrictMath.log(s)/s);
+            nextNextGaussian = v2 * multiplier;
+            haveNextNextGaussian = true;
+            return v1 * multiplier;
+        }
+    }
+
+            ]]></programlisting>
+            Ahogy láthatjuk a hivatalos megoldás teljesen ugyanaz, mint a mi sajátunk. Ez a feladat arra ad példát, hogy
+            az objektumorientált programozás egyáltalán nem annyira nehéz, mint azt sokan gondolják.
+        </para>
+        <para>
+            Végezetül pedig lássuk, újra ennek a C++-os megoldását.
+            <programlisting language="c++"><![CDATA[
+class PolarGen {
+
+	public:
+
+		PolarGen(); //konstruktor
+
+		~PolarGen(){} //destruktor
+
+		double kovetkezo(); //random lekérés
+
+	private:
+
+		bool nincsTarolt;
+		double tarolt; //random értéke
+
+};
+
+
+PolarGen::PolarGen() { //a konstruktor kifejtése
+	nincsTarolt = false;
+	std::srand (std::time(NULL)); //random inicializálás
+};
+
+
+double PolarGen::kovetkezo() { //random lekérő függvény kifejtése
+	if (nincsTarolt)
+{
+		double u1, u2, v1, v2, w;
+
+		do{
+			u1 = std::rand () / (RAND_MAX + 1.0); //innentől jön az algoritmus
+			u2 = std::rand () / (RAND_MAX + 1.0);
+			v1 = 2 * u1 - 1;
+			v2 = 2 * u2 - 1;
+			w = v1 * v1 + v2 * v2;
+		    }
+		while (w > 1);
+
+		double r = std::sqrt ((-2 * std::log (w)) / w);
+
+		tarolt = r * v2; 
+		nincsTarolt = !nincsTarolt;
+
+		return r * v1; //idáig tart az algoritmus
+	}
+	
+	else
+	{
+		nincsTarolt = !nincsTarolt; //ha van korábbi random érték, akkor azt adja vissza
+		return tarolt;
+	}
+};    
+            ]]></programlisting>
         </para>
     </section>        
 
@@ -41,10 +179,230 @@
             (például a böngésző címsorából) kapja meg azt a mintát, amelynek kiszámolja az LZW binfáját!
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://git.io/Je3cZ">https://git.io/Je3cZ</link>                
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A könyv korábbi részében részletesen elemztük már, hogy hogyan működik az LZW binfa. 
+            Megvizsgáltuk a C++ forrás felépítését, és több feladatban módosítottunk is rajta. Most
+            viszont az eredeti <filename>z3a7.cpp</filename>-hez nyúlunk vissza, annak fogjuk 
+            elkészíteni a Java implementációját, és megismerkedünk azzal is, hogyan lehet ezt 
+            Java Servlet-ként böngészőben futtatni. Ahogy a feladat leírásásban olvashatod, 
+            elég csak a pointereket és a referenciákat eltüntetni a forrásból. Természetesen ez 
+            költői túlzás, de a feladat nem nehéz. 
+        </para>
+        <para>
+            A Java programozási nyelv biztosítja azt, hogy ne kelljen azon gondolkodni, hogy 
+            egy objektumot refernciakánt, pointerként, vagy esetleg csak értékként adjuk át.
+            Mivel bármilyen objektumot is példányosítunk, az lényegében egy objektumrefernciát hoz
+            létre. Kivételt képeznek ezalól a primitív típusok, mint az <function>int, double, char</function> stb.
+            Ezekhez a Java nyelv csomagoló osztályokat biztosít, mint például az <function>Integer</function>,
+            melyet már objektumreferenciaként példányosítjuk. Még egy fontos megjegyzés, mielőtt tovább haladunk,
+            hogy a Java nem támogatja a operátor túlterhelést, szóval ezeket kénytelenek vagyunk
+            hagyomásnyos függvényekkel helyettesíteni.
+        </para>
+        <para>
+            Lássuk a forrást:
+            <programlisting language="java"><![CDATA[
+class LZWBinFa
+{
+    public LZWBinFa ()
+    {
+        fa = gyoker;
+    }
+
+    public void hozzarendel(char b)
+    {
+        if (b == '0')
+        {
+            if (fa.nullasGyermek () == null)
+            {
+                Csomopont uj = new Csomopont ('0');
+                fa.ujNullasGyermek (uj);
+                fa = gyoker;
+            }
+            else			
+            {
+                fa = fa.nullasGyermek ();
+            }
+        }
+        else
+        {
+            if (fa.egyesGyermek () == null)
+            {
+                Csomopont uj = new Csomopont ('1');
+                fa.ujEgyesGyermek (uj);
+                fa = gyoker;
+            }
+            else
+            {
+                fa = fa.egyesGyermek ();
+            }
+        }
+    }
+    public void kiir ()
+    {
+        melyseg = 0;
+        kiir (gyoker, new java.io.BufferedWriter(new java.io.OutputStreamWriter(System.out)));
+    }
+
+    public int getMelyseg ()
+    {
+        melyseg = maxMelyseg = 0;
+        rmelyseg (gyoker);
+        return maxMelyseg - 1;
+    }
+    public double getAtlag ()
+    {
+        melyseg = atlagosszeg = atlagdb = 0;
+        ratlag (gyoker);
+        atlag = ((double) atlagosszeg) / atlagdb;
+        return atlag;
+    }
+    public double getSzoras ()
+    {
+        atlag = getAtlag ();
+        szorasosszeg = 0.0;
+        melyseg = atlagdb = 0;
+
+        rszoras (gyoker);
+
+        if (atlagdb - 1 > 0)
+            szoras = java.lang.Math.sqrt (szorasosszeg / (atlagdb - 1));
+        else
+            szoras = java.lang.Math.sqrt (szorasosszeg);
+
+        return szoras;
+    }
+    public void kiir (java.io.BufferedWriter os)
+    {
+        melyseg = 0;
+        kiir (gyoker, os);
+    }
+
+    private class Csomopont
+    {
+        public Csomopont (char b)
+        {
+            betu = b;
+            balNulla = null;
+            jobbEgy = null;
+        }
+        public final Csomopont nullasGyermek ()
+        {
+            return balNulla;
+        }
+        public final Csomopont egyesGyermek ()
+        {
+            return jobbEgy;
+        }
+        public void ujNullasGyermek (Csomopont gy)
+        {
+            balNulla = gy;
+        }
+        public void ujEgyesGyermek (Csomopont gy)
+        {
+            jobbEgy = gy;
+        }
+        public final char getBetu ()
+        {
+            return betu;
+        }
+
+        private char betu;
+        private Csomopont balNulla;
+        private Csomopont jobbEgy;
+    }
+
+    private Csomopont fa;
+    private int melyseg, atlagosszeg, atlagdb;
+    private double szorasosszeg;
+
+    public void kiir (Csomopont elem, java.io.BufferedWriter os)
+    {
+        if (elem != null)
+        {
+            try{
+            ++melyseg;
+            kiir (elem.egyesGyermek (), os);
+            for (int i = 0; i < melyseg; ++i)
+                os.write("---");
+            os.write(elem.getBetu () + "(" + (melyseg - 1) + ")\n");
+            kiir (elem.nullasGyermek (), os);
+            --melyseg;
+            }
+            catch(java.io.IOException e){
+                System.out.println("Csomópont írása nem sikerült.");
+            }
+        }
+    }
+    protected Csomopont gyoker = new Csomopont('/');
+    protected int maxMelyseg;
+    protected double atlag, szoras;
+
+    protected void rmelyseg (Csomopont elem)
+    {
+        if (elem != null)
+        {
+            ++melyseg;
+            if (melyseg > maxMelyseg)
+                maxMelyseg = melyseg;
+            rmelyseg (elem.egyesGyermek ());
+            rmelyseg (elem.nullasGyermek ());
+            --melyseg;
+        }
+    }
+    protected void ratlag(Csomopont elem) {
+        if (elem != null) {
+            ++melyseg;
+            ratlag(elem.egyesGyermek());
+            ratlag(elem.nullasGyermek());
+            --melyseg;
+            if (elem.egyesGyermek() == null && elem.nullasGyermek() == null) {
+                ++atlagdb;
+                atlagosszeg += melyseg;
+            }
+        }
+
+    }
+    protected void rszoras(Csomopont elem) {
+        if (elem != null) {
+            ++melyseg;
+            rszoras(elem.egyesGyermek());
+            rszoras(elem.nullasGyermek());
+            --melyseg;
+            if (elem.egyesGyermek() == null && elem.nullasGyermek() == null) {
+                ++atlagdb;
+                szorasosszeg += ((melyseg - atlag) * (melyseg - atlag));
+            }
+        }
+
+    }
+            ]]></programlisting>
+            Ahogy látható, semmilyen címképző operátorra, vagy csillagra nincs szükség a kódban.
+            Maga az osztály konstruktora az nagyon hasonlít az eredetire. Viszont nincs már szükség
+            destruktorra. Tehát a C++ forrásban lévő <function>szabadit</function>-ra már nincs szükségünk.
+            Ez annak köszönhető, hogy Java szemétgyűjtögetője automatikusan törli azokat az objektumokat a memóriából, amire
+            már nincs érvényes referencia. Lehet úgy példányosítani egy osztályt, mint ahogy C++-ban a sima változókat
+            deklaráltuk
+            <programlisting language="java>">
+                Csomopont fa;
+            </programlisting>
+            Ebben az esetben egy <function>null</function> referenciát kapunk, vagyis ennek még át kell adni egy
+            bizonyos memóriacímen található objektumot. Jelen esetben ez nem okoz problémát a programban, mert a
+            a <function>fa</function> objektumrefernciának átadjuk a <function>gyoker</function> által
+            mutatott objektumot. az átírás során én nem inicializáltam a <function>gyoker</function>
+            refenciát, így hibát dobott a program, mivel után a <function>fa</function> referencia is
+            null referencia maradt, mely által mutatott objektumra hivatkozunk a későbbi függvényekbe.
+            C++-hoz hasonlóan a <function>new</function> operátorral tudunk tárhelyet foglalni, mely Java-ban
+            referenciát ad át.
+        </para>
+        <para>
+            Az objektumorientált programozás alap építőkövének számító adatrejtés egy kicsit másabb, mint a
+            C++-ban megszoktuk. Ahhoz, hogy az egyes tagváltozók és tagfüggvények elérhetőségét szabályozzuk, 
+            mindegyik definíciója elé meg kell adni, hogy milyen elérést biztosítsunk hozzájuk.
         </para>
     </section>        
     
