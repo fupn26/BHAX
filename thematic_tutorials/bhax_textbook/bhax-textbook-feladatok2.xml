@@ -79,10 +79,10 @@
         </xi:fallback>
     </xi:include>
     
-    <xi:include href="bhax-textbook-feladatok2-schwarzenegger.xml">
+    <xi:include href="bhax-textbook-feladatok2-lauda.xml">
         <xi:fallback>
             <para>
-                <emphasis>XInclude: bhax-textbook-feladatok2-schwarzenegger.xml file not found</emphasis>
+                <emphasis>XInclude: bhax-textbook-feladatok2-lauda.xml file not found</emphasis>
             </para>
         </xi:fallback>
     </xi:include>
