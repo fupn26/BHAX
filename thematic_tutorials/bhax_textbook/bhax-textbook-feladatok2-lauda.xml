@@ -1,6 +1,6 @@
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
     <info>
-        <title>Helló, Schwarzenegger!</title>
+        <title>Helló, Lauda!</title>
         <keywordset>
             <keyword/>
         </keywordset>
@@ -80,7 +80,26 @@
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
     <section>
         <title>
-            <emphasis role="blue">OSCI</emphasis>
+            OSCI
+        </title>
+        <para>
+            Készíts egyszerű C++/OpenGL-es megjelenítőt, amiben egy kocsit irányítasz az úton. 
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+    </section>        
+
+
+    <section>
+        <title>
+            <emphasis role="blue">OSCI2</emphasis>
         </title>
         <para>
             Készíts egyszerű C++/OpenGL-es megjelenítőt, amiben egy kocsit irányítasz az úton. A kocsi
@@ -98,6 +117,25 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+    </section>
+    
+    <section>
+        <title>
+            <emphasis role="blue">OSCI3</emphasis>
+        </title>
+        <para>
+            Készíts egy OSM utakat megjelenítő C++/OpenGL-es progit!
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
     </section>        
+       
 
 </chapter>                
