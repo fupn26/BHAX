@@ -387,7 +387,7 @@ class LZWBinFa
             Ez annak köszönhető, hogy Java szemétgyűjtögetője automatikusan törli azokat az objektumokat a memóriából, amire
             már nincs érvényes referencia. Lehet úgy példányosítani egy osztályt, mint ahogy C++-ban a sima változókat
             deklaráltuk
-            <programlisting language="java>">
+            <programlisting language="java">
                 Csomopont fa;
             </programlisting>
             Ebben az esetben egy <function>null</function> referenciát kapunk, vagyis ennek még át kell adni egy
@@ -402,7 +402,124 @@ class LZWBinFa
         <para>
             Az objektumorientált programozás alap építőkövének számító adatrejtés egy kicsit másabb, mint a
             C++-ban megszoktuk. Ahhoz, hogy az egyes tagváltozók és tagfüggvények elérhetőségét szabályozzuk, 
-            mindegyik definíciója elé meg kell adni, hogy milyen elérést biztosítsunk hozzájuk.
+            mindegyik definíciója elé meg kell adni, hogy milyen elérést biztosítsunk hozzájuk. A Java nyelv 
+            nem támogatja a operátor túlterhelést, új metódus jelent meg a programban, a 
+            <function>hozzarendel</function>. Mostmár ezzel lehet a fába beletteni a nullákat és az egyeseket.
+        </para>
+        <para>
+            Most, hogy már láttuk magát az osztályt, akkor nézzük meg a <function>main</function> függvényt. 
+            <programlisting language="java"><![CDATA[
+public static void main (String[] args)
+{
+    if (args.length != 3)
+    {
+        usage ();
+        System.exit(-1);
+    }
+
+    String inFile = args[0];
+
+    if (args[1].charAt(1) != 'o')
+    {
+        System.out.println("Missing -o argument");
+        usage ();
+        System.exit(-2);
+    }
+
+try {
+        java.io.FileInputStream beFile = new java.io.FileInputStream(inFile);
+        java.io.DataInputStream beFile_datastream = new java.io.DataInputStream(beFile);
+        java.io.BufferedReader beFile_bufferedreader = new java.io.BufferedReader(new java.io.InputStreamReader(beFile_datastream));
+        
+        java.io.FileWriter kiFile = new java.io.FileWriter(args[2]);
+        java.io.BufferedWriter kiFile_bufferedwriter = new java.io.BufferedWriter(kiFile);
+        LZWBinFa binFa = new LZWBinFa(); // s nyomjuk majd be az LZW fa objektumunkba
+        
+        int c;
+        while ((c = beFile_bufferedreader.read()) != -1){
+            if (c == 0x0a) {
+                break;
+            }
+        }
+        boolean kommentben = false;
+
+    while ((c = beFile_bufferedreader.read()) != -1)
+    {
+ 
+        if (c == 0x3e) {			// > karakter
+                kommentben = true;
+                continue;
+            }
+
+        if (c == 0x0a) {			// újsor
+            kommentben = false;
+            continue;
+        }
+
+        if (kommentben) {
+            continue;
+        }
+
+        if (c == 0x4e) // N betű
+        {
+            continue;
+        }
+
+        for (int i = 0; i < 8; ++i) {
+            if ((c & 0x80) == 128) // ha a vizsgált bit 1, akkor az '1' betűt nyomjuk az LZW fa objektumunkba
+            {
+                binFa.hozzarendel('1');
+            } else // különben meg a '0' betűt:
+            {
+                binFa.hozzarendel('0');
+            }
+            c <<= 1;
+        }
+
+    }
+
+
+    binFa.kiir(kiFile_bufferedwriter);
+    kiFile_bufferedwriter.write("depth = " + binFa.getMelyseg() + '\n');
+    kiFile_bufferedwriter.write("mean = " + binFa.getAtlag()+ '\n');
+    kiFile_bufferedwriter.write("var = " + binFa.getSzoras() + '\n');
+
+    kiFile_bufferedwriter.close();
+    kiFile.close ();
+    beFile_datastream.close ();
+    beFile_bufferedreader.close();
+    beFile.close();
+    } catch (Exception e) {
+        for (StackTraceElement elem : e.getStackTrace()) {
+            System.err.println(elem);
+        }
+    }
+
+}
+            ]]></programlisting>
+            A függvény lénnyegében ugyanazt csinálja, mint korábban. Feltűnhet, hogy már nem 
+            4 paraméternek kell lennie, hanem csak 3-nak. Ez abból adódik, hogy Java-ban az
+            első paraméter nem a program neve, hanem az álatulnk megadott első paraméter a 
+            program neve után. Tehát leellenőrizzük, hogy meg van-e minden szükséges paraméter.
+            Ezután jön egy érdekesség, mely a korábbi programban nem volt benne, de gyakorlott
+            C++ programozóknak már nem lehet újdonság, ez a <function>try-catch</function> blokk.
+            Java-ban a kivételkezelés sok esetben elvárásnak számít. Jelen esetben a fájlkezelés
+            miatt volt rá szükség, mivel enélkül le se fordulna a kód. De ezzel az esetleges
+            null referenciákra való hivatkozást is ki tudjuk szűrni.
+            Első lépésként 
+            megnyitjuk a bemenethez és a kimenethez szükséges fájlokat. Ehhez a java.io osztályait
+            használjuk. Ezután pedig elkezdjük beolvasni a forrást, és az abban lévő betűk függvényében
+            0-kal és 1-kel feltölteni a fát. A <function>for</function> ciklust kellett egy kicsit átalakítani, 
+            mivel Java-ban a bájtsorrend big-endian, ezért nem 1-el kell egyenlőnek lennie a
+            <function><![CDATA[(c & 0x80)]]></function> kifejezésnek, hanem 128-al, ahhoz, hogy 
+            1-est nyomjunk a fába. Majd a fát és annak mélységét, átlagát, szórását kiírjuk a 
+            kimenetként kapott fájba. Egy dologra vigyázni kell, hogy a <function>BufferedWriter</function>
+            osztály nem azonnal írja ki a fájlba a tartalmat, hanem csak akkor, amikor bezárjuk az 
+            általa megnyitott fájlt. Tehát ha ezt elfelejtjük megtenni, akkor azt nem kapjuk meg a
+            program eredményét.
+        </para>
+        <para>
+            A következőkben a Java Servletről lesz szó.
         </para>
     </section>        
     
@@ -413,7 +530,7 @@ class LZWBinFa
             <function><![CDATA[„while (x <= t && x >= t && t != x);"]]></function> tesztkérdéstípusra adj a szokásosnál
             (miszerint x, t az egyik esetben az objektum által hordozott érték, a másikban meg az objektum
             referenciája) „mélyebb” választ, írj Java példaprogramot mely egyszer végtelen ciklus, más x, t
-            értékekkel meg nem! A példát építsd a JDK Integer.java forrására3
+            értékekkel meg nem! A példát építsd a JDK Integer.java forrására
             , hogy a 128-nál inkluzív objektum
             példányokat poolozza!
         </para>
@@ -422,6 +539,46 @@ class LZWBinFa
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A feladat arra épül, hogy a Java <function>Integer</function> osztálya 
+            a 128-nál kisebb egészeket pool-ozza. Ez abban nyilvánul meg, hogy 
+            ha példányosítunk egy <function>Integer</function> objektumot, ami 
+            128-nál kisebb értéket kap, akkor az objektum referencia ugyanarra a 
+            memóriaterületre hivatkozik. Lássuk a forrást:
+            <programlisting language="java"><![CDATA[
+class Gagyi{
+	public static void main (String[] args){
+            if (args.length != 2){
+                System.out.println("Használat: java Gagyi szám");
+                return;
+            }
+            
+            Integer x = Integer.parseInt(args[0]);
+            Integer t = Integer.parseInt(args[0]);
+                
+            while (x >= t && x <= t && x != t){
+                System.out.println("Gagyiiii");
+            }
+	}
+} 
+            ]]></programlisting>
+            A program 1 egész számot kér paraméterként, majd ezek értékét átadjuk
+            x és t objektumrefernciáknak. Ezután pedig végrehajtjuk a feladatban megadott
+            ciklust. A ciklus ellentmondása abból adódna egy laikusnak, hogy lényegében a 
+            feltétel azt vizsgálja, hogy teljesül-e az, hogy <function>x</function> és
+            <function>t</function> egyenlő, emellett pedig <function>x</function> és 
+            <function>t</function> nem egyenlő. Viszont Java-ban létezik az automatikus 
+            csomagolás fogalma. Ennek annyi a lényege, hogy a program autmatikusan 
+            kicsomagolja az <function>Integer</function> osztály értékét, abban az 
+            esetben, ha ez szükséges. Például a <function><![CDATA[<=, >=]]></function>
+            operátorok esetén megtörténik a kicsomagolás. Ellenben a
+            <function><![CDATA[!=]]></function> operátor objektum refernciákat
+            hasolít össze. Ha a két <function>Integer</function> objektum 
+            értéke ugyanaz, és 128-nál kisebb az értéke, akkor nem lépünk be a 
+            végtelen ciklusba. Ellenben ha 127-nél nagyobb egészt adunk meg, akkor
+            viszont belépünk, amiatt, mert ebben az esetben az objektum referenciák
+            különbözőek lesznek.
         </para>
     </section>    
             
@@ -453,9 +610,6 @@ class LZWBinFa
             javat-tanitokjavat/apbs02.html#pi_jegyei">https://www.tankonyvtar.hu/hu/tartalom/tkt/javat-tanitokjavat/apbs02.html#pi_jegyei</link>
             (mert ha csak lemásolod, akkor pont az a fejlesztői élmény marad ki,
             melyet szeretném, ha átélnél).
-        </para>
-        <para>
-            <link xlink:href="https://en.wikipedia.org/wiki/Yoda_conditions">https://en.wikipedia.org/wiki/Yoda_conditions</link>
         </para>
         <para>
             Megoldás forrása:                
