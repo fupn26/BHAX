@@ -597,6 +597,82 @@ class Gagyi{
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            A Yoda conditions nevét a Star Wars-ból ismert Yoda karakterről kapta. Az
+            említett filmben ő angolul beszél, viszont nem a nyekv hagyományos
+            szintaxisával. Ilyen furcsaságról van szó itt is. Azért találták ki, hogy
+            megkönnyítsék a programozók számára az elírások kiszűrését, abban az esetben, amikor
+            egyenlőséget vizsgálunk.
+            Főleg akkor
+            érdemes használni, amikor a változókat nem változóval hasonlítjuk össze, hanem
+            valamilyen konstanssal.
+            <programlisting language = "java"><![CDATA[
+Integer a = 5;
+//Yoda használata nélkül
+if (a == 6)
+  //valamit csinál 
+
+//Yoda használatával     
+if (6 == a)
+   //valamit csinál
+            ]]></programlisting>
+            Ahogy látható a Yoda conditions lényege, hogy felcseréljük a feltételben a 
+            változót a konstanssal. Ez a technika megkönnyíti a hibakeresését például 
+            ebben az esetben:
+            <programlisting language= "java"><![CDATA[
+if (6 = a)          if (a = 6)
+            ]]></programlisting>
+            Ha így írjuk a feltételt, akkor is működni fog a program, de az 
+            <function>if</function>-be mindig be fog lépni a vezérlés, mivel 
+            annak fejlécében csak értéket adunk át, és nem feltételt vizsgálunk.
+            Ezzel az a probléma, hogy a programunk nem megfelelően működik, és
+            ez a legrosszabb módja, mert nem is kapunk visszajelzést a hibáról.
+            Viszont az első esetben sokkal egyszerűbb észrevenni, mint a 
+            másodiknál.
+        </para>
+        <para>
+            Most, hogy tudjuk, mi is az a Yoda conditions, lássuk a feladat 
+            megoldását.
+            <programlisting language="java"><![CDATA[
+class Yoda{
+    public static void main (String[] args){
+        String a = null;
+
+        if(a.equals("Yoda")){
+//        if("Yoda".equals(a)){
+            System.out.println("Yoda");
+        }
+    }
+}  
+            ]]></programlisting>
+            Jelen álllapotában a program kivételt dob, pontosan azt , amit a 
+            feladat előír, a java.lang.NullPointerEx-et. Ez annak köszönhető, hogy
+            az <function>a</function> objektum refencia <function>null</function>
+            értékű, és ennek a tagfüggvényét hívjuk meg. Mivel nem létező 
+            objektumra mutat hivatkozik, ezért kapunk hibát. Viszont a 
+            kikommentezett feltételt használva már nem kapunk hibát. Ez annak
+            köszönhető, hogy a beírt szöveg egyből <function>String</function>-é
+            konvertálódik, és el tudjuk érni annak tagfüggvényeit.
+            <figure>
+                <title>Yoda conditions alkalmazásával</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Yoda/yoda_on.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            <figure>
+                <title>Yoda conditions alkalmazása nélül</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Yoda/yoda_off.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Összegezve a láttotakat, kijelenthetjük, hogy bizonyos esetben igazán hasznos lehet
+            a Yoda conditions használata. Több órás keresgéléstől kímélhetjük meg magunkat egyes
+            hibák felderítése során.
+        </para>
     </section>
     
     <section>
