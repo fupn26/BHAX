@@ -519,7 +519,204 @@ try {
             program eredményét.
         </para>
         <para>
-            A következőkben a Java Servletről lesz szó.
+            A feladat második részében pedig átalakítjuk a programot Java 
+            Servletté. Ehhez az Apache Tomcat webszervert fogjuk használni. 
+            Első lépésként le kell tölteni a legújabb verzióját ennek a 
+            szervernek.(<link xlink:href="http://tomcat.apache.org/">http://tomcat.apache.org/</link>)
+            Ki kell csomagolni, majd /bin/startup.sh-val tudjuk elindítani a 
+            szervert, leállítani pedig a /bin/shutdown.sh-val lehet. A módosított
+            java forrásból készített class fájlt
+            a /webapps/ROOT/WEB-INF/classes mappába kell helyezni, majd 
+            a /webapps/ROOT/WEB-INF/web.xml fájlba el kell helyezni a következő
+            sorokat:
+            <programlisting language="xml"><![CDATA[
+<servlet>
+   <servlet-name>LZWBinFa</servlet-name>
+   <servlet-class>LZWBinFa</servlet-class>
+</servlet>
+
+<servlet-mapping>
+   <servlet-name>LZWBinFa</servlet-name>
+   <url-pattern>/LZWBinFa</url-pattern>
+</servlet-mapping>
+            ]]></programlisting>
+            Fontos, hogy ezeket a <function>webapp</function> tagak közé kell helyezni.
+            Ha ezekkel a lépésekkel kész vagyunk, akkor már lehet futtatni a böngészőben 
+            a programot.
+            Nézzük meg, hogy milyen módosításokat kellett végezni az eredeti 
+            forráson.
+            <programlisting language="java">
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+
+public class LZWBinFa extends HttpServlet
+{
+                ...
+}
+            </programlisting>
+            Elsőnek importálni kell a Java Servlethez szükséges csomagokat.
+            Ezeket a <function>javac</function> nem találja meg azonnal, mivel 
+            a <filename>servlet-api.jar</filename>-t nem tartalmazza a Java
+            JDK. Ezt a Tomcat webserverrel együtt kapjuk meg, ezért a classpath-t
+            meg kell adni a <function>javac</function> számára. Ehhez a -cp
+            kapcsolót használhatjuk.
+            <programlisting>
+                javac -cp /path/to/apache-tomcat-9.0.xx/lib/servlet-api.jar LZWBinFa.java
+            </programlisting>
+            A másik, amit egyből észre lehet venni, hogy az osztályunk a 
+            HttpServlet osztály leszármazottja. Enélkül nem tudnánk 
+            <function>Servlet</function>-ként használni a programot. Az 
+            osztályunk konstruktorára már nincs szükség, mivel nincs 
+            <function>main</function> függvény sem. A megmaradt 
+            tagfüggvények nagy része nem változott. Kivéve a 
+            <function>kiir</function> függvényt, mely most a 
+            az <function>LZWBinFa</function> tagváltozójába, 
+            a <function>kimenet</function>-be építi fel a fát.
+            <programlisting language="java"><![CDATA[
+    public void kiir (Csomopont elem)
+    {
+        // Nem létező csomóponttal nem foglalkozunk... azaz ez a rekurzió leállítása
+        if (elem != null)
+        {
+
+            ++melyseg;
+            kiir (elem.egyesGyermek ());
+            // ez a postorder bejáráshoz képest
+            // 1-el nagyobb mélység, ezért -1
+            for (int i = 0; i < melyseg; ++i)
+                kimenet.append("---");
+            kimenet.append(elem.getBetu () + "(" + (melyseg - 1) + ")<br>\n");
+            kiir (elem.nullasGyermek ());
+            --melyseg;
+            
+        }
+    } 
+            ]]></programlisting>
+            A <function>main</function> függvényt a <function>CreateStringBuffer</function>
+            váltotta. Lényegében ugyan azt a szerepet látja el, annyi különbséggel, hogy
+            ez már egy tagfüggvénye az osztályunknak.
+            <programlisting><![CDATA[
+public void CreateStringBuffer(String bemenet)
+{
+    for(int i = 0; i < bemenet.length(); ++i){
+        int c = bemenet.charAt(i);
+        if(c == 0x0a){
+            break;
+        }
+    }
+    boolean kommentben = false;
+        
+        
+    for(int i = 0; i < bemenet.length(); ++i)
+    {
+        int c = bemenet.charAt(i);
+ 
+        if (c == 0x3e) {			// > karakter
+                kommentben = true;
+                continue;
+            }
+
+        if (c == 0x0a) {			// újsor
+            kommentben = false;
+            continue;
+        }
+
+        if (kommentben) {
+            continue;
+        }
+
+        if (c == 0x4e) // N betű
+        {
+            continue;
+        }
+
+       
+        for (int j = 0; j < 8; ++j) {
+           
+            if ((c & 0x80) == 128) 
+            {
+                hozzarendel('1');
+            } else 
+            {
+                hozzarendel('0');
+            }
+            c <<= 1;
+        }
+
+    }
+    
+    kiir();
+    kimenet.append("depth = " + getMelyseg() + "<br>\n");
+    kimenet.append("mean = " + getAtlag()+ "<br>\n");
+    kimenet.append("var = " + getSzoras() + "<br>\n");
+
+    }
+
+            ]]></programlisting>
+            Már nincs szükség a fájlkezeléshez szükséges objektumokra, mivel a 
+            kiírás a <function>bemenet</function> bufferbe történik. Az utolsó, és
+            egyben legfontosabb függvény pedig a <function>doGet</function>
+            függvény, mely a <function>HttpServlet</function> osztály
+            egy tagfüggvénye. Ez szolgál arra, hogy GET kérést intézzünk a 
+            szerver felé.
+            <programlisting language="java"><![CDATA[
+public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+      
+      // Set response content type
+      response.setContentType("text/html");
+      
+    if(request.getParameter("bemenet") == null){
+        return;
+    }
+    else
+      CreateStringBuffer(request.getParameter("bemenet"));
+    
+    PrintWriter out = response.getWriter();
+    String title = "LZWBinFa";
+    String docType =
+         "<!doctype html public \"-//w3c//dtd html 4.0 " + "transitional//en\">\n";
+         
+    out.println(docType +
+         "<html>\n" +
+            "<head><title>" + title + "</title></head>\n" +
+            "<body>\n" +
+               "<h1 align = \"center\">" + title + "</h1>\n" + 
+                 kimenet + 
+            "</body>" +
+         "</html>"
+      );
+   }
+            ]]></programlisting>
+            A <function>setContentType</function> függvény segítségével 
+            be tudjuk állítani, hogy milyen fomrátumban küldje a szerver a kért
+            reprezentációt. Jelen esetben mi ezt egy HTML formátumban kérjük. 
+            A hibás működés elkerülése érdekében kezelni kell azt az esetet, ha 
+            a felhasználó elfelejti megadni a bemenetet. Ha van bemenetünk, akkor
+            a <function>CreateStringBuffer</function> segítségével felépítjük, és
+            kiírjuk a fát a bufferbe. A <function>PrintWriter</function> 
+            osztály segítségével megírjuk, hogy hogyan nézzen ki a válasz, mit
+            tartalmazzon. Lényegében egy klasszikus html fájlt hozunk létre. 
+            Ha a fenti paranccsal fordítjuk a forrást, akkor ideális esetben 
+            kapunk két <filename>.class</filename> fájlt. Mind a kettőt be kell
+            másolni a fentebb megadott helyre, és módosítani kell az xml-fájlt. 
+            Mielőtt elkezdenéd bemásolni a class-okat, ellenőrizd, hogy
+            le van-e állítva a Tomcat server. Ha nincs, állítsd le, majd a 
+            módosítások elvégzése után már csak be kell írni a következőt:
+            <programlisting><![CDATA[
+                http://localhost:8080/LZWBinFa?bemenet=szöveg
+            ]]></programlisting>
+            <figure>
+                <title>Java servlet</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/LZW/Java_servlet/servlet.png" format="PNG" scale="250"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+
         </para>
     </section>        
     

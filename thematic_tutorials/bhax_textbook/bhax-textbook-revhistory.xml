@@ -303,4 +303,14 @@
         </revremark>
     </revision>
 
+    <revision>
+        <revnumber>0.3.7</revnumber>
+        <date>2019-09-23</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Java Servlet elkészítve
+        </revremark>
+    </revision>
+
+
 </revhistory>
