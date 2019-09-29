@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/PiBBP.csproj": {}
+  },
+  "projects": {
+    "/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/PiBBP.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/PiBBP.csproj",
+        "projectName": "PiBBP",
+        "projectPath": "/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/PiBBP.csproj",
+        "packagesPath": "/home/fupn26/.nuget/packages/",
+        "outputPath": "/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/fupn26/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

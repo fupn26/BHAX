@@ -89,7 +89,7 @@ int main ()
 
   clock_t delta = clock ();
 
-  for (d = 1000000; d < 1000001; ++d)
+  for (d = 100000000; d < 100000001; ++d)
     {
 
       d16Pi = 0.0;

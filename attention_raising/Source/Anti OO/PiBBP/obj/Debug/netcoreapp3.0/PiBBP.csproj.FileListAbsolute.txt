@@ -1,0 +1,11 @@
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/bin/Debug/netcoreapp3.0/PiBBP
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/bin/Debug/netcoreapp3.0/PiBBP.deps.json
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/bin/Debug/netcoreapp3.0/PiBBP.runtimeconfig.json
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/bin/Debug/netcoreapp3.0/PiBBP.runtimeconfig.dev.json
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/bin/Debug/netcoreapp3.0/PiBBP.dll
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/bin/Debug/netcoreapp3.0/PiBBP.pdb
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/obj/Debug/netcoreapp3.0/PiBBP.csprojAssemblyReference.cache
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/obj/Debug/netcoreapp3.0/PiBBP.AssemblyInfoInputs.cache
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/obj/Debug/netcoreapp3.0/PiBBP.AssemblyInfo.cs
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/obj/Debug/netcoreapp3.0/PiBBP.dll
+/home/fupn26/BHAX/attention_raising/Source/Anti OO/PiBBP/obj/Debug/netcoreapp3.0/PiBBP.pdb
