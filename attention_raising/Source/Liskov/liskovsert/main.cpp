@@ -30,18 +30,18 @@ public:
     }
 };
 
-void setKerulet(Negyzet &negyzet){
+void setKeruletTerulet(Negyzet &negyzet){
     negyzet.kerulet = negyzet.a * 4;
     negyzet.terulet = negyzet.a * negyzet.a;
 }
 
 int main()
 {
-    Negyzet& negyzet = *new Negyzet(5,5,5,5);;
+    Negyzet& negyzet = *new Negyzet(5,5,5,5);
     Teglalap& teglalap = *new Teglalap(4,5,4,5);
 
-    setKerulet(negyzet);
-    setKerulet(teglalap);
+    setKeruletTerulet(negyzet);
+    setKeruletTerulet(teglalap);
 
     cout << "Téglalap kerülete: " << teglalap.kerulet  << ", Négyzet kerülete: " << negyzet.kerulet << endl;
 }

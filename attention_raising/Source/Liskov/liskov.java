@@ -29,7 +29,7 @@ class LiskovSert{
 	}
 
 	public static class Program{
-		public void setKerület(Négyzet negyzet){
+		public void setKerületTerület(Négyzet negyzet){
 			negyzet.kerület = negyzet.a * 4;	
 			negyzet.terület = negyzet.a * negyzet.a;
 		}
@@ -40,8 +40,8 @@ class LiskovSert{
 		Négyzet negyzet = new Négyzet(5,5,5,5);;
 		Téglalap teglalap = new Téglalap(4,5,4,5);
 		
-		program.setKerület(negyzet);
-		program.setKerület(teglalap); 
+		program.setKerületTerület(negyzet);
+		program.setKerületTerület(teglalap); 
 
 		System.out.println("Téglalap kerülete: " + teglalap.kerület + ", Négyzet kerülete: "+ negyzet.kerület); 
 		

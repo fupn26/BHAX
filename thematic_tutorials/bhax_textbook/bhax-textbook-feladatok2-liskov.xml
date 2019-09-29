@@ -22,6 +22,133 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            A Liskov elv azt mondja ki, hogy minden osztálynak helyettesíthetőnek
+           kell lennie a leszármazottaival anélkül, hogy a program helyes működése
+           megváltozna. Ha objektum orientált nyelven programozunk, éredemes ezt
+            az elvet betartani, hiszen a proggram továbbfejlesztése során komoly problémát jelenthet
+            ennek hiánya. 
+        </para>
+        <para>
+            Lássunk egy példát arra, hogy mi történik, ha nem vesszük a Liskov elvet figyelembe. A példa
+            egy matematikai tévedést tartalmaz, amit valószínűleg nem követnénk el a való életben, de jól szemlélteti
+            az elvben megfogalmazott szabály hiányát.
+            <programlisting language="c++"><![CDATA[
+#include <iostream>
+
+using namespace std;
+
+class Negyszog{
+public:
+    Negyszog(int a_oldal, int b_oldal, int c_oldal, int d_oldal){
+        a = a_oldal;
+        b = b_oldal;
+        c = c_oldal;
+        d = d_oldal;
+    }
+    int a;
+    int b;
+    int c;
+    int d;
+    int kerulet;
+    int terulet;
+};
+
+class Negyzet:public Negyszog{
+public:
+    Negyzet(int a_oldal, int b_oldal, int c_oldal, int d_oldal):Negyszog(a_oldal, b_oldal, c_oldal, d_oldal){
+    }
+};
+
+class Teglalap:public Negyzet{
+public:
+    Teglalap(int a_oldal, int b_oldal, int c_oldal, int d_oldal):Negyzet(a_oldal, b_oldal, c_oldal, d_oldal){
+    }
+};
+
+void setKeruletTerulet(Negyzet &negyzet){
+    negyzet.kerulet = negyzet.a * 4;
+    negyzet.terulet = negyzet.a * negyzet.a;
+}
+
+int main()
+{
+    Negyzet& negyzet = *new Negyzet(5,5,5,5);;
+    Teglalap& teglalap = *new Teglalap(4,5,4,5);
+
+    setKeruletTerulet(negyzet);
+    setKeruletTerulet(teglalap);
+
+    cout << "Téglalap kerülete: " << teglalap.kerulet  << ", Négyzet kerülete: " << negyzet.kerulet << endl;
+}
+
+            ]]></programlisting>
+            Tehát elsőnek van egy <function>Negyszog</function> osztáylunk. Ebből származtatjuk a
+            <function>Negyzet</function> osztályt. Ezután viszont geimetrialiag hibát követünk el, mert
+            minden négyzet téglalap, de nem minden téglalap négyzet. A <function>Negyzet</function> osztályból
+            származtatjuk a <function>Teglalap</function> osztályt. Majd definiálunk egy függvényt, mely egy
+            négyzet kerületét és területét számolja ki. Viszont az objektum orientált nyekvekben az ős helyén
+            használható a gyermek is. Vagyis a <function>setKeruletTerulet</function> függvényt meg tudjuk hívni
+            egy <function>Teglalap</function> objektummal is. Ami nyilvánvalóan hibás eredményhez vezet, ha 
+            olyan táglalapot adunk át, ami nem négyzet.
+        </para>
+        <para>
+            Most, hogy már láttad a C++ forrást, nézzük a Java-s verziót. Nagy különbésg nincs a kettő között, csak
+            szintaktikailag.
+            <programlisting language="java"><![CDATA[
+class LiskovSert{
+	public static class Négyszög{
+		public int a;
+		public int b;
+		public int c;
+		public int d;
+
+		public Négyszög(int a_oldal, int b_oldal, int c_oldal, int d_oldal){
+			a = a_oldal;
+			b = b_oldal;
+			c = c_oldal;
+			d = d_oldal;
+		}
+
+		public int kerület;
+		public int terület;
+	}
+	
+	public static class Négyzet extends Négyszög{
+		public Négyzet(int a_oldal, int b_oldal, int c_oldal, int d_oldal){
+			super(a_oldal, b_oldal, c_oldal, d_oldal);
+		}
+	}
+	
+	public static class Téglalap extends Négyzet{
+		public Téglalap(int a_oldal, int b_oldal, int c_oldal, int d_oldal){
+			super(a_oldal, b_oldal, c_oldal, d_oldal);
+		}
+	}
+
+	public static class Program{
+		public void setKerületTerület(Négyzet negyzet){
+			negyzet.kerület = negyzet.a * 4;	
+			negyzet.terület = negyzet.a * negyzet.a;
+		}
+	}	
+
+	public static void main(String[] args){
+		Program program = new Program();
+		Négyzet negyzet = new Négyzet(5,5,5,5);;
+		Téglalap teglalap = new Téglalap(4,5,4,5);
+		
+		program.setKerületTerület(negyzet);
+		program.setKerületTerület(teglalap); 
+
+		System.out.println("Téglalap kerülete: " + teglalap.kerület + ", Négyzet kerülete: "+ negyzet.kerület); 
+		
+	}
+} 
+            ]]></programlisting>
+            Annyiban eltér a C++-os forrástól, hogy ebben a <function>setKerületTerület</function> függvény a <function>Program</function>
+            osztálynak egy tagfüggvénye. 
+        </para>
     </section>        
 
     <section>
@@ -38,6 +165,76 @@
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A feladat lényege, hogy bemutassuk, az ős refernciáin vagy pointerein keresztül csak az ős
+            függvényeit tudjuk meghívni.
+            Lássuk elsőnek a C++-os példát.
+            <programlisting><![CDATA[
+#include <iostream>
+
+using namespace std;
+
+class Vehicles{
+public:
+//    void setNumberOfWheels(){
+//        wheels = 0;
+//    }
+    int wheels = 0;
+};
+
+class Cars: public Vehicles{
+public:
+    void setNumberOfWheels(){
+        wheels = 4;
+    }
+};
+
+int main()
+{
+    Vehicles &vehicle = *new Cars();
+
+    vehicle.setNumberOfWheels(); //Hibás, mivel az ős nem tudja elérni a gyermek metódusait.
+
+    cout << "The number of wheels: " << vehicle.wheels << endl;
+}
+            ]]></programlisting>
+            Tehát van egy <function>Vehicles</function> osztályunk, aminek a 
+            <function>wheels</function> változójában a kerekek számát tároljuk.
+            A kerekek száma alapértelmezetten nulla. A <function>Cars</function>
+            ennek az osztálynak a leszármazottja. Tartalmaz egy függvényt, amely
+            beállítja a kerekek számát 4-re. A <function>main</function> függvényben 
+            deklarálunk egy <function>Vehicle</function> osztály refeneciát, és 
+            értékéül egy <function>Cars</function> osztályrefernciát adunk. Ha a 
+            <function>vehicle</function> referncián keresztül meghívjuk a <function>setNumberOfWheels</function>
+            függvényt, akkor hibát dob a program, nem találja a függvény definícióját.
+        </para>
+        <para>
+            Ugyanez a forrás Java nyelven a következőképpen néz ki:
+            <programlisting language="java"><![CDATA[
+public class Vehicles{
+//	public void setNumberOfWheels(){
+//		wheels = 0;
+//	}
+	public int wheels;
+
+	public static class Cars extends Vehicles{
+	    	public void setNumberOfWheels(){
+		        wheels = 4;
+	    	}
+	}
+
+	public static void main(String[] args)
+	{
+    		Vehicles vehicle = new Cars();
+
+		vehicle.setNumberOfWheels(); //Hibás, mert az ős a leszármazott metódusait nem éri el.
+
+		System.out.println("The number of wheels: "+vehicle.wheels);
+	}
+}
+
+            ]]></programlisting>
         </para>
     </section>
     
@@ -57,6 +254,55 @@
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <caution>
+            <title>Segítség .NET telepítéséhez minden platformra</title>
+            <para>
+                <link xlink:href="https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial/intro">https://dotnet.microsoft.com/learn/dotnet/hello-world-tutorial/intro</link>
+            </para>
+        </caution>
+        <table frame='all'><title>Eredmények</title>
+            <tgroup cols='4' align='center' colsep='1' rowsep='1'>
+                    <colspec colname='c1'/>
+                    <colspec colname='c2'/>
+                    <colspec colname='c3'/>
+                    <colspec colname='c4'/>
+                    <thead>
+                    <row>
+                      <entry></entry>
+                      <entry>C++</entry>
+                      <entry>Java</entry>
+                      <entry>C#</entry>
+                    </row>
+                    </thead>
+                    <tfoot>
+                    <row>
+                      <entry>10<superscript>8</superscript></entry>
+                      <entry>229.681</entry>
+                      <entry>205.073</entry>
+                      <entry>241.051</entry>
+                    </row>
+                    </tfoot>
+                    <tbody>
+                    <row>
+                      <entry>10<superscript>6</superscript></entry>
+                      <entry>1.726</entry>
+                      <entry>1.547</entry>
+                      <entry>2.002</entry>
+                    </row>
+                    <row>
+                      <entry>10<superscript>7</superscript></entry>
+                      <entry>20.015</entry>
+                      <entry>17.912</entry>
+                      <entry>21.239</entry>
+                    </row>
+                    </tbody>
+                </tgroup>
+        </table>
+        <para>
+            Az eredményeket figyelembe véve egyértelműen látszik, hogy a C#-os
+            verzió teljesít a leggyengébben. Hozzá képest alig gyorsabb a C++-os,
+            ezzel szemben a Java-s program több másodperccel gyorsabb mind a kettőnél.
         </para>
     </section>
     
@@ -131,6 +377,72 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A ciklomatikus komplexitás, másnéven McCabe-komplexitás a program döntési komplexitását adja meg a gráfelmélet szabályait használva.
+            A képlet a következő: <function>M = E - N + 2P</function>, ahol E a gráf éleinek a száma, N a csúcsok száma és P az
+            összefüggő komponensek száma. Tehát minnél több elágazás van a program vezérlésében, annál nagyobb értéket kapunk.
+        </para>
+        <para>
+            Az a program, aminek ki fogjuk számolni a ciklomatikus komplexitását, a BBP program lesz. Ehhez egy Maven projetet hozunk létre,
+            és abba beleágyazzuk a programunkat. Ez abból áll, hogy a Netbeans-ben létrehozunm egy új Maven projecetet, és ahhoz hozzáadjuk a 
+            PiBBP.java osztályt. Majd az <function>mvn</function> paranccsal lehet felépíteni a <function>.class</function> fájlt. 
+            Fontos, hogy az <function>mvn</function> parancsot ott futassuk, ahol a <filename>pom.xml</filename> található.
+        </para>
+        <caution>
+            <title>Maven használata</title>
+            <para>
+                Telepíteni a <function>sudo apt install maven</function> paranccsal lehet.
+            </para>
+        </caution>
+        <para>
+        Emellett még szükségünk lesz a SonarQuebe Community Edition programra, amely egy elemezni fogja a forrásunkat.
+        Ha letöltöttük, akkor futtani kell a <filename>sonar.sh start</filename> parancsot a terminálba, ez a 
+        egy szervert indít el, mely a <link xlink:href="http://localhost:9000 ">http://localhost:9000 </link>
+        URI-n keresztül érhető el. Jelentkezzünk be admin/admin-nal, majd hozzunk létre egy új projektet. 
+        <figure>
+                <title>Project létrehozása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Ciklomatikus_komplexitás/new_project.png" format="PNG" scale="100"/>
+                        </imageobject>
+                    </mediaobject>
+        </figure>
+        <figure>
+                <title>Név megadása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Ciklomatikus_komplexitás/new_project2.png" format="PNG" scale="100"/>
+                        </imageobject>
+                    </mediaobject>
+        </figure>
+        <figure>
+                <title>Token generálása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Ciklomatikus_komplexitás/new_project3.png" format="PNG" scale="100"/>
+                        </imageobject>
+                    </mediaobject>
+        </figure>
+        <figure>
+                <title>Forrás teszthez szükséges parancs</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Ciklomatikus_komplexitás/new_project4.png" format="PNG" scale="100"/>
+                        </imageobject>
+                    </mediaobject>
+        </figure>
+        Az, hogy miből generáljuk a token-t, teljesen szabadon választhataó. A végén megkapjuk a parancsot, amivel
+        a SonarQube leellenőrzi a kódot, és az eredméynek megnézhetők a weboldalon. Láthatjuk, hogy az eredmény 12.
+        <figure>
+                <title>Forrás teszthez szükséges parancs</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Ciklomatikus_komplexitás/result.png" format="PNG" scale="100"/>
+                        </imageobject>
+                    </mediaobject>
+        </figure>
+        
         </para>
     </section> 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
