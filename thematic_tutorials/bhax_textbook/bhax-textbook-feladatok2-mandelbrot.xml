@@ -42,6 +42,15 @@
             keres, ezért ki kell egészíteni a szűrést <function>cpp</function> kiterjesztéseel. Majd értelem szerűen beimportáljuk a fájlt. Ezután pedig oldalt a fastruktúra
             nézetből ki kell választani a klasszneveket és behúzni az osztálydiagrammba. Ez még nem lesz tökéletes, a fenti linken található diasorban látható módon kell
             átalakítani.
+            <figure>
+                <title>LZWBinFa UML diagram</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Reverse engineering/z3a7.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+
         </para>
         <para>
             Fontos még beszélni a kompozíció és aggregáció kapcsolatáról. Mind a kettő az asszociációnak, melyről a 3. felafatban lesz részletesebb kifejtés,
@@ -71,7 +80,17 @@
             Az előző feladatban megismert Umbrello programot fogjuk itt is használni. Ehhez elsőnek meg kell csinálni az osztálydiagrammot.
             Legyen a példa egy sakk játék elkészítése. Ekkor létre kell hozni minden bábúnak egy osztályt. Ezeknek lesznek tagfüggvényei, mint
             a <function>lepesvalidator</function>, és tagváltozói, amik a pozíciójukat és az aktuális állapotukat határozza meg. Van egy külön osztály, a
-            <function>Sakk</function>, mely az egész játékot kezeli. Ha elkészítettük a diagrammot, akkor a <function>Kódgenerálás</function> menüpontban végehetjük
+            <function>Sakk</function>, mely az egész játékot kezeli.
+            <figure>
+                <title>Sakk UML diagram</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Reverse engineering/sakk.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+
+            Ha elkészítettük a diagrammot, akkor a <function>Kódgenerálás</function> menüpontban végehetjük
             el a források generálását.
         </para>
     </section>
@@ -239,6 +258,71 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A TeX egy szerkesztő rendszer, ami széleskörben elterjedt a tudományos körökben. 
+            Erre épül a LaTeX szövegszerkesztő, amely az alapját képezi ennek a könyvnek is.
+            TeX-hez rengeteg csomag érhető el, ezek közül mi a TiKz-UML csomagot
+            fogjuk ebben a feladatban használni. Ez viszont nem fogja megcsinálni nekünk kézzel
+            a diagramot, nekünk kell begépelni egy <filename>.tex</filename> kiterjesztésű fájlba.
+        </para>
+        <caution>
+            <title>TikZ-UML</title>
+            <para>
+            Használatához szükség van a <filename>texlive-pictures</filename> csomagra és
+            a <filename>tikz-uml.sty</filename> fájlra, amit a TikZ-UML oldaláról 
+            tudsz letölteni. Ezt a fájlt a forrásunk könyvtárába kell helyezni.
+            </para> 
+        </caution>
+        <para>
+            A forrás keretét így adjuk meg:
+            <programlisting>
+                \documentclass{article}
+                    ...
+                \begin{document}
+                    ...
+                \end{document}
+            </programlisting>
+            Meg kell adnunk a szükséges csomagokat, melyet a <function>\usepackage{}</function>
+            jelzéssel tehetjük meg.
+            <programlisting>
+\documentclass{article}
+
+\usepackage{tikz}
+\usepackage{tikz-uml}
+
+\begin{document}
+    ...
+\end{document}
+            </programlisting>
+            Ha meg vannak a szükésges csomagok, akkor elsőnek a csomagokat adjuk meg, amik az 
+            OOCWC projekt osztályit tartalmazzák.
+            <programlisting>
+\documentclass{article}
+
+\usepackage{tikz}
+\usepackage{tikz-uml}
+
+\begin{document}
+\begin{tikzpicture} 
+\begin{umlpackage}[x=0, y=0]{justine}
+\begin{umlpackage}[x=0, y=0]{robocar}
+\end{umlpackage}
+\begin{umlpackage}[x=10, y=0]{sampleclient}
+\end{umlpackage}
+\end{umlpackage} 
+\end{tikzpicture}
+\end{document}
+            </programlisting>
+            <figure>
+                <title>Sakk UML diagram</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Reverse engineering/TexUML/texuml1.png" format="PNG" scale="150"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 </chapter>                

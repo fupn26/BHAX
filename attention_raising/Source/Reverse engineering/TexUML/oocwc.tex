@@ -1,0 +1,39 @@
+\documentclass{article}
+
+\usepackage{tikz}
+\usepackage{tikz-uml}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+\begin{tikzpicture} 
+\begin{umlpackage}[x=0, y=0]{justine}
+\begin{umlpackage}[x=0, y=0]{robocar}
+\umlclass{justine::robocar::CarLexer}{
+	- name : char[128] \\
+	- role : char \\
+	- route : std::vector<unsigned int>}{
+	+ yylex() : int \\
+	+ operator <<(os : std::ostream&, cl:CarLexer&) : std::ostream& <<friend>> \\
+	+ get\_name() : char* \\
+	+ get\_role() : char \\
+	+ get\_num() :int \\
+	+ get\_errnumber() : int \\
+	+ get\_guided() : bool \\
+	+ get\_cmd() : int \\
+	+ get\_id() : int \\
+	+ get\_route : std::vector<unigned int>& \\ + get\_from() : unsigned int \\
+	+ get\_to() : unsigned int \\
+	- m\_cmd() : int \\
+	- num () : int \\
+	- m\_errnumber() : int \\
+	- m\_guided() : bool \\
+	- m\_id() : int \\
+	- from() : unsigned int \\
+	- to() : unsigned int
+	}
+\end{umlpackage}
+\begin{umlpackage}[x=10, y=0]{sampleclient}
+\end{umlpackage}
+\end{umlpackage} 
+\end{tikzpicture}
+\end{document}
