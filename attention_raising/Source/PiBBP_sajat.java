@@ -35,26 +35,41 @@ class PiBBP{
     
     
     public double dj16s(int d, int j){
-        double sum = 0;
+        double sum = 0.0d;
         for(int k = 0; k <= d; ++k){
-            sum += binmodk(8*k+j, d-k) / (double)(8*k + j);
+            sum += (double)binmodk(8*k+j, d-k) / (double)(8*k + j);
         }
-        sum -= java.lang.StrictMath.floor(sum);
         
 //        long iPart = (long) sum;
 //        Double fpart = sum -iPart;
         
-        System.out.println(sum);
-        return sum;
+        return sum - java.lang.StrictMath.floor(sum);
     }
     
-    public double binmodk(int k, int d){
+    public long binmodk(int k, int d){
         int t = 1;
-        double r = 1.0;
+        long r = 1;
         while(t <= d){
             t *= 2;
         }
         
+//        while(true) {
+            
+//            if(d >= t) {
+//                r = (16*r) % k;
+//                d = d - t;
+//            }
+            
+//            t = t/2;
+            
+//            if(t < 1)
+//                break;
+            
+//            r = (r*r) % k;
+            
+//        }
+
+
         while(t < 1){
             if(d >= t){
                 r = (16*r) % k;

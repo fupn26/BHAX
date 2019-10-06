@@ -943,7 +943,7 @@ class PiBBP{
     public double dj16s(int d, int j){
         double sum = 0;
         for(int k = 0; k <= d; ++k){
-            sum += binmodk(8*k+j, d-k) / (double)(8*k + j);
+            sum += (double)binmodk(8*k+j, d-k) / (double)(8*k + j);
         }
         sum -= java.lang.StrictMath.floor(sum);
         
@@ -954,9 +954,9 @@ class PiBBP{
         return sum;
     }
     
-    public double binmodk(int k, int d){
+    public long binmodk(int k, int d){
         int t = 1;
-        double r = 1.0;
+        long r = 1;
         while(t <= d){
             t *= 2;
         }
@@ -982,6 +982,14 @@ class PiBBP{
 }
 
             ]]></programlisting>
+            Az első fontos függvény a <function>binmodk</function>, mely
+            egy bináris algoritmus a modulo k értékének kiszámolásához.
+            Ha ez meg van, akkor ki kell számolnunk a 
+            a {16<superscript>d</superscript>Sn}-t. Ezt a 
+            <function>dj16s</function> számolja ki. Végül pedig a 
+            <function>PiBBP</function> osztály konstruktorában
+            pedig kiszámoljuk a {16<superscript>d</superscript>π}
+            értékét a képlet és a függvények segítségével.
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 </chapter>                
