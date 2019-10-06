@@ -43,6 +43,14 @@
             nézetből ki kell választani a klasszneveket és behúzni az osztálydiagrammba. Ez még nem lesz tökéletes, a fenti linken található diasorban látható módon kell
             átalakítani.
         </para>
+        <para>
+            Fontos még beszélni a kompozíció és aggregáció kapcsolatáról. Mind a kettő az asszociációnak, melyről a 3. felafatban lesz részletesebb kifejtés,
+            egy speciális fajtája. Az aggregáció tartalmazást jelöl. Az UML-ből generált kódban meg sem jelenik, emiatt sokan nem is javasolják használatát.
+            Jele az ábrában az üres rombusz. A kompozíciót teli rombusszal jelöljük, lényegében erős aggregációnak is nevezhetnénk. Fontos megkötések a 
+            kompozíció  esetén, hogy a tartalmazott objektum nem lehet megosztva több objektum között. Emellett a tartalmazó és a tartalmazott objektum együtt
+            jön létre, ennek következtében a tartalmazott objektumért a tartalmazó felel. A tartalmazó objektum destruktorábnak kell tartalmaznia a tartalmazott 
+            objektum felszabadításához szükséges kódot. Kompozícióra példa a mi feladatunkban a <function>gyoker</function> attribútum. 
+        </para>
     </section>        
 
     <section>
@@ -63,7 +71,7 @@
             Az előző feladatban megismert Umbrello programot fogjuk itt is használni. Ehhez elsőnek meg kell csinálni az osztálydiagrammot.
             Legyen a példa egy sakk játék elkészítése. Ekkor létre kell hozni minden bábúnak egy osztályt. Ezeknek lesznek tagfüggvényei, mint
             a <function>lepesvalidator</function>, és tagváltozói, amik a pozíciójukat és az aktuális állapotukat határozza meg. Van egy külön osztály, a
-            <sunction>Sakk</sunction>, mely az egész játékot kezeli. Ha elkészítettük a diagrammot, akkor a <function>Kódgenerálás</function> menüpontban végehetjük
+            <function>Sakk</function>, mely az egész játékot kezeli. Ha elkészítettük a diagrammot, akkor a <function>Kódgenerálás</function> menüpontban végehetjük
             el a források generálását.
         </para>
     </section>
@@ -75,6 +83,105 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ebben a feladatban az UML osztálydiagramokkal folytatjuk az ismerkedést. Néhány alap dologot tisztázunk elsőnek, amit 
+            a korábbi feladatokban már láthattál.
+        </para>
+        <para>
+            UML-ben az osztályokat téglalapok ábrázolják, melyek 3 részből állnak. Az első részben szerepel az osztály neve, ezt követi
+            az osztály attribútumai és végül tagváltozói. Mind a változók, mind a függvények előtt szerepel egy láthatóságot jelölő operátor.
+            A "+" jelöli a publikus tagokat, a "-" a privát tagokat és a "#" a védetteket. Ezket követi az attribútum neve, típusa, 
+            multiplicitása és alapértelmezett értéke.
+            <programlisting>
+                láthatóság név : típus multiplicitás = alapértelmezett érték {tulajdonságok}
+            </programlisting>
+            Multiplicitásról akkor esik szó, ha az attribútum egy tömb, ez adja meg a lehetséges elemek számának a halmazát.
+            Ez egy egész szám vagy egy egész számból álló intervallum. Szintaxisa a következő:
+            <programlisting>
+                alsó_határ .. felső_határ
+                
+                például 0..1 (0 vagy 1)
+            </programlisting>
+            Kapcsos zárójelek között - a fentiek szerint - tulaajdonságokat adhatunk meg. Ilyen például a <function>readOnly</function>,, mely azt 
+            jelöli, hogy az attribútum konstans. 
+        </para>
+        <para>
+            UML osztálydiagramok esetén a műveleteket a következő szintaxissal adhatjuk meg:
+            <programlisting>
+                láthatóság név paraméterlista: visszatérési_érték {tulajdonságok}
+                
+                például:
+                +lepesValidator(x:int, y:int):bool
+            </programlisting>
+            A paraméterlistában meg lehet adni aparaméter irányát is, mely alapértelmezetten nulla. 3 féle lehet a paraméter iránya: in, out és inout.
+            Az <function>in</function> az érték szerinti paraméterátadást reprezentálja, a <function>out</function> esetén a művelet megváltoztatja a
+            pointerként vagy referenciaként átadott objektumot. Végezetül az <function>inout</function> paramétert a függvény felhasználja és módosítja is.
+            A paraméterlista szintaxisa a következő:
+            <programlisting>
+                irány név : típus = alapértelmezett_érték
+            </programlisting>
+            A műveleteket a <function>query</function> tulajdonsággal tudjuk konstanssá tenni, melyet az attribútumokhoz hasonlóan kapcsos zárójelek 
+            közé kell írni. Mind a változókra, mind a függvényekre igaz, hogy a statikusságot UML-ben aláhúzással jelöljük.
+        </para>
+        <para>
+            Eddig a diagram csomópontjait tárgyaltuk. Most lássuk a csomópontokat összekötő irányított szakaszokat, kapcsolatokat.
+        </para>
+        <para>
+            Elsőnek ismerjük meg az assszociációt, mint két osztály kapcsolatát. A diagramon egy vonallal jelöljük, melyenek közepén
+            helyezkedik el az asszociáció neve, de ennek irány nem mindig egyértelmű, ezért gyakran használunk nyilakat.
+            Az asszociácóhoz tatrozhatnak szerepnevek is, melyek azt jelölik, hogy miként vesznek részt az osztályok a 
+            kapcsolatban. Fontos tulajdonsága az asszociációknak, hogy van multiplicitásuk, tehát többszörös kapcsolat lehet 2 osztály
+            között. Abban az esetben, ha egy dinamikus tömböt kell végigjárni, érdemes elgondolkodni az asszociatív tömbök használatában, ahol
+            egy kulccsal tudjuk azonosítani az elemeket. Ennek a megvalósítása UML-ben a minősített asszociáció, melynek vége egy téglalapban 
+            tartalmazza az asszociációt létrehozó minősítő(k) halmazát. Minősítőnek a másik oldalon lévő osztály egy vagy több attribútumát
+            választjuk. Az asszociációnak lehetnek attribútumai, ezeket az asszociációs osztály reprezentálja. Ezek az osztályok szaggatott vonallal
+            vannak összekötve az asszocációval. Az asszociációs osztályokat normál osztályként implementáljuk, mely tartalmaz egy bal és egy jobb osztályra
+            mutató mutatót. És segíti a másik oldal elrését is az osztályoknak. 
+        </para>
+        <para>
+            <emphasis role="strong">Az esettanulmány</emphasis>
+        </para>
+        <para>
+            Egy számítógép-alkatrészekkel és számítógép konfiurációval foglalkozó kereskedésnek kell elkészíteni egy szoftvert.
+            A szoftver feladata, hogy nnyílvántartsa az alkatrészeket és a konfigurációkat. Támogatnia kell a termékek 
+            állományból való betöltését, képernyőn történő megjelenítését, az árak rugalmas kialakítást.
+        </para>
+        <para>
+            A koncepció 2 részből áll. Elsőnek ki kell alakítani egy keretrendszert osztálykönyvtár formájában, mely alapszinten
+            támogatja a termékek kezelését. Erre kell ráépíteni a számítógép-alkatrészeket kezelő rendszert. Cél, hogy a keretrendszer
+            módosítása nélkül lehessen a jövőben új termékcsaládokat támmogató szoftvereket készíteni.
+        </para>
+        <para>
+            Kezdjük a keretrendszer kialakításával. Ehhez szükség van egy <function>Product</function> osztályra, mely 
+            a termékek általánios kezelését implementálja. Ebből fognak leszármazni az egyes osztályok. Amik minden termék jelllemzője, mint a 
+            kor, a kezdő ár, azok kerülnek bele a <function>Product</function> osztályba. Például a típusa, meg a kódja mindegyiknek egyedi, ezért
+            az ezeket visszaadó függvéyneket virtuálisnakk deklaráljuk. Így járunk el az összes metódussal, ami termékfüggő. 
+        </para>
+        <para>
+            Mivel a kereskedés számítógép-konfigurációkat is árul, ezért szükséges az összetett termékek kezelése is. Ezt a 
+            <function>CompositeProduct</function> osztály valósítja meg. Az egyes alkatrészeket vektorban tároljuk, melyhez az 
+            <function>AddPart</function> metódussal tudunk elemeket adni. Az adatfolyamból az összetett termékeket a 
+            egy extra paraméterrel adjuk meg. Ez a paraméter tartalmazza, hogy hány elemből áll, így tudjuk, hogy az utána következő x darab 
+            hozzá tartozik.
+        </para>
+        <para>
+            Az egyes termékeket nyílván kell tartani. Ezért van szükség a <function>ProductInventory</function> osztályra.
+            Feladata a betöltött termékek tárolása memóriában, azok adatfolyamba írása, és formázott megjelenítése. Ebben az osztályban 
+            is egy vektorban tároljuk a termékeket. 
+        </para>
+        <para>
+            A probléma az, hogy mivel a keretrendszer egy osztálykönvtár, emiatt az általunk bevezetett termékosztályokat nem ismerheti. 
+            Emiatt szükségünk vcan még egy osztályra, mely áthidalja ezt a problémát. Ehhez létrehozzuk a ProductFactory osztályt.
+            Ennek a <function>ReadAndCreateProduct</function> függvényét a keretrendszerben kell definiálni, de az ez által 
+            meghívott <function>CreateProduct</function> függvény már virtuális, tehár implememtációját rábízzuk a leszármazott 
+            osztályokra. 
+        </para>
+        <para>
+            Amikor elkszítjük a keretrendszerre épülő alkalmazásunkat, a <function>ProductFactory</function> osztályt kell
+            leszármaztatnunk, ez lesz a <function>ComputerProductFactory</function>. Erre azért van szükség, hogy az előbb említett 
+            virtuális függvényhez definíciót tudjunk adni.
+            
         </para>
     </section>        
         
