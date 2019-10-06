@@ -25,6 +25,24 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Az UML (Unified Modelling Language) egy szabványosított modellező nyelv. Kifejezetten szoftvermérnökök, rendszertervezők és üzleti elemzőknek készítette Grady Booch,
+            Ivar Jacobson és James Rumbaugh. Sokrétű felhasználásának csak egy szeletével ismerkedünk most meg, ez pedig az objektumorientált programozási nyelvekkel készítette
+            programok specifikálása, ábrázolása lesz. 
+        </para>
+        <para>
+            Ahogy a feladatban is láthatod sok szoftver tartalmaz UML-ek előállításához szükséges szoftverkönyvtárat. Mi ezek közül az Umbrello-val ismerkedünk meg. Az Umbrello
+            egy ingyenes UML diagram készítő, mely elérhető Windows-ra és Unix alapú rendszerekre. Támogatja az összes szabványos UML sztenderdet, és am nekünk nagyon fontos, 
+            lehetővé teszi, hogy forrásokból generáljunk UML-t(reverse engineering) és viszont(forward engineering). Egyebek mellett támogatja a C++, C#, Java, Javascript és Python
+            nyelveket.
+        </para>
+        <para>
+            A feladat szerint a <filename>z3a7.cpp</filename> forrásunkból kell majd UML-t generálnunk. Ehhez az Umbrello <function>Kódimportálási varázslója</function> van 
+            segítségünkre. Itt ki kell választani, hogy milyen kódot zseretnénk importálni. A C++-nál alapértelmezetten csak <function>header</function> állományokat 
+            keres, ezért ki kell egészíteni a szűrést <function>cpp</function> kiterjesztéseel. Majd értelem szerűen beimportáljuk a fájlt. Ezután pedig oldalt a fastruktúra
+            nézetből ki kell választani a klasszneveket és behúzni az osztálydiagrammba. Ez még nem lesz tökéletes, a fenti linken található diasorban látható módon kell
+            átalakítani.
+        </para>
     </section>        
 
     <section>
@@ -40,6 +58,13 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Az előző feladatban megismert Umbrello programot fogjuk itt is használni. Ehhez elsőnek meg kell csinálni az osztálydiagrammot.
+            Legyen a példa egy sakk játék elkészítése. Ekkor létre kell hozni minden bábúnak egy osztályt. Ezeknek lesznek tagfüggvényei, mint
+            a <function>lepesvalidator</function>, és tagváltozói, amik a pozíciójukat és az aktuális állapotukat határozza meg. Van egy külön osztály, a
+            <sunction>Sakk</sunction>, mely az egész játékot kezeli. Ha elkészítettük a diagrammot, akkor a <function>Kódgenerálás</function> menüpontban végehetjük
+            el a források generálását.
         </para>
     </section>
     
