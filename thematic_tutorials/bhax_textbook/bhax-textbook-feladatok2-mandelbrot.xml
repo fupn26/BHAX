@@ -221,6 +221,16 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+             <figure>
+                <title>Bank BPMN diagram</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Reverse engineering/BPMN Bank.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
     </section>        
 
     <section>
