@@ -6,33 +6,64 @@
 
 \begin{document}
 \begin{tikzpicture} 
-\begin{umlpackage}[x=0, y=0]{justine}
-\begin{umlpackage}[x=0, y=0]{robocar}
-\umlclass{justine::robocar::CarLexer}{
-	- name : char[128] \\
-	- role : char \\
-	- route : std::vector<unsigned int>}{
-	+ yylex() : int \\
-	+ operator <<(os : std::ostream&, cl:CarLexer&) : std::ostream& <<friend>> \\
-	+ get\_name() : char* \\
-	+ get\_role() : char \\
-	+ get\_num() :int \\
-	+ get\_errnumber() : int \\
-	+ get\_guided() : bool \\
-	+ get\_cmd() : int \\
-	+ get\_id() : int \\
-	+ get\_route : std::vector<unigned int>& \\ + get\_from() : unsigned int \\
-	+ get\_to() : unsigned int \\
-	- m\_cmd() : int \\
-	- num () : int \\
-	- m\_errnumber() : int \\
-	- m\_guided() : bool \\
-	- m\_id() : int \\
-	- from() : unsigned int \\
-	- to() : unsigned int
-	}
+\begin{umlpackage}[x = 0, y=0]{justine}
+\begin{umlpackage}[x=5, y=10]{robocar}
+\umlclass{justine::robocar::CarLexer}{}{}
+%	- name : char[128] \\
+%	- role : char \\
+%	- route : std::vector<unsigned int>}{
+%	+ yylex() : int \\
+%	+ operator <<(os : std::ostream\&, cl:CarLexer\&) : std::ostream\& <<friend>> \\
+%	+ get\_name() : char* \\
+%	+ get\_role() : char \\
+%	+ get\_num() :int \\
+%	+ get\_errnumber() : int \\
+%	+ get\_guided() : bool \\
+%	+ get\_cmd() : int \\
+%	+ get\_id() : int \\
+%	+ get\_route : std::vector<unigned int>\& \\ + get\_from() : unsigned int \\
+%	+ get\_to() : unsigned int \\
+%	- m\_cmd() : int \\
+%	- num () : int \\
+%	- m\_errnumber() : int \\
+%	- m\_guided() : bool \\
+%	- m\_id() : int \\
+%	- from() : unsigned int \\
+%	- to() : unsigned in
+\umlclass[y=5, width=5ex]{justine:robocar:OSMReader}{}{}
+%\# vert : Vertices \\
+%\# edge\_multiplicity : int \\
+%\# locations : OSMLocations \\
+%- alist : AdjacencyList\& \\
+%- palist : AdjacencyList\& \\
+%- waynode\_locations : WayNodeLocations\& \\
+%- busyWayNodesMap : WayNodesMap\& \\
+%- way2nodes : Way2Nodes\& \\
+%- way2name : WayNames}{
+%+ OSMReader(osm\_file : const char*, \\ alist : AdjacencyList\&, \\palist : AdjacencyList\&, waynode_locations : WaynodeLocations\&, \\ busyWayNodesMap : W \\
+%+ ~OSMReader() <<destructor>> \\
+%+ get\_estimated\_memory() : std::size_t \\
+%+ edge (v1 : osmium::unsigned\_object\_id\_type, \\ v2 : osmium::unsigned\_object\_id\_type):bool\\
+%+ node(node : osmium::Node\&) \\
+%+ onewayc() : int \\
+%+ onewayf() : int \\
+%+ way(way : osmium::Way\&) \\
+%+ relation(rel : osmium::Relation\&) \\
+%\# nOSM\_nodes() : int \\
+%\# nOSM\_ways() : int \\
+%\# nOSM\_realtions() : int \\
+%\# sum\_unique\_highway\_nodes() : int \\
+%\# sum\_highway\_nodes() : int \\
+%\# nbuses() : int \\
+%\# max\_edge\_lehgth() : double \\
+%\# mean\_edge\_length() : double \\
+%\# cedges() : int \\
+%- distance(vertexa : osmmium::undigned\_object\_id\_type,\\ vertexb : osmium::unsigned\_object\_id\_type) : double \\
+%- m\_estimator() : std::size\_t
+\umlclass[type=typedef]{justine::robocar::Vertices}
+\umlcompo[geometry=-|]{justine:robocar:OSMReader}{justine::robocar::Vertices}
 \end{umlpackage}
-\begin{umlpackage}[x=10, y=0]{sampleclient}
+\begin{umlpackage}[x=6, y=1]{sampleclient}
 \end{umlpackage}
 \end{umlpackage} 
 \end{tikzpicture}

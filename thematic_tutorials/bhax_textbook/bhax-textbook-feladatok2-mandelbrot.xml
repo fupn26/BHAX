@@ -222,6 +222,12 @@
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
         <para>
+            A BPMN(Business Process Model and Notation) üzleti folyamatok ábrázolásához használt nyelv. Jelenlegi legújabb verziója
+            a BPMN 2.0. 
+        </para>
+        <para>
+            Vegyük példának a következő ábrát. Ez a hitelfelvétel folyamatát ábrázolja, melyben az egyes folyamatok együtt
+            működnek. Jelen esetben az egyik ág a bank, a másik pedig az ügyfél. 
              <figure>
                 <title>Bank BPMN diagram</title>
                     <mediaobject>
@@ -230,6 +236,13 @@
                         </imageobject>
                     </mediaobject>
             </figure>
+            Tehát az első lépésként az ügyfél megérkezik a bankba. Ezzel párhiuzamosan a recepciós köszönti. Majd az ügyfél sorszámot kér a recepción, és a 
+            recepciós felveszi őt a várakozók sorába. A párhuzamos folyamatok közötti kapcsolatot, üzenetküldést a szaggatott vonal jelöli. Az egymás utáni 
+            folyamatokat pedig iráynított szakaszok jelölik. Tehát az ügyfél kivárja a sorát, majd érdeklődik a rendelkezésre álló hitelekről. Ezt a tájékozatatást a 
+            hitelekkel foglalkozó alkalmazott adja meg. Ehhez szükség van az ügyfél személyes adatira, melyeket el is kér. Miután eldöntötték, hogy milyen hitelt
+            választ az ügyfél, az igénylés tovább adódik az elbírálónak. Az elbíráló eldönti, hogy megadja-e a hitelt az üygfélnek. Ezalatt az ügyfél több napot is vár.
+            Majd, ha megszületett a döntés, akkor az ügyfél értesítést kap. Ezzel a banki folyamat véget ér. Az ügyfél folyamata pedig ketté ágazik. Ha elutasították, akkot 
+            vége, ha nem, akkor aláírja a megállapodást, majd megkapja a juttatást.
         </para>
     </section>        
 
@@ -305,7 +318,7 @@
     ...
 \end{document}
             </programlisting>
-            Ha meg vannak a szükésges csomagok, akkor elsőnek a csomagokat adjuk meg, amik az 
+            Ha meg vannak a szükéges csomagok, akkor elsőnek a csomagokat adjuk meg, amik az 
             OOCWC projekt osztályit tartalmazzák.
             <programlisting>
 \documentclass{article}
@@ -325,14 +338,56 @@
 \end{document}
             </programlisting>
             <figure>
-                <title>Sakk UML diagram</title>
+                <title>OOCWC UML diagram 1</title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Source/Reverse engineering/TexUML/texuml1.png" format="PNG" scale="150"/>
                         </imageobject>
                     </mediaobject>
             </figure>
-
+            MOstmár kész a diagram alap szerkezete, el kell kezdeni ábrázolni az egyes csomagokhoz tartozó osztályokat. Elsőnek a 
+            kezdjük a <function>CarLexer</function> osztállyal. Az osztályokat a <function>\umlclass</function> segítségével 
+            tudjuk létrehozni. Szintaxisa a következő:
+            <programlisting><![CDATA[
+                \umlclass{<név>}{<tagváltozók>}{<metódusok>}
+            ]]></programlisting>
+            Az egyes tagváltozókat és függvényeket a "\\" karakterekkel választjuk el. Ahogy már megtanultuk a korábbi fejezetekbe, 
+            "+"-al jelöljük a publikus tagokat és "-"-al a privátokat. Az osztály teljes implementációja a következő.
+            <programlisting><![CDATA[
+\begin{umlpackage}[x=0, y=0]{robocar}
+\umlclass{justine::robocar::CarLexer}{
+	- name : char[128] \\
+	- role : char \\
+	- route : std::vector<unsigned int>}{
+	+ yylex() : int \\
+	+ operator <<(os : std::ostream&, cl:CarLexer&) : std::ostream& <<friend>> \\
+	+ get\_name() : char* \\
+	+ get\_role() : char \\
+	+ get\_num() :int \\
+	+ get\_errnumber() : int \\
+	+ get\_guided() : bool \\
+	+ get\_cmd() : int \\
+	+ get\_id() : int \\
+	+ get\_route : std::vector<unigned int>& \\ + get\_from() : unsigned int \\
+	+ get\_to() : unsigned int \\
+	- m\_cmd() : int \\
+	- num () : int \\
+	- m\_errnumber() : int \\
+	- m\_guided() : bool \\
+	- m\_id() : int \\
+	- from() : unsigned int \\
+	- to() : unsigned int
+	}
+\end{umlpackage}
+            ]]></programlisting>
+            <figure>
+                <title>OOCWC UML diagram 2</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Reverse engineering/TexUML/texuml2.png" format="PNG" scale="200"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 </chapter>                
