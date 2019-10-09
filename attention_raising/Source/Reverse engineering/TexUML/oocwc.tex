@@ -3,67 +3,227 @@
 \usepackage{tikz}
 \usepackage{tikz-uml}
 \usepackage[T1]{fontenc}
+\usepackage[paperwidth=1000mm,paperheight=1000mm,margin=1mm]{geometry}
 
 \begin{document}
 \begin{tikzpicture} 
-\begin{umlpackage}[x = 0, y=0]{justine}
-\begin{umlpackage}[x=5, y=10]{robocar}
-\umlclass{justine::robocar::CarLexer}{}{}
-%	- name : char[128] \\
-%	- role : char \\
-%	- route : std::vector<unsigned int>}{
-%	+ yylex() : int \\
-%	+ operator <<(os : std::ostream\&, cl:CarLexer\&) : std::ostream\& <<friend>> \\
-%	+ get\_name() : char* \\
-%	+ get\_role() : char \\
-%	+ get\_num() :int \\
-%	+ get\_errnumber() : int \\
-%	+ get\_guided() : bool \\
-%	+ get\_cmd() : int \\
-%	+ get\_id() : int \\
-%	+ get\_route : std::vector<unigned int>\& \\ + get\_from() : unsigned int \\
-%	+ get\_to() : unsigned int \\
-%	- m\_cmd() : int \\
-%	- num () : int \\
-%	- m\_errnumber() : int \\
-%	- m\_guided() : bool \\
-%	- m\_id() : int \\
-%	- from() : unsigned int \\
-%	- to() : unsigned in
-\umlclass[y=5, width=5ex]{justine:robocar:OSMReader}{}{}
-%\# vert : Vertices \\
-%\# edge\_multiplicity : int \\
-%\# locations : OSMLocations \\
-%- alist : AdjacencyList\& \\
-%- palist : AdjacencyList\& \\
-%- waynode\_locations : WayNodeLocations\& \\
-%- busyWayNodesMap : WayNodesMap\& \\
-%- way2nodes : Way2Nodes\& \\
-%- way2name : WayNames}{
-%+ OSMReader(osm\_file : const char*, \\ alist : AdjacencyList\&, \\palist : AdjacencyList\&, waynode_locations : WaynodeLocations\&, \\ busyWayNodesMap : W \\
-%+ ~OSMReader() <<destructor>> \\
-%+ get\_estimated\_memory() : std::size_t \\
-%+ edge (v1 : osmium::unsigned\_object\_id\_type, \\ v2 : osmium::unsigned\_object\_id\_type):bool\\
-%+ node(node : osmium::Node\&) \\
-%+ onewayc() : int \\
-%+ onewayf() : int \\
-%+ way(way : osmium::Way\&) \\
-%+ relation(rel : osmium::Relation\&) \\
-%\# nOSM\_nodes() : int \\
-%\# nOSM\_ways() : int \\
-%\# nOSM\_realtions() : int \\
-%\# sum\_unique\_highway\_nodes() : int \\
-%\# sum\_highway\_nodes() : int \\
-%\# nbuses() : int \\
-%\# max\_edge\_lehgth() : double \\
-%\# mean\_edge\_length() : double \\
-%\# cedges() : int \\
-%- distance(vertexa : osmmium::undigned\_object\_id\_type,\\ vertexb : osmium::unsigned\_object\_id\_type) : double \\
-%- m\_estimator() : std::size\_t
-\umlclass[type=typedef]{justine::robocar::Vertices}
-\umlcompo[geometry=-|]{justine:robocar:OSMReader}{justine::robocar::Vertices}
+\begin{umlpackage}[type=namespace]{justine}
+\begin{umlpackage}[type=namespace]{robocar}
+\umlclass{CarLexer}{
+	- name : char[128] \\
+	- role : char \\
+	- route : std::vector<unsigned int>}{
+	+ yylex() : int \\
+	+ operator <<(os : std::ostream\&, cl:CarLexer\&) : std::ostream\& <<friend>> \\
+	+ get\_name() : char* \\
+	+ get\_role() : char \\
+	+ get\_num() :int \\
+	+ get\_errnumber() : int \\
+	+ get\_guided() : bool \\
+	+ get\_cmd() : int \\
+	+ get\_id() : int \\
+	+ get\_route : std::vector<unigned int>\& \\ + get\_from() : unsigned int \\
+	+ get\_to() : unsigned int \\
+	- m\_cmd() : int \\
+	- num () : int \\
+	- m\_errnumber() : int \\
+	- m\_guided() : bool \\
+	- m\_id() : int \\
+	- from() : unsigned int \\
+	- to() : unsigned in}
+\umlclass[x=23, y=-5]{OSMReader}{
+	\# vert : Vertices \\
+	\# edge\_multiplicity : int \\
+	\# locations : OSMLocations \\
+	- alist : AdjacencyList\& \\
+	- palist : AdjacencyList\& \\
+	- waynode\_locations : WayNodeLocations\& \\
+	- busyWayNodesMap : WayNodesMap\& \\
+	- way2nodes : Way2Nodes\& \\
+	- way2name : WayNames
+}
+{
+	+ OSMReader(osm\_file : const char*, alist : AdjacencyList\&, palist : AdjacencyList\&, waynode\_locations : WaynodeLocations\&, busyWayNodesMap : W \\
+	+ $\sim$ OSMReader() <<destructor>> \\
+	+ get\_estimated\_memory() : std::size\_t \\
+	+ edge (v1 ShmClient::osmium::unsigned\_object\_id\_type, v2 ShmClient::osmium::unsigned\_object\_id\_type):bool\\
+	+ node(node ShmClient::osmium::Node\&) \\
+	+ onewayc() : int \\
+	+ onewayf() : int \\
+	+ way(way ShmClient::osmium::Way\&) \\
+	+ relation(rel ShmClient::osmium::Relation\&) \\
+	\# nOSM\_nodes() : int \\
+	\# nOSM\_ways() : int \\
+	\# nOSM\_realtions() : int \\
+	\# sum\_unique\_highway\_nodes() : int \\
+	\# sum\_highway\_nodes() : int \\
+	\# nbuses() : int \\
+	\# max\_edge\_lehgth() : double \\
+	\# mean\_edge\_length() : double \\
+	\# cedges() : int \\
+	- distance(vertexa ShmClient::osmium::undigned\_object\_id\_type, vertexb ShmClient::osmium::unsigned\_object\_id\_type) : double \\
+	- m\_estimator() : std::size\_t
+}
+%\umlemptyclass[type=typedef, x=29 , y=5]{Vertices}
+%\umlemptyclass[type=typedef]
+%\umlcompo[arg=\# vert]{OSMReader}{Vertices}
+\umlclass[x=15, y=-30]{Car}{
+	\# traffic : Traffic\& \\
+}{
+	+ Car(traffic : Traffic\&, type : CarType) <<constructor>> \\
+	\umlvirt{+ init()} \\
+	\umlvirt{+ step()} \\
+	+ from() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ to() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ get\_step() : ShmClient::osmium::undigned\_object\_id\_type \\
+	+ get\_type() : CarType \\
+	+ set\_type(type : CarType) \\
+	+ to\_node() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ get\_max\_steps() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	\umlvirt{+ nextEdge()} \\
+	\umlvirt{+ nectSmarterEdge()} \\
+	\umlvirt{+ print(os : std::ostream\&)} \\
+	+ operator <<(os : std::ostream\&, c : Car\&) : std::ostream\& <<friend>> \\
+	\# m\_type() : CarType \\
+	\# m\_from() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	\# m\_to() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	\# m\_step() : ShmClient::osmium::unsigned\_object\_id\_type
+}
+\umlclass[x=29,y=-30]{AntCar}{
+	\umlstatic{+ alist : AdjacencyList} \\
+	\umlstatic{+ alist\_ecaporate : AdjacencyList} \\
+}{
+	+ AntCar(traffic : Traffic\&) <<constructor>> \\
+	\umlvirt{+ nextSmarterEdge()} \\
+	\umlvirt{+ print(os : std::ostream\&)} \\
+	+ ant() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ ant\_rnd() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ ant\_rernd() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ ant\_mrend() : ShmClient::osmium::unsigned\_object\_id\_type \\
+	- rnd() : bool
+}
+\umlinherit{AntCar}{Car}
+\umlclass[y = -30]{SmartCar}{
+	- route : std::vector< unsigned int >
+}{
+	+ SmartCar(traffic : Traffic\&, type : CarType, guided : bool) <<constructor>> \\
+	\umlvirt{+ step()} \\
+	\umlvirt{+ init()} \\
+	\umlvirt{+ print(os : std::ostream\&)} \\
+	+ get\_guided() : bool \\
+	+ set\_route(route : std:: vector< unsigned int>\&) : bool \\
+	\umlvirt{+ nextEdge()} \\
+	\umlvirt{+ nextGuidedEdge()} \\
+	+ set\_fromto(from : unsigned int, to : unsigned int) : bool \\
+	- m\_guided() : bool \\
+	- m\_routed() : bool
+}
+\umlinherit{SmartCar}{Car}
+\umlclass[y=-20]{CopCar}{
+	\# m\_name : std::string
+}{
+	+ CopCar(traffic : Traffic\&, guided : bool, name : const char*) <<constructor>> \\
+	\umlvirt{+ print(os : std::ostream\&)} \\
+	+ get\_name() : std::string \\
+	+ get\_num\_captured\_gangsters() : int \\
+	+ captured\_gangsters() \\
+	\# m\_num\_captured\_gangsters() : int
+}
+\umlinherit{CopCar}{SmartCar}
+\umlclass[y=-10]{SmartCity}{
+	\# segment : boost::interprocess::managed\_shared\_memory* \\
+	\# shm\_map : boost::interprocess::offset\_ptr< shm\_map\_Type > \\
+	- m\_mutex : std::mutex \\
+	- m\_cv : std::condition\_value
+}{
+	+ SmartCity(osm\_file : const char*, shm\_segment : const char*, map\_file : const char*, mode : int) <<constructor>> \\
+	+ SmartCity(osm\_file : const char*, shm\_segment : const char*) <<constructor>> \\
+	+ $\sim$ SmartCity() <<destructor>> \\
+	+ node2way(node : ShmClient::osmium::unsigned\_object\_id\_type) : std::string \\
+	+ processes() \\
+	+ operator <<(os : std::ostream\&, t : SmartCity\&) : std::ostream\& <<friend>> \\
+	\umlvirt{+ city\_run()} \\
+	+ busyWayLength(verbose : bool) : double \\
+	\# m\_delay() : int \\
+	\# m\_run() : bool \\
+	- m\_thread() : std::thread
+}
+\umlclass[y=-50]{Traffic}{
+	\# segment : boost::interprocess::managed\_shared\_memory* \\
+	\# shm\_map : boost::interprocess::offset\_ptr<shm\_map\_Type> \\
+	\# m\_delay : int \\
+	\# m\_run : bool \\
+	\# m\_catchdist : double \\
+	- addCop(cl : CarLexer\&) : int \\
+	- addGangster(cl : CarLexer\&) : int \\
+	- m\_size : int \\
+	- m\_time : int \\
+	- m\_minutes : int \\
+	- m\_mutex : std::mutex \\
+	- m\_cv : std::condition\_variable \\
+	- m\_thread : std::thread \\
+	- cars : std::vector<std::shared\_ptr<Car>> \\
+	- m\_smart\_cars : std::vector<std::shared\_ptr<SmartCar>> \\
+	- m\_cop\_cars : std::vector<std::shared\_ptr<CopCar>> \\
+	- m\_smart\_cars\_map : std::map<int, std::shared\_ptr<SmartCar>> \\
+	- cars\_mutex : std::mutex \\
+	- m\_type : TrafficType \\
+	- logFile : std::fstream* \\
+	- logfile : std::string
+ }{
+	+ Traffic(size : int, shm\_segment : const char*, catchdist : double, type : TrafficType, minutes : int) <<constructor>> \\
+	+ $\sim$Traffic() <<destructor>> \\
+	+ processes() \\
+	+ get\_title(name : std::string) : std::string \\
+	\umlvirt{+ node() ShmClient::osmium::unsigned\_object\_id\_type} \\
+	\umlvirt{+ traffic\_run()} \\
+	+ steps() \\
+	+ pursuit() \\
+	+ nedges() : size\_t\\
+	+ alist(from ShmClient::osmium::unsigned\_object\_id\_type, to : int) ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ alist\_inv(from ShmClient::osmium::unsigned\_object\_id\_type, to ShmClient::osmium::unsigned\_object\_id\_type) : int \\
+	+ salist(from ShmClient::osmium::unsigned\_object\_id\_type, to : int) ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ set\_salist(from ShmClient::osmium::unsigned\_object\_id\_type, to : int, value ShmClient::osmium::unsigned\_object\_id\_type) \\
+	+ palist(from ShmClient::osmium::unsigned\_object\_id\_type, to : int) ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ hasNode(node ShmClient::osmium::unsigned\_object\_id\_type) : bool \\
+	+ start\_server(io\_service : boost::asio::io\_service\&, port : unsigned short) \\
+	+ cmd\_session(sock : boost::asio::ip::tcp::socket) \\
+	+ operator <<(os : std::ostream\&, t : Traffic\&) : std::ostream\& <<friend>> \\
+	+ naive\_node\_for\_nearest\_gangster(from ShmClient::osmium::unsigned\_object\_id\_type, to : ShmClient::osmium::unsigned\_object\_id\_type, step : ShmClient::osmium::unsigned\_object\_id\_type) ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ dst(n1 : ShmClient::osmium::unsigned\_object\_id\_type, n2 : ShmClient::osmium::unsigned\_object\_id\_type) : double \\
+	+ dst(lon1 : double, lat1 : double, lon2 : double, lat2 : double) : double \\
+	+ toGPS(from : ShmClient::osmium::unsigned\_object\_id\_type, to : ShmClient::osmium::unsigned\_object\_id\_type, step : ShmClient::osmium::unsigned\_object\_id\_type, lo : double*, la : double*) \\
+	+ naive\_nearest\_gangster(from : ShmClient::osmium::unsigned\_object\_id\_type, to : ShmClient::osmium::unsigned\_object\_id\_type, step : ShmClient::osmium::unsigned\_object\_id\_type) : ShmClient::osmium::unsigned\_object\_id\_type \\
+	+ get\_type() : TrafficType \\
+	+ get\_time() : int \\
+}
+\umlcompo[arg=\# traffic, mult=0...1]{Car}{Traffic}
+\umlclass[type=enum, y=-35, x=-10]{TrafficType}{
+	NORMAL \\
+	ANT \\
+	ANT\_RND \\
+	ANT\_RERND \\
+	ANT\_MRERND
+}{}
+\umlaggreg[arg=+ m\_time, mult=0...1]{Traffic}{TrafficType}
+\umlclass[type=enum, y=-20, x=15]{CarType}{
+	NORMAL \\
+	POLICE \\
+	GANGSTER \\
+	CAUGHT
+}{}
+\umlaggreg[arg=\# m\_type, mult=0...1]{Car}{CarType}
+\umlclass[y=-50, x=29]{SharedData}{
+	+ m\_alist : uint\_vector \\
+	+ m\_salist : uint\_vector \\
+	+ m\_palist : uint\_vector \\
+	+ lon : int \\
+	+ lat : int
+}{
+	+ SharedData(void\_alloc : const void\_allocator\&) <<constructor>>
+}
 \end{umlpackage}
-\begin{umlpackage}[x=6, y=1]{sampleclient}
+\begin{umlpackage}{sampleclient}
 \end{umlpackage}
 \end{umlpackage} 
 \end{tikzpicture}
