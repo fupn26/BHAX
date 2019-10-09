@@ -319,6 +319,14 @@
             Hello Liskov kidolgozva
         </revremark>
     </revision>
+    <revision>
+        <revnumber>0.3.9</revnumber>
+        <date>2019-10-07</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Hello Mandelbrot2 kidolgozva
+        </revremark>
+    </revision>
 
 
 </revhistory>

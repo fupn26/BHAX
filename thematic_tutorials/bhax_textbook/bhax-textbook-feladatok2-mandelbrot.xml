@@ -352,7 +352,7 @@
                 \umlclass{<név>}{<tagváltozók>}{<metódusok>}
             ]]></programlisting>
             Az egyes tagváltozókat és függvényeket a "\\" karakterekkel választjuk el. Ahogy már megtanultuk a korábbi fejezetekbe, 
-            "+"-al jelöljük a publikus tagokat és "-"-al a privátokat. Az osztály teljes implementációja a következő.
+            "+"-al jelöljük a publikus tagokat és "-"-al a privátokat. Az osztály teljes implementációja a következő:
             <programlisting><![CDATA[
 \begin{umlpackage}[x=0, y=0]{robocar}
 \umlclass{justine::robocar::CarLexer}{
@@ -388,7 +388,11 @@
                         </imageobject>
                     </mediaobject>
             </figure>
-                        <figure>
+            Ennek megfelelően elkészítjük a többi osztályt. Nagyon kell figyelni arra, hogy bizonyos karaktereket le kell védeni a "\" jellel.
+            A fenti kódrészletben láthattad, hogy ilyen karakter volt a "_", de így kell eljárni a <![CDATA[&]]> operátor esetén is. A statikus
+            tagokat az UML-ben aláhúzással kell jelölni, erre TeX-ben a <function>\umlstatic</function> használatos. A virtuális függvényeket
+            is külön kell ábrázolni, erre a <function>\umlvirt</function> szolgál.
+            <figure>
             <title>OOCWC UML diagram 3</title>
                     <mediaobject>
                         <imageobject>
@@ -396,11 +400,27 @@
                         </imageobject>
                     </mediaobject>
             </figure>
+            A következő ábrán a teljes <function>robocar</function> namespace implementációja látható. Ábrázoltuk a kapcsolatokat is. Ha két osztály
+            között aggregáció van, akkor <function>\umlaggreg</function> tag-et kell használni, kompozíció esetén az <function>\umlcompo</function>-t, 
+            öröklősénél az <function>\umlinherit</function>-et, és beágyazás esetén pedig az <function>\umlnest</function>-et. Aggregációnál és
+            kompozíciónál fontos megemlíteni a multiplicitást is. Ez az egyes osztályok közötti kapcsolat számosságát adja meg.
+            Beszélhetünk egy–egy, egy–sok vagy sok–sok jellegű, kötelező vagy opcionális multiplicitásról.
             <figure>
                 <title>OOCWC UML diagram 4</title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="../../attention_raising/Source/Reverse engineering/TexUML/texuml4.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Ezután jöhet a <function>sampleclient</function> névtér implementálása. A fentiek szerint kell itt is eljárni. Abban az esetben, ha egy
+            osztályba be van ágyazva egy <function>typedef</function> vagy egy <function>struct</function>, akkor azt egy külön osztályként kell
+            ábrázolni UML-ben, és jelölni kell a beágyazottságát a <function>\umlnest</function> tag-gel.
+            <figure>
+                <title>OOCWC végső UML diagram</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Reverse engineering/TexUML/texuml5.png" format="PNG"/>
                         </imageobject>
                     </mediaobject>
             </figure>

@@ -61,7 +61,7 @@
 	\# max\_edge\_lehgth() : double \\
 	\# mean\_edge\_length() : double \\
 	\# cedges() : int \\
-	- distance(vertexa ShmClient::osmium::undigned\_object\_id\_type, vertexb ShmClient::osmium::unsigned\_object\_id\_type) : double \\
+	- distance(vertexa ShmClient::osmium::unfigned\_object\_id\_type, vertexb ShmClient::osmium::unsigned\_object\_id\_type) : double \\
 	- m\_estimator() : std::size\_t
 }
 %\umlemptyclass[type=typedef, x=29 , y=5]{Vertices}
@@ -75,7 +75,7 @@
 	\umlvirt{+ step()} \\
 	+ from() : ShmClient::osmium::unsigned\_object\_id\_type \\
 	+ to() : ShmClient::osmium::unsigned\_object\_id\_type \\
-	+ get\_step() : ShmClient::osmium::undigned\_object\_id\_type \\
+	+ get\_step() : ShmClient::osmium::unsigned\_object\_id\_type \\
 	+ get\_type() : CarType \\
 	+ set\_type(type : CarType) \\
 	+ to\_node() : ShmClient::osmium::unsigned\_object\_id\_type \\
@@ -223,7 +223,68 @@
 	+ SharedData(void\_alloc : const void\_allocator\&) <<constructor>>
 }
 \end{umlpackage}
-\begin{umlpackage}{sampleclient}
+\begin{umlpackage}[x=20, type=namespace]{sampleclient}
+	\umlclass[x=37, y=-30]{MyShmClient}{
+		 \# nr\_graph : NodeRefGraph* \\
+		 \# m\_teamname : std::string \\
+		 - nr2v : std::map<osmium::unsigned\_object\_id\_type, NRGVertex>
+	}{
+		+ MyShmClient(shm\_segment : const char*, teamname : std::string) <<constructor>> \\
+		+ $\sim$MyShmClient() \\
+		+ start(io\_service : boost::asio::io\_service\&, port : const char*) \\
+		+ start10(io\_service : boost::asio::io\_service\&, port : const char*) \\
+		+ num\_vertices(sum\_edges : int\&) : int \\
+		+ print\_edges(more : unsigned) \\
+		+ print\_vertices(more : unsigned) \\
+		+ bgl\_graph() : NodeRefGraph* \\
+		+ hasDijkstraPath(from : osmium::unsigned\_object\_id\_type, to : osmium::unsigned\_object\_id\_type) : std::vector<osmium::unsigned\_object\_id\_type> \\
+		+ hasBellmanFordPath (from : osmium::unsigned\_object\_id\_type, to : osmium::unsigned\_object\_id\_type) : std::vector<osmium::unsigned\_object\_id\_type> \\
+		- foo() \\
+		- init(socket : boost::asio::ip::tcp::socket\&) \\
+		- gangsters(socket : boost::asio::ip::tcp::socket\&, id : int, cop : osmium::unsigned\_object\_id\_type) : std::vector<Gangster> \\
+		- initcops(socket : boost::asio::ip::tcp::socket\&) : std::vector<Cop>\\
+		- pos(socket : boost::asio::ip::tcp::socket\&, id : int) \\
+		- car(socket : boost::asio::ip::tcp::socket\&, id : int, f : unsigned*, t : unsigned*, s : unsigned*) \\
+		- route(socket : boost::asio::ip::tcp::socket\&, id : int, std::vector<osmium::unsigned\_object\_id\_type>\&)
+	}
+	\umlclass[type=struct, x=20, y=-30]{SmartCar}{
+		id : int \\
+		from : unsigned \\
+		to : unsigned \\
+		step : int
+	}{}
+	\umlnest{MyShmClient}{SmartCar}
+	\umlemptyclass[type=typedef, x=55, y=-30]{Gangster}
+	\umlnest{MyShmClient}{Gangster}
+	\umlemptyclass[type=typedef, x=37, y=-40]{Cop}
+	\umlnest{MyShmClient}{Cop}
+	\umlclass[x=37, y=-15]{ShmClient}{
+		\# shm\_map : boost::interprocess::offset\_ptr<justine::robocar::shm\_map\_Type>
+	}{
+		+ ShmClient(shm\_segment : const char*) \\
+		+ $\sim$ShmClient() \\
+		+ start(io\_service, port : const char*) \\
+		\umlvirt{+ get\_random\_node() : osmium::unsigned\_object\_id\_type} \\
+		+ num\_edges(from : osmium::unsigned\_object\_id\_type) : const size\_t \\
+		+ alist(from : osmium::unsigned\_object\_id\_type, to : int) : const osmium::unsigned\_object\_id\_type \\
+		+ alist\_inv(from : osmium::unsigned\_object\_id\_type, to : osmium::unsigned\_object\_id\_type) : const int \\
+		+ salist(from : osmium::unsigned\_object\_id\_type, to : int) : const osmium::unsigned\_object\_id\_type \\
+		+ set\_salist(from : osmium::unsigned\_object\_id\_type, to : int, value : osmium::unsigned\_object\_id\_type) \\
+		+ palist(from : osmium::unsigned\_object\_id\_type , to : int) : const osmium::unsigned\_object\_id\_type \\
+		+ hasNode(node : osmium::unsigned\_object\_id\_type) : bool \\
+		+ dst(n1 : osmium::unsigned\_object\_id\_type, n2 : osmium::unsigned\_object\_id\_type) : const double \\
+		+ dst(lon1 : double, lat1 : double, lon2 : double, lat2 : double) : const double \\
+		+ toGPS(from : osmium::unsigned\_object\_id\_type, lo : double*, la : double*) \\
+		+ toGPS(from : osmium::unsigned\_object\_id\_type, to : osmium::unsigned\_object\_id\_type, step : osmium::unsigned\_object\_id\_type, lo : double*, la : double*) \\
+		- foo() \\
+		- init(socket : boost::asio::ip::tcp::socket\&) : int \\
+		- gangsters(socket : boost::asio::ip::tcp::socket\&, id : int) \\
+		- pos(socket : boost::asio::ip::tcp::socket\&, id : int) \\
+		- car(socket : boost::asio::ip::tcp::socket\&, id : int, f : unsigned*, t : unsigned*, s : unsigned*) \\
+		- route1(socket : boost::asio::ip::tcp::socket\&, id :int) \\
+		- route2(socket : boost::asio::ip::tcp::socket\&, id :int)
+	}
+	\umlinherit{MyShmClient}{ShmClient}
 \end{umlpackage}
 \end{umlpackage} 
 \end{tikzpicture}
