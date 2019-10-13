@@ -19,7 +19,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása:<link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Mandelbrot/Zoom_java">https://github.com/fupn26/BHAX/tree/master/attention_raising/Mandelbrot/Zoom_java</link>              
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -224,7 +224,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LeetCipher">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LeetCipher</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -365,6 +365,264 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A feladat során egy Snake-t készítünk el, amely teljesképernyő módban jelenik meg. A program alapját a 
+            <link xlink:href="http://zetcode.com/tutorials/javagamestutorial/snake/">
+                http://zetcode.com/tutorials/javagamestutorial/snake/</link>. Ezen kell néhány módosítást eszközölni, és 
+                készen is vagyunk. 
+        </para>
+        <para>
+            Maga a Snake játék lényege, hogy a nyílbilentyűkkel irányítjuk a kígyót. Eközben random helyeken almák jelennek meg, amiket 
+            ha felveszünk, nagyobb lesz a kígyónk. A nehézség abban rejlik, hogy benne kall maradni a keretben, és nem szabad önmagába mennie a kígyónak.
+        </para>
+        <para>
+            A csomag 2 forrásból áll: <filename>Snake.java</filename> és <filename>Board.java</filename>. Elsőnek nézzük végig a 
+            Board.java forrást.
+            <programlisting language="java"><![CDATA[
+                public class Board extends JPanel implements ActionListener{
+    
+                    private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                
+                    private final int B_WIDTH = (int)screenSize.getWidth();//300;
+                    private final int B_HEIGHT = (int)screenSize.getHeight();//300;
+                    private final int DOT_SIZE = 10;
+                    private final int ALL_DOTS = 900;
+                    private final int RAND_POS = 29;
+                    private final int DELAY = 140;
+                
+                    private final int x[] = new int[ALL_DOTS];
+                    private final int y[] = new int[ALL_DOTS];
+                
+                    private int dots;
+                    private int apple_x;
+                    private int apple_y;
+                
+                    private boolean leftDirection = false;
+                    private boolean rightDirection = true;
+                    private boolean upDirection = false;
+                    private boolean downDirection = false;
+                    private boolean inGame = true;
+                
+                    private Timer timer;
+                    private Image ball;
+                    private Image apple;
+                    private Image head;
+            ]]></programlisting>
+            Ahogy látható, a <function>JPanel</function> osztály az őse, és implementálja a <function>ActionListener</function> interfészt.
+            Az első módosítás itt történik meg, létrehozunk egy <function>Dimension</function> típusú objektumot. Melynek az értéke a 
+            kijelző mérete lesz. Mind a <function>Dimension</function>, mind a <function>ToolKit</function> osztály a Java AWT API része.
+            Ha megvan a méret, akkor megadjuk a monitorunk szélességét és magásságát a <function>B_WIDTH</function> és <function>B_HEIGHT</function>
+            konstansoknak. Ezen kívül megadjuk a pontok (amiből a kígyó épül fel) méretét, hogy mennyi lehet belőle, a késleltetést, és még sorolatnánk.
+            <programlisting language="java"><![CDATA[
+                private void initBoard() {
+
+                    addKeyListener(new TAdapter());
+                    setBackground(Color.black);
+                    setFocusable(true);
+            
+                    setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
+                    loadImages();
+                    initGame();
+                }
+            ]]></programlisting>
+            Az <function>initBoard()</function> függvény segítségével iniciílizáljuk a táblát. A mi szempontunkból a <function>setPreferredSize()</function> függvény a fontos.
+            Ebben adjuk meg a monitorunk felbontását. Beállítjuk a háttér színét feketére a <function>setBackground</function> függvénnyel. És hozzáadunk egy billentyűkezelőt az 
+            <function>addKexListener</function> segítségével. Ehhez létrehozunk egy privát osztályt, a <function>TAdapter</function>-t. Ennek implementációja a következő:
+            <programlisting language="java"><![CDATA[
+                private class TAdapter extends KeyAdapter {
+
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+            
+                        int key = e.getKeyCode();
+            
+                        if ((key == KeyEvent.VK_LEFT) && (!rightDirection)) {
+                            leftDirection = true;
+                            upDirection = false;
+                            downDirection = false;
+                        }
+            
+                        if ((key == KeyEvent.VK_RIGHT) && (!leftDirection)) {
+                            rightDirection = true;
+                            upDirection = false;
+                            downDirection = false;
+                        }
+            
+                        if ((key == KeyEvent.VK_UP) && (!downDirection)) {
+                            upDirection = true;
+                            rightDirection = false;
+                            leftDirection = false;
+                        }
+            
+                        if ((key == KeyEvent.VK_DOWN) && (!upDirection)) {
+                            downDirection = true;
+                            rightDirection = false;
+                            leftDirection = false;
+                        }
+                        if(e.getKeyChar() == 'q'){
+                            System.exit(0);
+                        }
+                    }
+                }
+            ]]></programlisting>
+            Ez az osztály kezeli a billentyűlenyomásokat. Az eredeti verzió csak a nyilakat kezelte, de mivel teljesképernyős a program, ezért kellett
+            egy új billentyű, amivel kilépünk. Ehhez a "q" bilentyűt választottuk.
+            <programlisting>
+                private void loadImages() {
+
+                    ImageIcon iid = new ImageIcon("src/images/dot.png");
+                    ball = iid.getImage();
+            
+                    ImageIcon iia = new ImageIcon("src/images/apple.png");
+                    apple = iia.getImage();
+            
+                    ImageIcon iih = new ImageIcon("src/images/head.png");
+                    head = iih.getImage();
+                }
+            </programlisting>
+            Mivel a képernyőn képeket mozgatunk, ezért szükség van a képek betöltésére is, ezt végzi el a <function>loadImages</function> függvény.
+            <programlisting><![CDATA[
+                private void initGame() {
+
+                    dots = 3;
+            
+                    for (int z = 0; z < dots; z++) {
+                        x[z] = 50 - z * 10;
+                        y[z] = 50;
+                    }
+                    
+                    locateApple();
+            
+                    timer = new Timer(DELAY, this);
+                    timer.start();
+                }
+            ]]></programlisting>
+            A játék alapját a <function>initGame</function> inicializálja. Ebben benne van, hogy a kezdeti hossza a kígyónak 3. Elhelyezzük az első almát a 
+            és a kígyót a képernyőn. Végül elindítjuk az időzítőt, hogy tudjuk, mennyit kell várni a kijelző frissítésével.
+            <programlisting language="java"><![CDATA[
+                private void locateApple() {
+
+                    int r = (int) (Math.random() * RAND_POS);
+                    apple_x = ((r * DOT_SIZE));
+            
+                    r = (int) (Math.random() * RAND_POS);
+                    apple_y = ((r * DOT_SIZE));
+                }
+            ]]></programlisting>
+            Az almák elhelyezése teljesen randomizált módon történik. A randomszám generáláshoz a Java saját <function>random</function> függvényét használjuk.
+            <programlisting language="java"><![CDATA[
+                private void move() {
+
+                    for (int z = dots; z > 0; z--) {
+                        x[z] = x[(z - 1)];
+                        y[z] = y[(z - 1)];
+                    }
+            
+                    if (leftDirection) {
+                        x[0] -= DOT_SIZE;
+                    }
+            
+                    if (rightDirection) {
+                        x[0] += DOT_SIZE;
+                    }
+            
+                    if (upDirection) {
+                        y[0] -= DOT_SIZE;
+                    }
+            
+                    if (downDirection) {
+                        y[0] += DOT_SIZE;
+                    }
+                }
+            ]]></programlisting>
+            A kígyó mozgatása mögötti mechanizmust a <function>move</function> függvény adja meg. A mozgáson kívül kezelni kell még a ütközésket mind önmagával, mind 
+            a fallal. Erre szolgál a <function>checkCollision</function> függvény.
+            <programlisting language="java"><![CDATA[
+                private void checkCollision() {
+
+                    for (int z = dots; z > 0; z--) {
+            
+                        if ((z > 4) && (x[0] == x[z]) && (y[0] == y[z])) {
+                            inGame = false;
+                        }
+                    }
+            
+                    if (y[0] >= B_HEIGHT) {
+                        inGame = false;
+                    }
+            
+                    if (y[0] < 0) {
+                        inGame = false;
+                    }
+            
+                    if (x[0] >= B_WIDTH) {
+                        inGame = false;
+                    }
+            
+                    if (x[0] < 0) {
+                        inGame = false;
+                    }
+                    
+                    if (!inGame) {
+                        timer.stop();
+                    }
+                }
+            ]]></programlisting>
+            Csak akkir tudja megharapni magát, ha már legalább 5 egység hosszú, ebben az esetben az kell vizsgálni, hogy van-e
+            olyan pont, aminek megegyezik a pozíciója a fej pozíciójával. Ha 5-nál kisebb, akkor csak a 
+            "falat" nem szabad elérnie, tehát a képernyő szélét. Mindegyik hiba azt okozza, hogy a játék véget ér. 
+            <programlisting language="java"><![CDATA[
+                private void checkApple() {
+
+                    if ((x[0] == apple_x) && (y[0] == apple_y)) {
+            
+                        dots++;
+                        locateApple();
+                    }
+                }
+            ]]></programlisting>
+            Azt, hogy a kígyó mérete milyen módon nő, azt a <function>checkApple</function> függvény határozza meg. Akkor vesszük úgy, hogy a 
+            kígyó megette az almát, ha a kígyó feje, és az alma pozíciója egyezik. Ha ez teljesül, akkor növeljük a kígyó hosszát, és generálunk egy
+            új almát.
+        </para>
+        <para>
+            A <filename>Snake.java</filename> elég rövid, abban nem is történt semmi módosítás.
+            <programlisting language="java"><![CDATA[
+                public class Snake extends JFrame {
+
+                    public Snake() {
+                        
+                        initUI();
+                    }
+                    
+                    private void initUI() {
+                        
+                        Board m_board = new Board();
+                        
+                        add(m_board);
+                               
+                        setAlwaysOnTop(true);
+                        setResizable(false);
+                        pack();
+                        
+                        setLocationRelativeTo(null);
+                        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    }
+                    
+                
+                    public static void main(String[] args) {
+                        
+                        EventQueue.invokeLater(() -> {
+                            JFrame ex = new Snake();
+                            ex.setVisible(true);
+                        });
+                    }
+                }
+            ]]></programlisting>
+            A <function>Snake</function> osztály a <function>JFrame</function> osztály leszármazottja. Komolyabb feladatot nem lát el, 
+            csak felületet biztosít, amire ráhelyezzük a <function>Board</function> objektumot. És ez az osztály tartalmazz a 
+            <function>main</function> függvényt is, tehát itt indul a program futása. 
         </para>
     </section>        
     
