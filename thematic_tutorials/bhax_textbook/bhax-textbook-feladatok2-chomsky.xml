@@ -24,12 +24,31 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            A könyv előző részében már megbeszélt programról lesz szó, illetve annak a fordításáról. Az alkalmazás lehetővé teszi, hogy 
+            a Mandelbrot halmazt tetszőleges mértékben nagyítsuk. Lényegében mindig egy újabb Mandelbrot halmaz rajzolódott ki. Lehetett 
+            pontosítani a számításokon is, sőt még képernyőképet is készíthettünk. De most azzal fogunk megismerkedni, hogy Java nyelv milyen módon
+            teszi lehetővé, hogy ékezetes betűket használjunk a forrásban.
+        </para>
+        <para>
+            Java nyelv különlegessége, hogy forráskódban támogatja az Unicode karakterkódolást, ellentétben a C/C++-al, ahol 
+            csak ASCII karaktereket használhattunk. Viszont fontos megjegyezni, hogy az, hogy támogatja, nem azt jelenti, hogy 
+            egyből lefordul a kód. Legalábbis nem minden esetben. Például Linux operációs rendszereken nem feltétlen probléma, de 
+            Windows platfromon, már hibákba ütközhetünk. 
+        </para>
+        <para>
+            A megoldás a problémára a Javac <function>-encoding</function> kapcsolója. Ezután megadhatjuk a kívánt karakterkódolást, 
+            és lefordul a programunk. 
+            <programlisting>
+                javac -encoding utf8 MandelbrotHalmazNagyító
+            </programlisting>
+        </para>
     </section>        
 
     <section>
         <title>OOCWC lexer</title>
         <para>
-            Izzítsuk be az OOCWC-t és vázoljuk a <link xlink:href="https://github.com/nbatfai/robocaremulator/blob/master/justine/rcemu/src/carlexer.ll">https://github.com/nbatfai/robocaremulator/blob/master/justine/rcemu/src/carlexer.ll</link>
+            Izzítsuk be az OOCWC-t és vázoljuk a <link xlink:href="https://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/carlexer.ll">https://github.com/nbatfai/robocaremulator/blob/master/justine/rcemu/src/carlexer.ll</link>
             lexert és kapcsolását a programunk OO
             struktúrájába!
         </para>
@@ -41,6 +60,153 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A korábbi részben már taglaltuk, hogy mi is az a lexer. A lexer feladata, hogy tokenizálja a bemeneteket, és
+            ez alapján elemezzük azt. Természetesen ezt le lehetne programozni saját magunknak is, de mivel létezik a 
+            Lex, ezért erre nincs szükség. A Lex egy program, amely lexikális elemzőt generál. Beolvassa a bemenetet, és 
+            elkészíti a lexikális elemzőt, majd pedig legenerálja a C++ forrást. 
+        </para>
+        <para>
+                Az alap struktúra a következő:
+                <programlisting><![CDATA[
+                    {definíciók}
+                    %%
+                    {szabályok}
+                    %%
+                    {felhasználói utasítások} 
+                    ]]>
+                </programlisting>
+            </para>
+            <para>
+            Ez alapján nézzük végig a <filename>carlexer.ll</filename>
+            <programlisting><![CDATA[
+                %option c++
+                %option noyywrap
+            ]]></programlisting>
+            A forrás elsőrésze azt adja meg, hogy c++ forrást szeretnénk generálni, 
+            és nincs szükségünk az <function>yywrap()</function> függvényre. Az 
+            <function>yywrap()</function> feladata az lenne, hogy amikor az <function>yylex()</function>
+            végére ér a bemenetnek, akkor meghívja, és ha 1-et ad vissza, akkor nincs már
+            több bemenet, 0 esetén pedig tovább olvassa a bemenetet amire az <function>yyin</function>
+            mutat. Mivel a <function>yywarp()</function> függvény definícióját nem adja meg
+            a Lex program a kimeneti C++ fájlban, ezt a programozónak kell elkészítenie.
+            <programlisting><![CDATA[
+                %{
+                    #define YY_DECL int justine::robocar::CarLexer::yylex()
+                    #include "carlexer.hpp"
+                    #include <cstdio>
+                    #include <limits>
+                %}
+            ]]></programlisting>
+            Az opciók megadása után inclúdálhatjuk a szükséges header állomámnyokat,
+            deklarálhatjuk a szükséges változókat, vagy macro-kat hozhatunk létre.
+            <programlisting><![CDATA[
+                INIT	"<init"
+                INITG	"<init guided"
+                WS	[ \t]*
+                WORD	[^-:\n \t()]{2,}
+                INT	[0123456789]+
+                FLOAT	[-.0123456789]+
+                ROUTE	"<route"
+                CAR	"<car"
+                POS	"<pos"
+                GANGSTERS	"<gangsters"
+                STAT	"<stat"
+                DISP	"<disp>"
+            ]]></programlisting>
+            A következő lépés az egyes lexer-hez szükséges változók megadása. Lényegében megadunk
+            egy nevet és ehhez hoozákapcsolunk egy stringet, így után a nevet tudjuk használni a 
+            szabályok meghatározása során. Tehát, ahogy látható, az <function>INIT</function> esetén 
+            a <![CDATA["<init"]]> sztnget olvasunk be. A <function>WS</function> a whitespace-t jelenti,
+            és azért van ott a csillag, mert bármennyi lehet belőle, akár 0 is. A <function>WORD</function>
+            egy kicsit érdekesebb reguláris kifejezés. Ez olyan bemeneteket jelent, amik nem
+            <![CDATA[-,:,\n, \t,(,)]]> karakterekből állnak, és legalább 2 elemből. A többi 
+            pedig értelemszerű, szóval azokra most nem térünk ki külön.
+            <programlisting><![CDATA[
+            %% 
+            {DISP}					{
+                                m_cmd = 0;
+                                }
+            {POS}{WS}{INT}{WS}{INT}{WS}{INT}	{
+                                std::sscanf(yytext, "<pos %d %u %u", &m_id, &from, &to);
+                                m_cmd = 10001;
+                                }
+            {CAR}{WS}{INT}				{
+                                std::sscanf(yytext, "<car %d", &m_id);
+                                m_cmd = 1001;
+                                }
+            {STAT}{WS}{INT}				{
+                                std::sscanf(yytext, "<stat %d", &m_id);
+                                m_cmd = 1003;
+                                }
+            {GANGSTERS}{WS}{INT}			{
+                                std::sscanf(yytext, "<gangsters %d", &m_id);
+                                m_cmd = 1002;
+                                }
+            {ROUTE}{WS}{INT}{WS}{INT}({WS}{INT})*	{
+                            int size{0};
+                            int ss{0};
+                            int sn{0};				  
+                            
+                            std::sscanf(yytext, "<route %d %d%n", &size, &m_id, &sn);
+                            ss += sn;
+                            for(int i{0}; i<size; ++i)
+                            {
+                                unsigned int u{0u};
+                                std::sscanf(yytext+ss, "%u%n", &u, &sn);
+                                route.push_back(u);
+                                ss += sn; 				    
+                            }
+                            m_cmd = 101;
+                            }
+            {INIT}{WS}{WORD}{WS}("c"|"g")	{
+                            std::sscanf(yytext, "<init %s %c>", name, &role);
+                            num = 1;
+                            m_cmd = 0;
+                            }
+            {INIT}{WS}{WORD}{WS}{INT}{WS}("c"|"g")	{
+                            std::sscanf(yytext, "<init %s %d %c>", name, &num, &role);
+                            if(num >200)
+                            {
+                                m_errnumber = 1;
+                                num = 200;
+                            }
+                            m_cmd = 1;
+                            }				
+            {INITG}{WS}{WORD}{WS}("c"|"g")	{
+                            std::sscanf(yytext, "<init guided %s %c>", name, &role);
+                            num = 1;
+                            m_guided = true;
+                            m_cmd = 3;
+                            }
+            {INITG}{WS}{WORD}{WS}{INT}{WS}("c"|"g")	{				  
+                            std::sscanf(yytext, "<init guided %s %d %c>", name, &num, &role);
+                            if(num >200)
+                            {
+                                m_errnumber = 1;
+                                num = 200;
+                            }
+                            m_guided = true;
+                            m_cmd = 2;
+                            }								
+            .				{;}
+            %%
+            ]]></programlisting>
+            A szabályok részben pedig megadjuk, hogy az egyes bemenetek szerint mi legyen az egyes változók
+            értéke. Ehhez a <function>sscanf</function>-et használjuk, aminek az első paramétere a bemenet, 
+            majd annak a formátuma, és végül az egyes változók, amikbe "beleírjuk" az értékeket.
+            <programlisting>
+                int yyFlexLexer::yylex(){return -1;}
+            </programlisting>
+            Végezetül definiáljuk az <function>yylex()</function> függvényt. Ebből a <filename>carlexer.ll</filename>
+            fájlból pedig a <function>lex</function> parancs legenerálja a forrást.
+        </para>
+        <para>
+            <emphasis role="strong">C++ forrás generálása</emphasis>
+            <programlisting>
+                lex carlexer.ll
+            </programlisting>
         </para>
     </section>        
         
@@ -63,6 +229,44 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Mielőtt elkészeténk a feladatban megadott osztályt, vessünk egy pillantást a már korábban
+            taglalt <filename>l337d1c7.l</filename> forrásra, az abban lévő <function>cipher</function>
+            struktúrára.
+            <programlisting>
+                struct cipher {
+                    char c;
+                    char *leet[4];
+                    }
+            </programlisting>
+            Ha a <function>sizeof</function> függvénnyel kiíratjuk a méretét, akkor azt kapjuk, hogy 
+            40 bájt. A <function>leet</function> kétdimenziós tömb mérete 32 bájt, mivel a
+            <function>char*</function> 8 bájt, és a tömb 4-szer ennyi helyet foglalt le. A
+            <function>char</function> mérete pedig 1 bájt. Akkor hol a hiba? A megoldás a 
+            válaszra a <emphasis role="strong">padding</emphasis>. A padding lényege, hogy a 
+            fordító a címzési hibák elkerülése érdekében extra területet foglalhat az egyes tagokhoz.
+            Ezt nem tudjuk szabályozni, a fordító dönt. De a szabály az, hogy ha egy tag előtt vagy mögött vagy a
+            struktúra legvégén deklarálva van egy nagyobb tag, akkor mérete a nagyobb tagéval lesz egyenlő. 
+            Ezért érdemes méretük alapján csökkenő sorrendben rendezni a struktúra elemeit, azok mérete szerint.
+            Van egy megoldás a padding teljes megszüntetésére, ez pedig a <function>#pragma pack(1)</function>.
+            Ennek segítségével már a várt 33, a struktúra mérete.
+            <figure>
+                    <title>Pragma nélkül</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/l334d1c45/no_pragma.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+            <figure>
+                    <title>Pragma nélkül</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/l334d1c45/with_pragma.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+        </para>
     </section>        
 
     <section>
@@ -71,8 +275,7 @@
         </title>
         <para>
             Készítsünk egy teljes képernyős Java programot!
-            Tipp: <link xlink:href="https://www.tankonyvtar.hu/en/tartalom/tkt/javat-tanitok-javat
-                                    /ch03.html#labirintus_jatek">
+            Tipp: <link xlink:href="https://www.tankonyvtar.hu/en/tartalom/tkt/javat-tanitok-javat/ch03.html#labirintus_jatek">
             https://www.tankonyvtar.hu/en/tartalom/tkt/javat-tanitok-javat
                                     /ch03.html#labirintus_jatek</link>
         </para>
