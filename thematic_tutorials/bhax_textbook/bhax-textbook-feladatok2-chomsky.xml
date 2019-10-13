@@ -267,6 +267,84 @@
                         </mediaobject>
             </figure>
         </para>
+        <para>
+            Most, hogy tisztáztuk a korábbi feladat struktúrájának méretét, kezdjük el az új programot.
+            Továbbra is ugyanazt fogja csinálni a program, csak kap egy grafikus felületet a Qt segítségével, és nem fogjuk most
+            használni a Lex programot.
+            <figure>
+                <title>Pragma nélkül</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/LeetCipher/leetcipher.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Korábban már volt szó a Qt eszköztáráról, ezért most arra részletesebben nem térnék ki. Lássuk elsőnek a 
+            <function>Cipher</function> osztályt.
+            <programlisting language="c++"><![CDATA[
+                #include <QVector>
+                #include <QRandomGenerator>
+                
+                class Cipher
+                {
+                public:
+                    Cipher();
+                    QString get_result();
+                    void encryption(QString);
+                
+                private:
+                    struct m_cipher{
+                        char c;
+                        char const *leet[4];
+                    };
+                
+                    QVector<struct m_cipher> m_vector;
+                
+                    QString m_result;
+                };]]>
+            </programlisting>
+            Az korábbi c forrásban tömböt használtunk az egyes karakterekhez tartozó konverziókhoz, ezt most vektorra cseréljük, <function>QVector</function>-ra.
+            A csere oka az volt, hogy egy fejletebb adatstruktúrát használjunk, aminek például van olyan függvénye, amely megadja az elemei számát. A random számok
+            generálását pedig a <function>QRandomGenerator</function> osztályra bízzuk. Az osztállyal megegyező nevű függvények a konstruktorok, azokról később beszélünk. 
+            A <function>get_result()</function> függvény feladata, hogy a <function>m_result</function> privát tag értékéhez hozzáférést biztosítson.
+            <programlisting language="c++"><![CDATA[
+                QString Cipher::get_result(){
+                    return m_result;
+                }
+            ]]></programlisting>
+            Magát a szöveg kódolását a <function>encryption()</function> függvény végzi, melynek definíciója a következő:
+            <programlisting language="c++"><![CDATA[
+                void Cipher::encryption(QString input){
+                    m_result.clear();
+                    for (int x = 0; x < input.length(); ++x){
+                        int found = 0;
+                        for(int i=0; i<m_vector.length(); ++i)
+                        {
+                
+                            if(m_vector[i].c == input[x].toLower())
+                            {
+                
+                                int r = static_cast<int>(QRandomGenerator::global()->generate()%4);
+                
+                                m_result.append(m_vector[i].leet[r]);
+                
+                                found = 1;
+                                break;
+                            }
+                
+                        }
+                
+                        if(!found)
+                            m_result.append(input[x]);
+                    }
+                }
+            ]]></programlisting>
+            Alapjában véve hasonlít a korábbi megoldásra, csak kisebb módosítások lettek rajta végezve. Az <function>m_result</function>-ot minden 
+            híváskor ürítjük, hogy ne legyenek benne a korábbi fordításból származó eredmények. Majd végig megyünk a bemeneten karakterenként, és
+            ha van olyan karakter,a mit tudunk helyettesíteni, akkor random kiválasztunk egyet, ha nem, akkor pedig az eredetit rakjuk be az <function>m_result</function>
+            sztingbe. A random számot a <function>QRandomGenerator::global()->generate()</function> függvénnyel generálunk. De mivel nekünk csak 4 elem van a helyettesíthető
+            elemek között, ezért a random számot maradéksan osztjuk 4-gyel. 
+        </para>
     </section>        
 
     <section>

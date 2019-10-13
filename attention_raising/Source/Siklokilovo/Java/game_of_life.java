@@ -16,6 +16,7 @@ import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.awt.Event;
+import java.awt.Toolkit;
 
 public class game_of_life extends JFrame {
     RenderArea ra;
@@ -23,10 +24,12 @@ public class game_of_life extends JFrame {
     
     public game_of_life() {
         super("Game of Life");
-        this.setSize(1005, 1030);
+//        this.setSize(1005, 1030);
+this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+this.setUndecorated(true);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setVisible(true);
-        this.setResizable(false);
+//        this.setResizable(false);
         ra = new RenderArea();
         ra.setFocusable(true);
         ra.grabFocus();
@@ -271,6 +274,10 @@ public class game_of_life extends JFrame {
     public static void main(String args[])
     {
         game_of_life gol = new game_of_life();
+//	gol.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+////	gol.setUndecorated(true);
+//	gol.setVisible(true);
+//	gol.setUndecorated(true);
         while(gol.ra.running)
         {
             if(!gol.ra.edit_mode)gol.update();

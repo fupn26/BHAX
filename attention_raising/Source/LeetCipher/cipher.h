@@ -2,7 +2,6 @@
 #define CIPHER_H
 
 #include <QVector>
-#include <ctype.h>
 #include <QRandomGenerator>
 
 class Cipher

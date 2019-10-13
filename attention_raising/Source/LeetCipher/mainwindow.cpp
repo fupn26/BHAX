@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_widget = new QWidget(this);
     m_layout = new QGridLayout(m_widget);
     m_textedit = new QTextEdit(m_widget);
+    m_textedit->setToolTip("Input");
     m_pushbutton = new QPushButton("Cipher", m_widget);
     m_textedit_result = new QTextEdit(m_widget);
     m_checkbox = new QCheckBox("Auto translate", m_widget);
