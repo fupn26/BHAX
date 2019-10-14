@@ -968,6 +968,14 @@
             <programlisting language="c++">
                 png_image[i][j].green = 0;
             </programlisting>
+            <figure>
+                <title>Minta</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Saját_perceptron/output.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
         </para>
     </section>
 </chapter>                

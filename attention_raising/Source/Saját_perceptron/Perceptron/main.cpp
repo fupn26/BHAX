@@ -26,10 +26,8 @@ int main (int argc, char **argv)
     for(int i = 0; i < png_image.get_width(); ++i)
         for(int j = 0; j<png_image.get_height(); ++j){
             png_image[i][j].green = rand()%256;//newPNG[j*png_image.get_height()+j];
-            png_image[i][j].red = rand()%256;
-            png_image[i][j].blue = rand() % 256;
         }
-    png_image.write("output.png");
+    png_image.write("../output.png");
 
 
     double value = (*p) (image);
