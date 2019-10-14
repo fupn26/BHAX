@@ -939,6 +939,35 @@
         
     };
             ]]></programlisting>
+            A régi programot fogjuk egy kicsit módosítani, természetesen a <function>Perceptron</function> osztály érintetlen marad.
+            Korábban csak egy számot kaptunk végeredményül, most lesz egy képi kimenetünk is. 
+            A módosítás a következő:
+            <programlisting language="c++"><![CDATA[
+                srand(time(nullptr));
+
+                for(int i = 0; i < png_image.get_width(); ++i)
+                    for(int j = 0; j<png_image.get_height(); ++j){
+                        png_image[i][j].green = rand()%256;//newPNG[j*png_image.get_height()+j];
+                    }
+                png_image.write("output.png");            
+            ]]></programlisting>
+            A lényeg, hogy vesszük a beolvasott képet, és annak az egyes pixeleinek a zöld elemét változtatjuk random.
+            De rengeteg féleképpen lehet ezt megoldani, változtathatjuk a pixel kék és piros komponenseit is, vagy azt is
+            lehet, hogy csak elvonunk színeket az egyes pixelektől, azaz kinullázzuk.
+            <programlisting language="c++"><![CDATA[
+                double* newPNG = new double[size];
+            
+                for(int i = 0; i < png_image.get_width(); ++i)
+                    for(int j = 0; j<png_image.get_height(); ++j){
+                        png_image[i][j].green = newPNG[j*png_image.get_height()+j];
+                    }
+                png_image.write("output.png");
+            ]]></programlisting>
+            Lényegében ebben az esetben van egy tömbünk csupa nullából, és ebből kiválasztjuk az adott elemet, amivel kinullázzuk az R,G,B valamelyikét.
+            De az látható, hogy nem is lenne feltétlen szükség tömbre. Ha ki szeretnénk nullázni, akkor elég ez is:
+            <programlisting language="c++">
+                png_image[i][j].green = 0;
+            </programlisting>
         </para>
     </section>
 </chapter>                
