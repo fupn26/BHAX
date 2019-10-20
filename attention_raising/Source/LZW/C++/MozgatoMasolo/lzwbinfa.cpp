@@ -11,9 +11,9 @@ LZWBinFa::~LZWBinFa ()
     szabadit(gyoker);
 }
 
-LZWBinFa::LZWBinFa (const LZWBinFa & forras) : LZWBinFa(){
+LZWBinFa::LZWBinFa (const LZWBinFa & forras){
     std::cout << "Copy ctor" << std::endl;
-
+    gyoker = new Csomopont('/');
     gyoker->ujEgyesGyermek(masol(forras.gyoker->egyesGyermek(), forras.fa));
     gyoker->ujNullasGyermek(masol(forras.gyoker->nullasGyermek(), forras.fa));
     if (forras.fa == forras.gyoker){

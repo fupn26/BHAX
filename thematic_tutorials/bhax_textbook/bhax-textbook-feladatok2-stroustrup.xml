@@ -119,10 +119,125 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/blob/master/attention_raising/Source/LZW/C%2B%2B/MozgatoMasolo/lzwbinfa.cpp">https://github.com/fupn26/BHAX/blob/master/attention_raising/Source/LZW/C%2B%2B/MozgatoMasolo/lzwbinfa.cpp</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Korábban már tárgyaltuk a C++ 11 mozgató szemantikáját, ezúttal az LZWBinFa programunkat, kiegészítve a 
+            másoló és mozgató értékadással, fogjuk újra átnézni a feladatban megadott témára fektetve a hangsúlyt. 
+        </para>
+        <para>
+            Elsőnek tisztázzuk azt, hogy mikor hívódik meg a konstruktor, és mikor az értékadás. 
+            <programlisting language="c++">
+                LZWBinFa binFa = binFa_regi; //konstruktor (másoló)
+                LZWBinFa binFa2;
+                binFa2 = binFa_regi; //értékadás (másoló)
+            </programlisting>
+            Szóval a lényeg, hogy amikor az objektum létrehozásakor adunk értéket, akkor a mozgató/másoló konstruktor hívódik meg, ha 
+            pedig egy már inicializált objektumnak adunk meg új értéket, akkor pedig a másoló/mozgató értékadás.
+        </para>
+        <para>
+            Lássuk, hogy hogyan kell elkészíteni a másoló konstruktort. Mivel konstruktorról beszélünk, ezért a neve megegyezik az
+            osztály nevével. A vezérlés akkor adódik át erre a konstruktorra, ha magával megegyező típusú referenciát adunk át.
+            Lássuk a kódot:
+            <programlisting language="c++"><![CDATA[
+                LZWBinFa::LZWBinFa (const LZWBinFa & forras){
+                    std::cout << "Copy ctor" << std::endl;
+                    gyoker = new Csomopont('/');
+                    gyoker->ujEgyesGyermek(masol(forras.gyoker->egyesGyermek(), forras.fa));
+                    gyoker->ujNullasGyermek(masol(forras.gyoker->nullasGyermek(), forras.fa));
+                    if (forras.fa == forras.gyoker){
+                        fa = gyoker;
+                    }
+                }
+                ]]>
+            </programlisting>
+            Látható, hogy ez a konstruktor egy <function>LZWBinFa</function> konstans refernciát vár paraméterként. Mivel ilyenkor nem hívódik meg az
+            alap konstruktor, emiatt a <function>gyoker</function> pointerünknek értéket kell adni, különben memóriacímzési hibát kaphatunk. Ha ezzel 
+            kész vagyunk, akkor létre kell hozni a gyökértől kiindulva az egyes gyermekeket, ezért van szükség a <function>ujEgyesGyermek</function>
+            és <function>ujNullasGyermek</function> függvényekre. Mivel egy már elkészített fából indulunk ki, ezért annak a mintájára készítjük el a 
+            gyermekeket. Ebben a <function>masol</function> függvény van segítségünkre. Ennek két paramétere van, az egyik a forrás gyökerének a 
+            gyermeke, a másik pedig a forrás fa mutatója, mivel azt is szeretnénk átmásolni, hogy a fa mutató éppen hol áll az eredeti fában. 
+            <programlisting language="c++"><![CDATA[
+                Csomopont* LZWBinFa::masol (Csomopont* elem, Csomopont* regi_fa){
+                    Csomopont* ujelem = nullptr;
+                
+                    if (elem != nullptr){
+                        ujelem = new Csomopont (elem->getBetu());
+                
+                        ujelem -> ujEgyesGyermek(masol(elem->egyesGyermek(), regi_fa));
+                        ujelem -> ujNullasGyermek(masol(elem->nullasGyermek(), regi_fa));
+                
+                        if (regi_fa == elem){
+                            fa = ujelem;
+                        }
+                    }
+                
+                    return ujelem;
+                }]]>
+            </programlisting>
+            A <function>masol</function> egy <function>Csomopont</function> mutatót ad vissza. Első lépésben létrehozzuk a később átadni kívánt 
+            csomópontot. Majd ellenőrizzük, hogy az eredeti fa csomópontjának van-e értéke, vagy null pointer. Utóbbi esetben szimplán visszaadunk 
+            egy null pointert. Ellenkező esetben a <function>ujelem</function> pointernek átadunk egy az eredeti csomópont alapján inicializált 
+            csomóponthoz tartotó memóriacímet. Ezután újra meghívjuk a <function>masol</function> függvényt annak érdekében, hogy elkészítsük az 
+            <function>ujelem</function> gyermekeit. Ezt addig folytatjuk, ameddig az eredeti fa végére nem érünk. Abban az esetben, ha a régi 
+            fához tartozó fa mutató a <function>masol</function> függvénynek átadott elemre mutat, akkor az új fánk fa mutatóját ezen elem 
+            alapján létrehozott csomópontra állítjuk. Végezetül pedig visszatérünk a csomóponttal. Ahhoz, hogy a fa mutatót a 
+            <function>gyoker</function>-re is állíthassuk, a másoló konstruktorban is ellenőrizzük, hogy hova mutatat az eredeti fa fa mutatója. 
+        </para>
+        <para>
+            Most, hogy megismerkedtünk a másoló konstruktorral, nézzük át röviden a másoló értékadást. Ezt is a <function>masol</function> függvényre
+            alapozzuk.
+            <programlisting language="c++"><![CDATA[
+                LZWBinFa & LZWBinFa::operator= (const LZWBinFa & forras){
+                    std::cout << "Copy assaignement" << std::endl;
+                
+                    gyoker->ujEgyesGyermek(masol(forras.gyoker->egyesGyermek(), forras.fa));
+                    gyoker->ujNullasGyermek(masol(forras.gyoker->nullasGyermek(), forras.fa));
+                
+                    if (forras.fa == forras.gyoker){
+                        fa = gyoker;
+                    }
+                    return *this;
+                }]]>
+            </programlisting>
+            Lényegében egy operátor túlterhelésről van szó. Szemantikailag különbség a konstruktorhoz képest, hogy a másoló értékadásnak van visszatérési értéke,
+            jelen esetben <function>LZWBinFa</function> referencia. Ennek megfelelően visszaadunk egy mutatót arról az objektumról, amely az egyenlőség 
+            bal oldalán volt. Ezen kívül a már ismert eljárást követjük.
+        </para>
+        <para>
+            A C++11 másoló szemantikájának megismerése után folytassuk a mozgató szemantikával, azon belül is a mozgató konstruktorral. A mozgató konstruktor 
+            paraméteréül egy jobbértékreferenciát vár. Ezt jelöli a dupla <![CDATA[&]]>. A feladat szerint a mozgató értékadásra kell alapoznunk.
+            <programlisting language="c++"><![CDATA[
+                LZWBinFa::LZWBinFa (LZWBinFa&& forras)
+                {
+                    std::cout<<"Move ctor\n";
+                    gyoker = nullptr;
+                    *this = std::move(forras); //ezzel kényszerítjük ki, hogy a mozgató értékadást használja
+
+                }
+            ]]>
+            </programlisting>
+            Az alapkoncepciója az a mozgató értékadásra alapozásnak, hogy lényegében felcseréljük a két fa <function>gyoker</function> mutatójának értékét.
+            Ennek érdekében az újonan létrehozni kívánt fa gyökerét null mutatóvá tesszük, majd meghívjuk a mozgató értékadást. Ehhez a <function>std::move</function>
+            függvényyre van szükségünk, amely bemenetéül kapott paramétert jobbértékrefernciává alakítja. Mivel a <function>this</function> egy már inicializát objektumot
+            jelöl, ezért nem a mozgató konstruktor, hanem a mozgató értékadás hívódik meg.
+            <programlisting language="c++"><![CDATA[
+                LZWBinFa& LZWBinFa::operator= (LZWBinFa&& forras)
+                {
+                    std::cout<<"Move assignment ctor\n";
+                    std::swap(gyoker, forras.gyoker);
+                    return *this;
+                }
+                ]]>
+            </programlisting>
+            A mozgató értékadás feladata a már korábban említett érték csere, melyet a <function>std::swap</function> valósít meg. Mivel a 
+            megcserélődik a <function>gyoker</function> és a <function>forras.gyoker</function> által mutatott tárterület, ezért a mozgatás teljes egészében 
+            megvalósul. Hiszen a <function>gyoker</function> egy null mutató, emiatt a csere után a <function>forras.gyoker</function> is null mutató lesz, 
+            vagyis az eredeti fa "törlődött". Természetesen ez nem szószerint igaz, hiszen csak egy másik pointeren keresztül hivatkozunk a már korábban a 
+            memóriában lefoglalt, és tárolt fára. 
         </para>
     </section>
     
@@ -161,6 +276,124 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Ebben a fejezetben azzal ismerkedünk meg, hogyan lehet változó argumentumszámú konstruktort készíteni. Szintatktikailag 
+            C++-ban a <function>...</function> karaktersorozat tudatja a fordítóval, hogy bármely paramétere lehet a konstruktornak, függvénynek.
+            Ahhoz, hogy elérjük az összes paramétert a <function>cstdarg</function> header-re lesz szükségünk. Lássuk, hogyan néz ki a konstruktor:
+            <programlisting language="c++"><![CDATA[
+                Perceptron ( int nof, ... )
+                {
+                    n_layers = nof;
+            
+                    units = new double*[n_layers];
+                    n_units = new int[n_layers];
+            
+                    va_list vap;
+            
+                    va_start ( vap, nof );
+            
+                    for ( int i {0}; i < n_layers; ++i )
+                    {
+                        n_units[i] = va_arg ( vap, int );
+            
+                        if ( i )
+                            units[i] = new double [n_units[i]];
+                    }
+            
+                    va_end ( vap );
+
+                        ...
+                        ]]>
+            </programlisting>
+            A <function>Perceptron</function> osztály konstruktorában egy megnevezett paraméter van, a <function>nof</function>. A maradék paraméterek eléréshez
+            a deklaráljuk a <function>vap</function> <function>va_list</function> típusú változót, melyben a változó paramétereket tároljuk. Értékét a 
+            <function>va_start</function> inicializálja. A <function>nof</function> azt adja meg, hogy hány paramétert adtunk meg. Ez két paramétert kér, egy <function>va_list</function>-et melybe betölti az argumentumokat, és 
+            egy argumentumot, ahonnan kezdve betöltse az attribútumokat. A <function>va_arg</function> makro az aktuális <function>int</function> típusú
+            paramétert adja vissza. Előnye, hogy minden meghívása módosítja a <function>vap</function> tartalmát oly módon, hogy a korábban visszaadott
+            értéket követő értéket adja vissza. Tehát segítségével be tudjuk járni a paraméterlistát. A <function>va_end</function> pedig végrehajtaj a 
+            megfelelő műveleteket, hogy többet ne tudjuk használni az argumentum listát. Összegezve a <function>va_start</function> segítségével 
+            beolvassuk egy <function>va_list</function>-be a paramétereket, a <function>va_arg</function> segítségével kiolvassuk, és a <function>va_end</function> pedig 
+            törli a paraméterlistát.
+        </para>
+        <para>
+            Az előző fejezetben már használtuk a <function>Perceptron</function> osztályt. Ebben a fejezetben kisebb módosítást hajtunk végre 
+            a működésében. A feladatban leírtak szerint nem egy értéket fog visszaadni, hanem egy vektort, aminek a mérete megegyezik a bemeneti kép
+            méretével. A vektorban lévő elemekkel pedig manipuláljuk az eredeti képet, és elmentjük <filename>output.png</filename> néven.
+        </para>
+        <para>
+            Lássuk, hogy milyen módosításokkal érhető el, hogy a egy képet kapjunk vissza. Az első lépés, hogy amikor példányosítunk egy 
+            <function>Perceptron</function> típusú objektumot, akkor az utolsó paraméternek nem 1-et, hanem <function>size</function> értéket kell adnunk.
+            <programlisting language="c++">
+                Perceptron* p = new Perceptron (3, size, 256, size);
+            </programlisting>
+            Ezután a <function>Perceptron</function> osztályban meg kell oldanunk, hogy ezt megfelelően kezeljük, mivel alapból arra van kialakítva, hogy az 
+            utolsó paraméter 1.
+            <programlisting><![CDATA[
+                std::vector< double > operator() ( double image [] )
+                {
+                    std::cout << "std" << std::endl;
+                    units[0] = image;
+
+                    for ( int i {1}; i < n_layers; ++i )
+                    {
+
+                        #ifdef CUDA_PRCPS
+
+                        cuda_layer ( i, n_units, units, weights );
+
+                        #else
+
+                        #pragma omp parallel for
+                        for ( int j = 0; j < n_units[i]; ++j )
+                        {
+                            units[i][j] = 0.0;
+
+                            for ( int k = 0; k < n_units[i-1]; ++k )
+                            {
+                                units[i][j] += weights[i-1][j][k] * units[i-1][k];
+                            }
+
+                            units[i][j] = sigmoid ( units[i][j] );
+
+                        }
+
+                        #endif
+
+                    }
+
+                    std::vector< double > result_vector;
+            
+                    for (int i = 0; i < units[n_layers - 1]; ++i){
+                            result_vector.push_back(sigmoid( units[n_layers - 1][i]));
+                    }
+                    return result_vector;
+                }
+            ]]>
+            </programlisting>
+            A <function>operator()</function> túlterhelés során egy vektort készítünk, és azt adjuk vissza. A túlterhelés vége  fontos, ahol a 
+            <function>result_vector</function>-ba betöltjük a <function>sigmoid</function> függvény által kiszámított értékeket.
+            Végezetül pedig a <function>main</function> függvényben a vektor értékei alapján módosítjuk az eredeti kép pixeleihez tartozó
+            zöld értékeket.
+            <programlisting language="c++"><![CDATA[
+
+                        ...
+
+                std::vector< double > value = (*p) (image);
+
+                for (int i = 0; i<png_image.get_width(); ++i)
+                    for (int j = 0; j<png_image.get_height(); ++j){
+                        png_image[i][j].green = value[i*png_image.get_width() + j];
+            
+                }
+            
+                png_image.write("output.png");
+            
+                    ...]]>
+
+            </programlisting>
+            A <function>png_image</function> <function>write</function> tagfüggvénye segítségével pedig kiírjuk a módosított képet a 
+            háttértárba.
+        </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 
     <section>
@@ -169,7 +402,64 @@
             Az előző 4 feladat egyikéről írj egy 1 oldalas bemutató „esszé" szöveget!
         </para>
         <para>
-            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+            <emphasis role="strong">A mozgató és másoló konstruktor</emphasis>
+        </para>
+        <para>
+            A C++ objektum oreintált nyelv, vagyis lehetőséget biztosít a polimorfizmusra, az egységbezárást, és az adatrejtést. Definiálhatunk benne 
+            osztályokat, melyek olyan tagfüggvénnyel rendelkező struktúráknak lehet nevezni, természetesen kibővítve az objektum orientáltság alapelveivel.
+            Amikor egy osztályt példányosítunk, akkor az osztály konstruktora hívódik meg. Ha nem definiálunk konstruktort, akkor a fordító az alapértelmezett
+            konstruktort használja. A konstruktorok olyan függvények, melyeknek feladata az objektum inicializálása. Vagyis ebben szoktunk a 
+            az egyes tagváltozóknak értéket adni, bizonyos tagfüggvényeket meghívni, melyek szükséegese az objektum alapjának elkészítéséhez. Egy másik
+            szembetűnő tulajdonsága a konstruktoroknak, hogy a nevük megegyezik az osztály nevével. A konstruktor ellentéte a destruktor, mely az objektum 
+            törlésével együtt hívódik meg, és felszabadítja a már nem használt memóriaterületeket. Egy jól megírt C++ programban viszont nem elég ennek a 
+            kettőnek a megléte, szükség van még másoló és mozgató konstruktorokra.
+        </para>
+        <para>
+            A másoló és mozgató konstruktorok segítségével szintén objektumok inicializálását hajthatjuk végre, viszont egy másik azonos osztályú objektum
+            alapján. Ha nem szeretnénk megírni ezeket, akkor a legegyszerűbb, ha letiltjuk használatukat, vagyis privát taggá tesszük őket. Erre azért van szükség,
+            mert ha nem tiltjuk le őket, akkor a fordító az alapértelmezett másoló/mozgató konstruktort hívja meg, ami váratlan eredményekhez vezethet, kiszámíthatatlanná
+            teszi a program működését. 
+        </para>
+        <para>
+            A másoló konstruktor, ahogy a nevében is benne van egy objektumot másol le, és az alapján készít egy másikat. Onnan lehet felismerni, hogy 
+            paraméterként mindig az őt magábafoglaló osztállyal azonos osztályú objektumrefenciát vár. Két fajta másolásról beszélhetünk: sekély és mély 
+            másolás. A sekély másolás lényege, hogy csak létrehozunk egy másik mutatót, ami a paraméterként megadott onjektumra mutat. Ennek implementálása a 
+            legegszerűbb, viszont használata problémákat okozhat. A legfőbb hátrány eme megoldási módnak, hogy közös a memóriaterület, tehát ha az egyiket
+            módosítjuk, akkor az a másikr is kifejti hatását. Tehát ez nem egy igazi másolat, nevezhetnénk alias-nak. A mély másolás ezzel szemben egy különálló 
+            onjektumot hoz létre, mely megegyezik a paraméterül kapott elemmel, viszont külön memóriacímen. Sekély társához képest implementálása összetettebb,
+            viszont magabiztos használata jobb C++ programozóvá tesz.
+        </para>
+        <para>
+            A 2. feladatban megvalósított másoló konstruktor a mély másolást implementálja. Tehát a forrásként kapott LZW fát bejárjuk, és 
+            minden elemének a másolatát elkészítjük a konstruálandó fában is. Ennek következtében lesz két külön fánk a meóriában, külön 
+            gyökér és fa mutatóval. Binárisfa bejárások közül létezik preorder, postorder és inorder. Ezek közül bármelyiket használhatjuk, mindegyik a 
+            megfelelő eredményhez vezet. A mi programunk a postorder bejárást alkalmazza, vagyis elsőnek dolgozzuk fel a gyemekeket, majd gyökeret.
+        </para>
+        <para>
+            A mozgató konstruktor a többi konstruktorhoz megfelelően egy inicializálást hajt végre, a másoláshoz hasonlóan ez is egy másik 
+            objektumra alapul. A különbség annyi, hogy a míg a másolásnál a másolásban részt vevő objektumok megmaradnak, addig a 
+            mozgatásnál a forrás objektum megszűnik, pontosabban nem determináns állapotba kerül. A mozgató konstruktor arról ismerszik meg, hogy a 
+            paramétere egy jobbérték referencia. A jobbérték refernciát a <![CDATA[&&]]> jelöli. Annak érdekében, hogy ez a konstruktor hívódjon meg, a 
+            <function>std::move</function> függvényt kell meghívni. Gyakori tévedés, köszönhetően ennek a függvénynek a félreérthető nevének, hogy 
+            mozgatást hajt végre. Valójában a paraméteréül kapott objektum jobbérték refernciájával tér vissza.
+        </para>
+        <para>
+            Az LZWBinFa programunkban maga a mozgató konstruktor a mozgató értékadásra van alapozva. Az alap koncepció az, hogy az inicializálni kívánt 
+            fa gyökerét null mutatóvá tesszük, majd megcseréljük a forrás és a cél fa gyökér mutatójának értékét, ezzel megvalósítva a mozgatást. Ezt
+            úgy érjük el, hogy a mozgató konstruktoron keresztül meghívjuk a mozgató értékadást. Fontos látni, hogy mikor hívódik meg a konstruktor és mikor 
+            az értékadás. Ha egy még nem inicializát objektumot szeretnénk másolással, mozgatással inicializálni, akkor a konstruktor hívódik. Ezzel szemben
+            egy már inicializát objektumba szeretnénk másolni, mozgatni, akkor már az értékadás hajtódik végre. Ennek tudatában szerepel a 
+            mozgató konstruktorban a következő sor:
+            <programlisting language="c++">
+                *this = std::move(forras);
+            </programlisting>
+            Szóval meghívódik a mozgató értékadás, ahol a pointer értékek cseréjét hajtjuk végre. Ehhez a <function>std::swap</function> függvényt 
+            használjuk. Természetesen lehetne saját cserét is írni, ebben a könyvben több megoldást adtunk erre, de összességében elmondható, hogy
+            érdemes a már előre implementált függvényeket, metódusokat használni. 
+        </para>
+        <para>
+            Összegezve a leírtakat, a másoló és mozgató szemantika a C++ nyelvben kiemelt szerepet játszik. Magabiztos használatuk elsajátítása 
+            nélkülözhetetlen a megbízható programok készítéséhez. 
         </para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 
