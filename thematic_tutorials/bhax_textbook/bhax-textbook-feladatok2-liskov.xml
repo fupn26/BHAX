@@ -17,7 +17,7 @@
             (számos példa szerepel az elv megsértésére az UDPROG repóban, lásd pl. source/binom/BatfaiBarki/madarak/)
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Liskov">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Liskov</link>            
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -161,7 +161,7 @@ class LiskovSert{
             <link xlink:href="https://arato.inf.unideb.hu/batfai.norbert/UDPROG/deprecated/Prog2_1.pdf">https://arato.inf.unideb.hu/batfai.norbert/UDPROG/deprecated/Prog2_1.pdf(98. fólia)</link>
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Sz%C3%BCl%C5%91-gyerek">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Sz%C3%BCl%C5%91-gyerek</link>             
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -250,7 +250,7 @@ public class Vehicles{
             <link xlink:href="https://www.tankonyvtar.hu/hu/tartalom/tkt/javat-tanitok-javat/apas03.html#id561066">https://www.tankonyvtar.hu/hu/tartalom/tkt/javat-tanitok-javat/apas03.html#id561066</link>
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Anti%20OO">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Anti%20OO</link>              
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -308,7 +308,7 @@ public class Vehicles{
     
     <section>
         <title>
-            <emphasis role='cadiumgreen'>deprecated - Hello, Android!</emphasis>
+            <emphasis role="cadiumgreen">deprecated - Hello, Android!</emphasis>
         </title>
         <para>
             Élesszük fel a <link xlink:href="https://github.com/nbatfai/SamuEntropy/tree/master/cs">https://github.com/nbatfai/SamuEntropy/tree/master/cs</link> projektjeit és vessünk össze
@@ -336,7 +336,7 @@ public class Vehicles{
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/SMNISTforHumans">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/SMNISTforHumans</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -481,7 +481,7 @@ public class Vehicles{
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Ciklomatikus_komplexit%C3%A1s">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Ciklomatikus_komplexit%C3%A1s</link>              
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>

@@ -55,6 +55,7 @@
 #include <random>
 #include <limits>
 #include <fstream>
+#include <vector>
 
 class Perceptron
 {
@@ -149,7 +150,7 @@ public:
     
     double operator() ( double image [] )
     {
-        
+        std::cout << "std" << std::endl;
         units[0] = image;
         
         for ( int i {1}; i < n_layers; ++i )
@@ -178,9 +179,8 @@ public:
             #endif
             
         }
-        
+
         return sigmoid ( units[n_layers - 1][0] );
-        
     }
     
     void learning ( double image [], double q, double prev_q )

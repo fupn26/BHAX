@@ -1,9 +1,9 @@
-using namespace std;
-
 #include <iostream>
 #include "../perceptron.hpp"
 #include "png++/png.hpp"
 #include <time.h>
+
+using namespace std;
 
 int main (int argc, char **argv)
 {
@@ -11,7 +11,7 @@ int main (int argc, char **argv)
 
     int size = png_image.get_width() * png_image.get_height();
 
-    Perceptron* p = new Perceptron (3, size, 256, 1);
+    Perceptron* p = new Perceptron (3, size, 256, size);
 
     double* image = new double[size];
 
@@ -27,10 +27,11 @@ int main (int argc, char **argv)
         for(int j = 0; j<png_image.get_height(); ++j){
             png_image[i][j].green = rand()%256;//newPNG[j*png_image.get_height()+j];
         }
-    png_image.write("../output.png");
+    png_image.write("output.png");
 
 
     double value = (*p) (image);
+
 
     std::cout << value << std::endl;
 

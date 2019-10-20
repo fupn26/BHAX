@@ -56,7 +56,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="ttps://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/">ttps://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/</link>          
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -361,13 +361,13 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Snake">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Snake</link>              
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
         <para>
-            A feladat során egy Snake-t készítünk el, amely teljesképernyő módban jelenik meg. A program alapját a 
+            A feladat során egy klasszikus Snake játékot készítünk el, amely teljesképernyő módban jelenik meg. A program alapját a 
             <link xlink:href="http://zetcode.com/tutorials/javagamestutorial/snake/">
                 http://zetcode.com/tutorials/javagamestutorial/snake/</link>. Ezen kell néhány módosítást eszközölni, és 
                 készen is vagyunk. 
@@ -669,7 +669,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Saj%C3%A1t_perceptron">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Saj%C3%A1t_perceptron</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>

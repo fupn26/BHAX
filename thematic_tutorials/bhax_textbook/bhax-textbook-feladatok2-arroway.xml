@@ -732,7 +732,7 @@ public void doGet(HttpServletRequest request, HttpServletResponse response)
             példányokat poolozza!
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Gagyi">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Gagyi</link>             
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -789,7 +789,7 @@ class Gagyi{
             <link xlink:href="https://en.wikipedia.org/wiki/Yoda_conditions">https://en.wikipedia.org/wiki/Yoda_conditions</link>
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Yoda">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/Yoda</link>               
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -885,7 +885,7 @@ class Yoda{
             melyet szeretném, ha átélnél).
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/blob/master/attention_raising/Source/PiBBP_sajat.java">https://github.com/fupn26/BHAX/blob/master/attention_raising/Source/PiBBP_sajat.java</link>               
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>

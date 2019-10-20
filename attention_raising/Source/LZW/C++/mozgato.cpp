@@ -94,6 +94,9 @@ public:
     {
         szabadit(gyoker);
     }
+    LZWBinFa (const LZWBinFa &);
+    LZWBinFa & operator= (const LZWBinFa &);
+
     LZWBinFa (LZWBinFa&& forras)
     {
         std::cout<<"Move ctor\n";
@@ -287,8 +290,6 @@ private:
     int melyseg, atlagosszeg, atlagdb;
     double szorasosszeg;
     // szokásosan: nocopyable
-    LZWBinFa (const LZWBinFa &);
-    LZWBinFa & operator= (const LZWBinFa &);
 
     /* Kiírja a csomópontot az os csatornára. A rekurzió kapcsán lásd a korábbi K&R-es utalást... */
     void kiir (Csomopont * elem, std::ostream & os)

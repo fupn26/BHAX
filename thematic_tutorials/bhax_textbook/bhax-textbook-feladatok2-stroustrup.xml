@@ -16,10 +16,96 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/JavaClassCounter">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/JavaClassCounter</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <caution>
+            <title><emphasis role='red'>Program használata</emphasis></title>
+            <para>
+                <programlisting>
+                    sudo apt-get install libboost-all-dev
+                    sudo apt-get install qtdeclarative5-dev
+                    qmake JavaClassCounter.pro
+                    make
+                    ./JavaClassCounter /path/to/src
+                </programlisting>
+                Vagy telepítsd a Qt Creator-t, és abba betöltve a *.pro fájlt, működni fog.
+            </para>
+        </caution>
+        <para>
+            A Boost egy kifejezetten C++hoz használható eszközkönyvtár. 1999-ben adták ki, és azóta folyamatosan fejlesztik. Az eszközkönyvtárai 
+            header-only-k, azaz elég csak include-álni a megfelelő header-eket, a fordító megtalája a szükséges függvényeket, osztályokat. Ebben a 
+            feladatban 2 elemét fogjuk használni a Boost-nak. A Boost.Filesystem és a Boost.Regex könyvtárakat. Előbbire azért lesz szükség, hogy 
+            a megadott mappában lévő fájlokat wl tudjuk érni, még utóbbira a kiterjesztés szűrése miatt lesz szükség. 
+        </para>
+        <para>
+            A forrása ennek a programnak nagyon egyszerű. Lássuk, hogy mit tartalmaz.
+            <programlisting language="c++"><![CDATA[
+                int iterator(boost::filesystem::path p){
+                    int osztalyok_szama = 0;
+                    boost::regex expr{"(.*\\.java)"};
+                
+                    for (const boost::filesystem::directory_entry& x : boost::filesystem::recursive_directory_iterator(p)){
+                
+                        if(boost::regex_match(x.path().string(), expr) && boost::filesystem::is_regular_file(x.path())){
+                            std::cout << ++osztalyok_szama << std::endl;
+                            std::cout << "    " << x.path() << '\n';
+                        }
+                    }
+                    return osztalyok_szama;
+                }]]>
+            </programlisting>
+            Az <function>iterator</function> függvény feladata, hogy kiszámolja a Java osztályok számát. Ehhez paraméterként kap egy 
+            <function>boost::filesystem::path</function> típusú objektumot, mely tartalmazza a elérési útját a <function>src</function>-nek.
+            A <function>osztalyok_szama</function> változóban tároljuk el a megtalált osztályok számát. Az <function>expr</function> objektum
+            egy reguláris kifejezést tartalmaz, azokat a fájlokra illeszkedik, amik <function>.java</function>-ra végződnek. Majd a 
+            <function>for</function> ciklus segítségével bejárjuk az <function>src</function> mappát. Ehhez a <function>recursive_directory_iterator</function>
+            -t használjuk, melynek segítségével az almappákat is be tudjuk járni. Ha csak a sima <function>directory_iterator</function>-t használnánk, akkor
+            rekurzívan kéne meghívnunk a függvényünket újra és újra. Csak akkor növeljük a megtalált osztályok számát, ha illeszkedik a fájl neve a 
+            <function>expr</function> kiefejezésünkre, és maga a fájl egy hagyományos fájl, nem pedig mappa. A ciklus végeztével visszaadjuk a 
+            talált osztályok számát. 
+        </para>
+        <para>
+            <programlisting language="c++"><![CDATA[
+                int main(int argc, char *argv[])
+                {
+                    QCoreApplication a(argc, argv);
+                
+                    if (argc < 2)
+                    {
+                        std::cout << "Usage: tut3 path\n";
+                        return 1;
+                    }
+                
+                    boost::filesystem::path p (argv[1]);
+                
+                    try
+                    {
+                        int osztalyok_szama = iterator(p);
+                        std::cout << "Java JDK osztályok száma " << osztalyok_szama << std::endl;
+                    }
+                
+                    catch (const boost::filesystem::filesystem_error& ex)
+                    {
+                        std::cout << ex.what() << '\n';
+                    }
+                
+                
+                    return a.exec();
+                }]]>
+            </programlisting>
+            A <function>main</function> függvényben pedig <function>p</function> objektumban eltároljuk az átadott útvonatal. Majd meghívjuk a 
+            korábban tárgyalt <function>iterator</function> függvényt, és kiíratjuk a Java JDK osztályok számát terminálba.
+            <figure>
+                <title>JDK 13 osztályainak száma Linuxon</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/JavaClassCounter/jdk13_1num.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
         </para>
     </section>        
 
@@ -80,7 +166,7 @@
     <section>
         <title>Összefoglaló</title>
         <para>
-            Az előző 4 feladat egyikéről írj egy 1 oldalas bemutató „”esszé szöveget!
+            Az előző 4 feladat egyikéről írj egy 1 oldalas bemutató „esszé" szöveget!
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
