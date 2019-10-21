@@ -27,7 +27,7 @@
     </section>        
 
     <section>
-        <title>OOCWC Boost ASIO hálózatkezelése</title>
+        <title>OOCWC Boost ASIO hálózatkezelése</title> <!-- Egy megoldási javaslat, hogy írjuk át Protobufferes kommunikációra-->
         <para>
             Mutassunk rá a scanf szerepére és használatára! <link xlink:href="https://github.com/nbatfai/robocaremulator/blob/master/justine/rcemu/src/carlexer.ll">https://github.com/nbatfai/robocaremulator/blob/master/justine/rcemu/src/carlexer.ll</link>
         </para>
@@ -60,7 +60,7 @@
     </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
     <section>
-        <title>BrainB</title>
+        <title>BrainB</title> <!-- A számítás osztály van összekapcsolva az ablakkal -->
         <para>
             Mutassuk be a Qt slot-signal mechanizmust ebben a projektben: <link xlink:href="https://github.com/nbatfai/esporttalent-search">https://github.com/nbatfai/esporttalent-search</link>
         </para>
@@ -76,7 +76,7 @@
     </section>        
 
     <section>
-        <title>OSM térképre rajzolása</title>
+        <title>OSM térképre rajzolása</title> <!-- Ebből éredmes az androidosat választani -->
         <para>
             Debrecen térképre dobjunk rá cuccokat, ennek mintájára, ahol én az országba helyeztem el a DEAC
             hekkereket: <link xlink:href="https://www.twitch.tv/videos/182262537">https://www.twitch.tv/videos/182262537</link> (de az OOCWC Java Swinges

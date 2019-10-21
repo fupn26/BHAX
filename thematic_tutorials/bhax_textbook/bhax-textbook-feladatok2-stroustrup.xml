@@ -257,6 +257,112 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Az RSA kódolást Ron <emphasis role="strong">R</emphasis>ivest, Adi <emphasis role="strong">S</emphasis>hamir és Len <emphasis role="strong">A</emphasis>dleman
+            fejlesztette ki 1976-ben. Ez egy nyílt kulcsú tikosító algoritmus, mely a moduláris számelméleten és a prímszámelméleten alapul. A titkosításhoz 
+            szükség van egy publikus és egy privát kulcsra, a nyílt kulccsal lehet kódolni a szövegünket, de csak a privát kóddal lehet dekódolni. 
+        </para>
+        <para>
+            Maga az algoritmus a következő:
+            <orderedlist numeration="lowerroman">
+                <listitem>
+                <para>Választani kell tetszőleges nagy prímet, <emphasis role="strong">p</emphasis>-t és <emphasis role="strong">q</emphasis>-t.</para>
+                </listitem>
+                <listitem>
+                <para>Ki kell számolni az <emphasis role="strong">N = p*q</emphasis>-t, melynél <emphasis role="strong">N</emphasis> jelöli a 
+                modulusát a nyílt és a titkos kulcsnak.</para>
+                </listitem>
+                <listitem>
+                <para>Euler-féle fi függvényérték kiszámítása, melynek képlete a következő: <emphasis role="strong">fi(N) = (p-1)(q-1)</emphasis></para>
+                </listitem>
+                <listitem>
+                <para>Kell találni egy olyan <emphasis role="strong">e</emphasis> számot, amely 1-nél nagyobb és fi(N)-nél kisebb. Emellett fontos, hogy
+                <emphasis role="strong">e</emphasis>-nek és <emphasis role="strong">fi(N)</emphasis>-nek a legnagyobb közös osztólya 1 legyen.
+                Az <emphasis role="strong">e</emphasis> lesz a nyilvános kucs kitevője, ezért nyilvánossaá tesszük.</para>
+                </listitem>
+                <listitem>
+                    <para>
+                        A privát kulcshoz is kell találni egy <emphasis role="strong">d</emphasis> kitevőt, mely esetén teljesül, hogy 
+                        <emphasis role="strong">d*e</emphasis> <emphasis role="strong">fi(N)</emphasis> osztva 1 maradékot ad. Mivel ez a 
+                        titkos kulcsnak a kitevője, ezért ezt is titkosítjuk. 
+                    </para>
+                </listitem>
+            </orderedlist>
+        </para>
+        <para>
+            A linkelt diásorban ezt az algoritmust megvalósító program forrását találjuk. Nézzük át, hogy mit is tartalmaznak ezek:
+            <programlisting language="java">
+    class KulcsPar {
+
+        java.math.BigInteger d, e, m;
+        
+        public KulcsPar() {
+            int meretBitekben = 700 * (int) (java.lang.Math.log((double) 10) 
+                    / java.lang.Math.log((double) 2));
+            
+            java.math.BigInteger p =
+                    new java.math.BigInteger(meretBitekben, 100, new java.util.Random());
+            java.math.BigInteger q =
+                    new java.math.BigInteger(meretBitekben, 100, new java.util.Random());
+        
+            m = p.multiply(q);
+            
+            java.math.BigInteger z = p.subtract(java.math.BigInteger.ONE).
+                    multiply(q.subtract(java.math.BigInteger.ONE));
+            
+            do {
+                
+                do {
+                    d = new java.math.BigInteger(meretBitekben, new java.util.Random());
+                } while (d.equals(java.math.BigInteger.ONE));
+            
+            } while (!z.gcd(d).equals(java.math.BigInteger.ONE));
+            
+            e = d.modInverse(z);
+        
+        }
+        
+    }
+            </programlisting>
+            A <classname>Kulcspar</classname> osztály feladaata a fentebb leírt algoritmus megvalósítása. Ahhoz, hogy kellően nagy prímszámokat 
+            találhassunk, a Java BigInteger osztályát használjuk. Ez lehetővé teszi, hogy sokkal nagyobb értékekkel számolhassunk, mint 
+            bármelyik primitív adattípussal. Az egyszerűség kedvéért az algoritmus betűit használja a program is, kivéve az <emphasis role="strong">N
+            </emphasis> betűt, melyet a forrásban <emphasis role="strong">m</emphasis> jelöl. 
+            <programlisting language="java"><![CDATA[
+            public class RSAPelda {
+
+                public static void main(String[] args){
+                    
+                    KulcsPar jSzereplo = new KulcsPar();
+                    
+                    String tisztaSzoveg = "Hello, Vilag!";
+                    
+                    //kódol
+                    byte[] buffer = tisztaSzoveg.getBytes();
+                    java.math.BigInteger[] titkos = new java.math.BigInteger[buffer.length];
+                    
+                    for (int i = 0; i < titkos.length; ++i){
+                        titkos[i] = new java.math.BigInteger(new byte[] {buffer[i]});
+                        titkos[i] = titkos[i].modPow(jSzereplo.e, jSzereplo.m);
+                    }
+                    
+                    //dekódol
+                    for (int i = 0; i < titkos.length; ++i){
+                        titkos[i] = titkos[i].modPow(jSzereplo.d, jSzereplo.m);
+                        buffer[i] = titkos[i].byteValue();
+                    }
+                    
+                    System.out.println(new String (buffer));
+                }
+                
+            }]]>
+            </programlisting>
+            Az <classname>RSAPelda</classname> osztály végzi el a bemeneti szövegen a tikosítást és a dekódolást a <classname>KulcsPar</classname> osztály által generált 
+            publikus és privát kulcsok alapján. A szöveg tikosítása úgy zajlik, hogy a <function>titkos</function> tömbben eltároljuk a bemenet adott eleméhez
+            tartozó bytokat, majd a <function>modPow</function> függvény segítségével vesszük a <function>titkos[i]</function> érékenek a 
+            <emphasis role="strong">e</emphasis>-edik hatványát modulo <emphasis role="strong">m</emphasis>. A dekódolás során ugyanezt a folyamatot hajtjuk végre, csak 
+            <emphasis role="strong">d</emphasis>-edik hatványát vesszük az adott <function>titkos[i]</function>-nek. 
+        </para>
     </section>        
         
 
