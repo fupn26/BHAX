@@ -32,8 +32,8 @@ public class Board extends JPanel implements ActionListener{
     private final int B_HEIGHT = (int)screenSize.getHeight();//300;
     private final int DOT_SIZE = 10;
     private final int ALL_DOTS = 900;
-    private final int RAND_POS = 29;
-    private final int DELAY = 140;
+    private final int RAND_POS = (int)screenSize.getWidth()/10 - 100;
+    private int DELAY = 140;
 
     private final int x[] = new int[ALL_DOTS];
     private final int y[] = new int[ALL_DOTS];
@@ -52,10 +52,16 @@ public class Board extends JPanel implements ActionListener{
     private Image ball;
     private Image apple;
     private Image head;
+    
+    public boolean running = false;
 
     public Board() {
         
         initBoard();
+    }
+    
+    private Board getBoard(){
+        return this;
     }
     
     private void initBoard() {
@@ -201,10 +207,11 @@ public class Board extends JPanel implements ActionListener{
 
     private void locateApple() {
 
-        int r = (int) (Math.random() * RAND_POS);
+//        int r = (int) (Math.random() * RAND_POS);
+        int r = (int) (Math.random() * (screenSize.getWidth()/10));
         apple_x = ((r * DOT_SIZE));
 
-        r = (int) (Math.random() * RAND_POS);
+        r = (int) (Math.random() * (screenSize.getHeight()/10));
         apple_y = ((r * DOT_SIZE));
     }
 
@@ -253,6 +260,11 @@ public class Board extends JPanel implements ActionListener{
             }
             if(e.getKeyChar() == 'q'){
                 System.exit(0);
+            }
+            if (key == KeyEvent.VK_SHIFT){
+                DELAY /= 2;
+                timer = new Timer(DELAY, getBoard());
+                timer.start();
             }
         }
     }
