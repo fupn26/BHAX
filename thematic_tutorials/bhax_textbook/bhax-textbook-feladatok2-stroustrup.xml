@@ -291,7 +291,7 @@
         </para>
         <para>
             A linkelt diásorban ezt az algoritmust megvalósító program forrását találjuk. Nézzük át, hogy mit is tartalmaznak ezek:
-            <programlisting language="java">
+            <programlisting language="java"><![CDATA[
     class KulcsPar {
 
         java.math.BigInteger d, e, m;
@@ -322,7 +322,7 @@
         
         }
         
-    }
+    }]]>
             </programlisting>
             A <classname>Kulcspar</classname> osztály feladaata a fentebb leírt algoritmus megvalósítása. Ahhoz, hogy kellően nagy prímszámokat 
             találhassunk, a Java BigInteger osztályát használjuk. Ez lehetővé teszi, hogy sokkal nagyobb értékekkel számolhassunk, mint 
@@ -362,6 +362,158 @@
             tartozó bytokat, majd a <function>modPow</function> függvény segítségével vesszük a <function>titkos[i]</function> érékenek a 
             <emphasis role="strong">e</emphasis>-edik hatványát modulo <emphasis role="strong">m</emphasis>. A dekódolás során ugyanezt a folyamatot hajtjuk végre, csak 
             <emphasis role="strong">d</emphasis>-edik hatványát vesszük az adott <function>titkos[i]</function>-nek. 
+        </para>
+        <para>
+            Azután, hogy megismertük az eredetei programot, lássuk annak átalakított (elronott) verzióját. Az első probléma, hogy az eredeti nem karakterenként végzi a kódolást. Tehát az
+            módosítani kell a kódon az alábbiak szerint.
+            <programlisting language="java"><![CDATA[
+                PrintWriter writer = new PrintWriter("output.txt");
+                for (int idx = 0; idx < tisztaSzoveg.length(); ++idx) {
+                    Character tisztaszoveg = tisztaSzoveg.charAt(idx);
+                    tisztaszoveg = Character.toLowerCase(tisztaszoveg);
+                    byte[] buffer = tisztaszoveg.toString().getBytes();
+                    java.math.BigInteger[] titkos = new java.math.BigInteger[buffer.length];
+                    byte[] output = new byte[buffer.length];
+        
+                    for (int i = 0; i < titkos.length; ++i) {
+                        titkos[i] = new java.math.BigInteger(new byte[]{buffer[i]});
+                        titkos[i] = titkos[i].modPow(jSzereplo.e, jSzereplo.m);
+                        output[i] = titkos[i].byteValue();
+                        writer.print(titkos[i]);
+                    }
+                    writer.println();
+                }
+                writer.close();        
+            ]]></programlisting>
+            A <classname>PrintWriter</classname> osztályt fogjuk használni a fájlbaíráshoz. Előnye a <classname>FileWriter</classname> osztályhoz képest, hogy képesek vagyunk
+            átalakításnél a fájlba írni <classname>BigInteger</classname> típusú objektumokat. A karakterenkéntui kódolás, ahogy már megszokhattuk, abból áll, hogy a 
+            bemeneten egy <function>for</function> ciklus segítségével végigmegyünk a <varname>tisztaSzoveg</varname>-en. A <function>charAt</function> függvény segítségével
+            minden i. indexnél lévő karaktert tudjuk visszaadni, melyet eltráolunk lokális változóban, majd kisbetűsítünk a <function>tolowerCase</function> függvénnyel. 
+            Erre azért van szükség, hogy könnyebben tudjuk dekódolni a szöveget. Majd a karaktert bájtsorozattá alakítjuk, végül a már korábban látott módon az RSA algoritmussal
+            kódoljuk, az eredményt pedig kiírjuk egy fájlba.
+            <programlisting language="java"><![CDATA[
+                BufferedReader inputStream = new BufferedReader(new FileReader("output.txt"));
+                int lines = 0;
+                String line[] = new String[100000];
+                while ((line[lines] = inputStream.readLine()) != null) {
+                    lines++;
+                }
+                inputStream.close();        
+            ]]></programlisting>
+            Következő lépésként a korábban kiírt titkosított sorokat visszaolvassuk egy <classname>String</classname> tömbbe.
+            Hogy az egyes karakterek titkosított alakját, és gyakoriságát könnyen tudjuk kezelni, ezért bevezetünk egy új osztályt, melynek 
+            neve <classname>Karakterek</classname> lesz.
+            <programlisting language="java"><![CDATA[
+                class Karakterek {
+
+                    private String encrypted;
+                    private char karakter = ' ';
+                    private int gyakorisag = 0;
+                
+                    public Karakterek(String str, char k) {
+                        encrypted = str;
+                        karakter = k;
+                    }
+                
+                    public Karakterek(String str) {
+                        encrypted = str;
+                    }
+                
+                    public void setEncrypted(String str) {
+                        encrypted = str;
+                    }
+                
+                    public String getEncrypted() {
+                        return encrypted;
+                    }
+                
+                    public void setKarakter(char k) {
+                        karakter = k;
+                    }
+                
+                    public char getKarakter() {
+                        return karakter;
+                    }
+                
+                    public void increment() {
+                        gyakorisag += 1;
+                    }
+                
+                    public int getGyak() {
+                        return gyakorisag;
+                    }
+                }]]>                
+            </programlisting>
+            Ezután a beolvasott sorokat el kell tároli <classname>Karakterek</classname> típusú objektumokba. Ennek érdekében létrehozunk egy tömböt, melybe csak akkor rakunk új karaktert, ha még
+            nem létezik, ellenkező esetben az <function>increment</function> függvény segítségével növeljük az adott karakter gyakoriságát. Ezt írja le a következő kódrészlet.
+            <programlisting language="java"><![CDATA[
+                    Karakterek kar[] = new Karakterek[1000];
+                    boolean found;
+                    kar[0] = new Karakterek(line[0]);
+                    int count = 1;
+                    for (int i = 1; i < lines; i++) {
+                        found = false;
+                        for (int j = 0; j < count; j++) {
+                            if (kar[j].getEncrypted().equals(line[i])) {
+                                kar[j].increment();
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            kar[count] = new Karakterek(line[i]);
+                            count++;
+                        }
+                    }]]>
+            </programlisting>
+            Ha elkészítettük a tömböt, akkor ezt az elemek gyakorisága szerint sorba kell rendezni. Erre azért lesz szükség, mivel a statisztikai karaktergyakoriság alapján 
+            fogjuk ezeket a titkosított elemeket heylettesíteni normál karakterekkel. A sorba rendezés a következőképpen néz ki:
+            <programlisting language="java"><![CDATA[
+                    for (int i = 0; i < count; i++) {
+                        for (int j = i + 1; j < count; j++) {
+                            if (kar[i].getGyak() < kar[j].getGyak()) {
+                                Karakterek x = kar[i];
+                                kar[i] = kar[j];
+                                kar[j] = x;
+                            }
+                        }
+                    }]]>
+            </programlisting>
+            Ahhoz, hogy a megtudjuk a statisztikai gyakoriságát az egyes karaktereknek éredmes ellátogatni a következő weboldalra:
+            <link xlink:href="https://mdickens.me/typing/letter_frequency.html">https://mdickens.me/typing/letter_frequency.html</link>.
+            Ezalapján elkészítjük a <filename>gyakorisag.txt</filename> fájlt, melynek minden egyes sorában egy karakter van. Ha ezt 
+            elkészítettük, akkor már csak be kell olvasni a tartalmát.
+            <programlisting language="java"><![CDATA[
+                    FileReader f = new FileReader("gyakorisag.txt");
+                    char[] karakter = new char[70];
+                    int karCount = 0;
+                    int k;
+                    while ((k = f.read()) != -1) {
+                        if ((char) k != '\n') {
+                            karakter[karCount] = (char) k;
+                            karCount++;
+                        }
+                    }
+                    f.close();]]>           
+            </programlisting>
+            Az egyes karaktereket szintén egy tömbbe gyűjtjük össze, mely eleve a karakterekhez tartozó gyakoriság alapján lesz (csökkenően) rendezve. Ezután az a 
+            feladatunk, hogy a korábban létrehozott <varname>kar</varname> tömb elemeit kicseréljük a beolvasott karakterekre. 
+            <programlisting language="java"><![CDATA[
+                    for (int i = 0; i < count; i++) {
+                        kar[i].setKarakter(karakter[i]);
+                    }]]>            
+            </programlisting>
+            Végezetül pedig elvégezzük a dekódolást, ami valószínűleg nem fog tökéletes eredményt adni. Ezt orvolandóan, el lehet készíteni a 
+            bemeneti szövegünkhöz tartózó karaktergyakoriságot, de mivel a kódolt szöveg előzetes ismerete törésnél nem valószínű, ezért ezzel
+            most nem élünk.
+            <figure>
+                    <title>Dekódolás eredménye</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/RSA/result.png" format="PNG" scale="130"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>    
         </para>
     </section>        
         
