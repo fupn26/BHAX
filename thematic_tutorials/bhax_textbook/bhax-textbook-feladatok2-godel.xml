@@ -12,7 +12,7 @@
             Gengszterek rendezése lambdával a Robotautó Világbajnokságban
         </para>
         <para>
-            <link xlink:href="https://https://youtyoutu.be/DL6iQwPx1Yw">https://youtu.be/DL6iQwPx1Yw(8:05-től)</link>
+            <link xlink:href="https://youtu.be/DL6iQwPx1Yw">https://youtu.be/DL6iQwPx1Yw(8:05-től)</link>
         </para>
         <para>
             Megoldás videó:
@@ -22,6 +22,51 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ebben a feldatban azt fogjuk megismerni, hogy hogyan lehet a C++11-től bevezetett
+            <function>std::sort()</function> függvényt használni. Ez a gyorsrendezés algoritmusát
+            implementálja.
+            Lássuk a tárgyalni kívánt
+            kódrészletet.
+            <programlisting language="c++"><![CDATA[
+            std::sort ( gangsters.begin(), gangsters.end(), [this, cop] ( Gangster x, Gangster y )
+            {
+                return dst ( cop, x.to ) < dst ( cop, y.to );
+            } );]]>                  
+            </programlisting>
+            Az <function>std::sort()</function> függvényből létezik 2 és 3 paraméteres
+            verzió létezik. Az első 2 paraméter mindig az, hogy mettől meddig szeretnénk
+            rendezni a vektort, vagy tömböt. A harmadik pedig egy opcionális paraméter, mely
+            egy, a rendezés alapjául szolgáló függvényt ad meg. Ha ezt kihagyjuk, akkor a 
+            beépített függvény dönti el, hogy mi alapján fogja rendezni a vektort.
+        </para>
+        <para>
+            Tehát az első két paraméternek megadjuk a <varname>gangsters</varname> vektor
+            első utolsó elemének indexét a <function>begin()</function> és <function>end()</function>
+            függvények segítségével. Az érdekességet a 3. paraméter hordozza. Ez egy név nélküli 
+            függvény, más néven lambda függvény.
+        </para>
+        <para>
+            A lambda függvény C++11 óta támogatott. A szintaxisa a következő:
+            <programlisting>
+                [](paraméterek)-> visszatérési típusa {utasítások}
+            </programlisting>
+            A [] jelek közé lehet olyan változókat megadni, melyek a függvényen kívülről
+            szertnénk elérni. A mi példánkban az aktuális objektum mutatójára és a <varname>cop</varname>
+            objektumra van szükségünk.
+            A paraméterül két <classname>Gangster</classname> osztályú
+            objektumot, melyek mindig a <function>sort</function> által összehasonlított 
+            elemek. A lambda testében lévő utasítás szerint pedig azt vizsgáljuk, hogy 
+            melyik gangster van közelebb a rendőrhöz, és egy <varname>bool</varname> értékkel
+            tréünk vissza. Ahogy a lambda szintaxisánál láttuk, ezt meg lehetne adni explicit
+            módon, de mivel csak egy visszatérési értéke van a függvénynek, és típusa egyértelmű,
+            ezért nem kell megadni.
+        </para>
+        <para>
+            Összegezve a <function>std::sort()</function> függvény, és egy lambda függvény
+            segítségével a <varname>gangsters</varname> vektor elemeit a rendőröktől való
+            távolságuk szerint rendezzük növekvő sorrendbe.
         </para>
     </section>        
 
@@ -39,6 +84,130 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Amikor példányosítunk egy objektumot, akkor a memóriában lefoglalódik az ehhez szükséges terület. C++-ban a <function>new</function>
+            operátorral tudjuk meghívni az alapértelmezett allokátort. Ez remekül müködik, viszonot bizonyos esetkben nagyobb beleszólást szeretnénk
+            a programunk memóriakezelésébe. Ennek érdekében készíthetünk saját allokátor osztályt. Ebben a feladatban arra fogjuk használni a 
+            <classname>CustomAlloc</classname> osztályunkat, hogy nyomonkövessük a lefoglalt memóriaterületeket.
+        </para>
+        <para>
+            Názzük is meg a <classname>CustomAlloc</classname> osztályunkat.
+            <programlisting language="c++"><![CDATA[
+                template<typename T>
+                    class CustomAlloc
+                    {
+                    public:
+                        CustomAlloc() {}
+                        CustomAlloc(const CustomAlloc&) {}
+                        ~CustomAlloc() {}
+                    
+                        using size_type = size_t;
+                        using value_type = T;
+                        using pointer = T*;
+                        using const_pointer = const T*;
+                        using reference = T&;
+                        using const_reference = const T&;
+                        using difference_tyoe = ptrdiff_t;
+                    
+                        pointer allocate( size_type n){
+                            int s;
+                            char* p = abi::__cxa_demangle( typeid (T).name(), 0, 0, &s);
+                            std::cout << "Allocating"
+                                      << n << " objects of "
+                                      << n*sizeof (T)
+                                      << " bytes. "
+                                      << typeid (T).name() << "=" << p
+                                      << std::endl;
+                            delete p;
+                            return reinterpret_cast<T*>(new char[n*sizeof(T)]);
+                        }
+                    
+                        void deallocate (pointer p, size_type n){
+                            delete[] reinterpret_cast<char *>(p);
+                            std::cout << "Deallocating"
+                                      << n << " objects of "
+                                      << n*sizeof (T)
+                                      << " bytes. "
+                                      << typeid (T).name() << "=" << p
+                                      << std::endl;
+                    
+                        }                    
+                    };]]>
+            </programlisting>
+            Ahogy látható ez egy template-elt osztály, tehát bármilyen típussal használhatjuk. Az osztály konstruktorait most nem kell megírunk, elég az alapértelmezett 
+            használata. Egy érdekesség a <function>using</function> kulcsszó, amellyel eddig még nem találkoztunk. Ez a C++11-től kezdve a <function>typedef</function>
+            helyett használható. Tehát alias-ként szolgál az egyenlőségjel jobb oldalán található típusokra. Az <function>allocate</function> osztály végzi a szükséges 
+            terület lefoglalását, és erre a területre mutató pointerrel tér vissza. Ebben a függvényben az <function>std</function> névtér mellett megismerkedünk egy 
+            újjal, mely az <function>abi</function>. Ez az <emphasis role="strong">A</emphasis>pplication <emphasis>B</emphasis>inary <emphasis role="strong">I</emphasis>nterface rövidítése.
+            Ennek segítségével meg tudjuk határozni, hogyan legyenek az argumentumok tárolva a hívási stack-ben, a registerekben, hogyan legyenek rendezve és padding-elve az egyes típusok
+            a struktúrákban. Mielőtt tovább haladnánk a kód elemzésében, elsőnek ejtsünk pár szót a <emphasis role="strong">name mangling</emphasis>-ról.    
+        </para>
+        <para>
+            A <emphasis role="strong">name mangling</emphasis> a fordító által történik. A lényege, hogy a forrásfájlban szereplő neveket átalakítja belsőleg használtakra.
+            Ezt úgy kell elképzelni, hogy például a <function>void pelda(int i, char b)</function> függvényt a fordító átalakítja <function>pelda_FvicE</function> formára.
+            Természetesen az egyes fordítók eltérően alakíthatják át az egyes kifejezéseket. A <emphasis role="strong">name mangling</emphasis> lényege, hogy a megkönnyítse a 
+            linker feladatát abban, hogy megkülönböztesse az egyes neveket. Ahogy látható a fenti példában, az átalakított formának is tartalmaznia kell a függvény nevét, és 
+            a kért paraméterek típusát. A visszatérési érték mindig az F utáni első betű, ami jelenleg <function>void</function>-ot jelöl. Későbbiekben majd láthatjuk, hogy a 
+            beépített típusokat mindig a kezdőbetűjével fog reprezentálni ez a mevhanizmus.
+        </para>
+        <para>
+            Most, hogy tudjuk, mi is az a <emphasis role="strong">name mangling</emphasis>, már sejthetjük, hogy mire fogjuk használni a <function>__cxa_demangle</function>
+            függvényt. Ennek segítségével tudjuk visszafejteni, hogy az átalakított formából az eredeti típust. A <function>typeid().name()</function> segítségével megkapjuk, hogy
+            egy objektum típusa milyen néven lett átalakítva. Ebben az esetben a fenti példában tárgyalt <function>void pelda(int i, char b)</function> esetén a 
+            <function>typeid(pelda).name()</function> függvény a <function>FvicE</function> kifejezést adja vissza. Tehát a <classname>CustomAlloc</classname> osztályunkban a 
+            <varname>T</varname> típusát fogjuk eltárrolni a karaktertömbként a <varname>p</varname> változóban. Majd <function>cout</function> segítségével kiíratjuk a 
+            lefoglalt bájtok méretét, és, hogy milyen típusnak foglaltunk területet. Végezetül pedig visszatérünk egy <varname>T</varname> típusú pointerrel, mely egy 
+            újonnan lefoglalt memóriaterületre mutat.
+        </para>
+        <para>
+            A <function>deallocate</function> függvény pedig a memória felszabadítsásáért felel. Itt is kiiírjuk a terminálba, hogy mennyi a felszabadított bájtok száma, és 
+            azt, hogy melyik memóriaterületet szabadítottuk fel.
+        </para>
+        <para>
+            A <function>main</function> függvény a következőképpen néz ki:
+            <programlisting language="c++"><![CDATA[
+                int main()
+                {
+                    std::vector<int, CustomAlloc<int>> v;
+
+                    v.push_back(1);
+                    v.push_back(2);
+                    v.push_back(3);
+                    v.push_back(4);
+                    v.push_back(5);
+                    v.push_back(6);
+                    v.push_back(7);
+                    v.push_back(8);
+                    v.push_back(9);
+                    v.push_back(10);
+                    v.push_back(11);
+                    v.push_back(12);
+                    v.push_back(13);
+                    v.push_back(14);
+                    v.push_back(15);
+
+                    for(int x : v){
+                        std::cout << x << std::endl;
+                    }
+
+                    std::cout << typeid(pelda).name() << std::endl;
+                    return 0;
+                }]]>
+            </programlisting>
+            Deklarálunk egy vektor, melynél megadjuk, hogy a mi allokátorunkat használja. Majd elkezdünk belerakni elemeket, és végül kiíratjuk a vektorban tárolt elemeket.
+            <figure>
+                <title>Custom Allocator</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/CustomAlloc/result.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A képen felfigyelhetünk a vektorok érdekes működésére. A lényeg, hogy C++-ban a vektorok dinamikus adatszerkezetek, tehát "bármennyi" eleme lehet, de ezt úgy valósítja
+            meg, hogy ha betelik a lefoglalt terület, és új elemet adunk hozzá, akkor egy újat foglal le, melynek mérete az előző duplája lesz. A már benne lévő elemeket átmásolja 
+            az új területre, majd törli a régit. Ha valaki azt szeretné, hogy a ne foglaljon újra területet, akkor használhatjuk a vektor <function>reserve</function> tagfüggvényét, 
+            mellyel meg lehet határozni, hogy hány bájtot foglaljon le. Ennek segítségével elérhetjük, hogy ritkábban, vagy esetleg soha ne kelljen újabb területet foglalnia a vektornak.
         </para>
     </section>        
         

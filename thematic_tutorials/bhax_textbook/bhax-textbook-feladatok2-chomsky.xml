@@ -58,6 +58,13 @@
         <para>
             Megoldás forrása: <link xlink:href="ttps://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/">ttps://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/</link>          
         </para>
+        <caution>
+            <title>OOCWC projekt beizzítása</title>
+            <para>
+                A szükséges instrukciók a következő oldalon találhatóak:
+                <link xlink:href="https://github.com/fupn26/BHAX/blob/master/attention_raising/Source/OOCWC/NeededInstallations.md">https://github.com/fupn26/BHAX/blob/master/attention_raising/Source/OOCWC/NeededInstallations.md</link>
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
