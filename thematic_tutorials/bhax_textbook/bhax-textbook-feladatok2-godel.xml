@@ -80,7 +80,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/CustomAlloc">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/CustomAlloc</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -225,6 +225,49 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Az STL szó a Standard Template Library rövidítése, melynek fontos részét képezik a tárolók. A hagyományos C tömbök továbbfejlesztésének igénye 
+            hívta elő új típusú tárolók létrehozásának igéynét. Alapvető célok voltak, hogy olyan adatszerkezeteket használjanak, melyek hatékonyan, 
+            biztonságosan, kivételbiztosan és típushelyesen tárolják az adatokat. STL tároló például a vector, a feladatban szereplő map, de a list, 
+            a set és a stack is ide sorolható. 
+        </para>
+        <para>
+            A <function>map</function> tárolók asszociatív tömbök, melyek kulcs-adat párokból áll, és kulcsértékek alapján növekvően van rendezve. 
+            Lássuk, hogy hogyan használjuk ezt a <filename>fenykard.cpp</filename> forrásban.
+            <programlisting language="c++"><![CDATA[
+std::vector<std::pair<std::string, int>> sort_map ( std::map <std::string, int> &rank )
+        {
+                std::vector<std::pair<std::string, int>> ordered;
+        
+                for ( auto & i : rank ) {
+                        if ( i.second ) {
+                                std::pair<std::string, int> p {i.first, i.second};
+                                ordered.push_back ( p );
+                        }
+                }
+        
+                std::sort (
+                        std::begin ( ordered ), std::end ( ordered ),
+                [ = ] ( auto && p1, auto && p2 ) {
+                        return p1.second > p2.second;
+                }
+                );
+        
+                return ordered;
+        }]]>
+            </programlisting>
+            Ahogy láthatjuk a <function>sort_map</function> függvény visszatérési értékének típusa egy vektor lesz. Az érdekesség, hogy a párokból áll.
+            Ehhez az <classname>std::pair</classname> adatszerkezetet használjuk, mely lehetővé teszi heterogén adatok párban való tárolását. Vagyis 
+            jelen esetben sztringeket és egészek párját tudjuk tárolni. Az <classname>std::map</classname>, ahogy már megbeszéltük, egy rendezett 
+            asszociatív tömb. Kulcs és érték párokból áll, és minden kulcs csak egyszer fordulhat benne elő. Maga a függvény által végrehajtott 
+            utasítások már ismertek. Elsőnek bejátjuk a <varname>rank</varname> map-et, és az érték párokat beletesszük az <varname>ordered</varname>
+            vektorba. Említést érdemel az <classname>auto</classname> típus. Ez a C++11 óta létező funkció, melynek lényege, hogy a fordító automatikusan
+            találja meg a megfelelő típust az adott változóhoz. Végül a vektor rendezése az előző feladatban megismert lambda kifejezésssel történik. 
+            Vagyis értékek alapján rendezzük át a vektort. Hogy jobban belelássatok abba, hogy miért is van erre szükség, térjünk ki arra, hogy mire szolgál a 
+            <filename>fenykard</filename> program. Régen ez alapján adtak jegyeket a diákoknak. Ekkor már logikusnak tűnik, hogy elsőnek a <classname>map</classname>-ben
+            kell tárolni az egyes hallgatókat, hogy ne szerepelhessen többször ugyanaz a tanuló. Viszont az értékelés szempontjából nem kívánatos, hogy 
+            név alapján legyen rendezve a tömb. Ahhoz, hogy a teljesítményt lehessen osztályozni, át kell alakítani az adatszerkezetet érték szerint rendezetté. 
+        </para>
     </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
     <section>
@@ -237,10 +280,94 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/AlternativTabella">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/AlternativTabella</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Az Alternatív Tabella a magyar labarúgó bajnoság csapatainak alternatív rangsorát tartalmazza. Különlegessége abban rejlik, hogy 
+            nem csak azt vizsgálja, hogy nyert, döntetlent vagy vereséget ért el egy csapat, hanem azt is, hogy ki ellen éri el az eredményt. Tehát
+            célja, hogy hitelesebb képet kapjunk a csapatok valós teljesítményéről.
+        </para>
+        <para>
+            A feladat célja, hogy megismerkedjünk a csapatok közti összehasonlítás mechnizmusát. Az csapatok kezeléséhez létrehozunk egy 
+            <classname>Csapat</classname> osztályt, mely implementálja a <classname>Comparable</classname> interfészt. Lássuk az osztályt.
+            <programlisting language="java"><![CDATA[
+                class Csapat implements Comparable<Csapat> {
+
+                    protected String nev;
+                    protected double ertek;
+                  
+                    public Csapat(String nev, double ertek) {
+                      this.nev = nev;
+                      this.ertek = ertek;
+                    }
+                  
+                    public int compareTo(Csapat csapat) {
+                      if (this.ertek < csapat.ertek) {
+                        return -1;
+                      } else if (this.ertek > csapat.ertek) {
+                        return 1;
+                      } else {
+                        return 0;
+                      }
+                    }
+                  }]]>
+            </programlisting>
+            Tehát egy <classname>Csapat</classname> típusú objektum rendelkezik egy névvel és egy értékkel. Mivel implementáltuk a 
+            <classname>Comparable</classname> interfészt, ezért definiálnunk kell a <function>compareTo</function> függvényt. Ennek 
+            segítségével tudjuk meghatározni, hogyan legyen összehasonlítva a két objektum.
+        </para>
+        <para>
+            Most hogy láttuk, hogyan mi a feladata a <classname>Comparable</classname> interfésznek. Nézzük meg, hogy az AlternatívTabella
+            programunk többi forrását.
+        </para>
+        <para>
+            Az eredeti példában a két programunk volt. Az egyik <classname>Wiki2Matrix</classname>. Ez a csapatok egymás elleni eredményeit tartalmazó
+            kereszttáblázatból kiszámolja a linkmátrixot, amely alapjául szolgál a <classname>AlternativTabella</classname> programunkhoz. Viszont ekkor 
+            a kiírt linkmátrixot be kellett másolni az <classname>AlternativTabella</classname> forrásába, mely nem túl felhasználóbarát. Ezért a 
+            linkmátrixot a <classname>Wiki2Matrix</classname> osztály tagváltozójában tároljuk el. Ehhez a <function>nyom3</function> függvény 
+            átalakításával érjük el.
+            <programlisting language="java"><![CDATA[
+                void nyom3(int[][] k, int[] oszlopOsszeg) {
+                    for (int i = 0; i < k.length; ++i) {
+                        matrix.add(new ArrayList<>());
+                        System.out.println();
+                        System.out.print("{");
+                        for (int j = 0; j < k[i].length; ++j) {
+            
+                            if (oszlopOsszeg[j] != 0.0) {
+                                System.out.print(k[i][j] * (1.0 / oszlopOsszeg[j]) + ", ");
+            //                    matrix[i][j] = k[i][j] * (1.0 / oszlopOsszeg[j]);
+                                matrix.get(i).add(k[i][j] * (1.0 / oszlopOsszeg[j]));
+                                
+                            } else {
+                                System.out.print(k[i][j] + ", ");
+                                matrix.get(i).add(k[i][j] * 1.0);
+                            }
+            
+                        }
+                        System.out.print("},");
+                    }
+                }]]>            
+            </programlisting>
+            Magát a linkmátrixot egy kétdimenziós <classname>ArrayList</classname>-ben tároljuk, mely a <classname>Vector</classname>
+            osztályt helyettesíti, mivel azt már az általam használt Java 11-ben a használata már nem javasolt, mivel ki fog kerülni a JDK-ból.
+            A másik módosítás a <function>AlternativTabella</function> osztályban történt.
+            <programlisting language="java"><![CDATA[
+                public static void main(String[] args) {
+        
+                    Wiki2Matrix Matrix = new Wiki2Matrix();
+                    
+                    ArrayList<ArrayList<Double>> L = Matrix.getMatrix();
+                        
+                        ...
+
+                    }]]>
+            </programlisting>
+            Tehát példányosítjuk a <classname>Wiki2Matrix</classname> osztályt. Végül pedig az osztály <function>getMatrix()</function> tagfüggvényével
+            érjük el.
         </para>
     </section>        
 
@@ -253,10 +380,116 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/PrologFamily">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/PrologFamily</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A Prolog egy olyan programozási nyelv, melynek segítségével matematikai logikai formulákat tudunk vizsgálni. A matematikai logikáról ez a 
+            feladat nem fog részletesebb tájékoztatást nyújtani, a fentebb lévő pdf-ben találhattok példákat a mélyebb megértéshez. Annyit fontos
+            megemlíteni, hogy a program az elsőrendű logikán alapszik. Tehát itt az atomi formulák mellett megjelennek a függvényszimbólumok és a 
+            kvantorok, mint a logikai formulák építőelemei.
+        </para>
+        <caution>
+            <title>SWI-Prolog használata</title>
+            <para>
+                <programlisting>
+                    sudo apt install swi-prolog-java               
+                </programlisting>
+                Ha telepítettük, akkor a NetBeans-ben a projektet megnyitva a <function>Libraries</function>-ra jobb egér kattintással tudjuk
+                hozzáadni a könyvtárat. Elsőnek létre kell hozni egy új osztályt, majd a <function>/usr/lib/swi-prolog/lib/jpl.jar</function> fájlt kell megadni a ClassPath mezőben.
+            </para>
+        </caution>
+        <para>
+            A programunk Java programban íródott, mely az SWI-Prolog könyvtárat használja. Alapvetően a 
+            program úgy működik, hogy a elsőnek betöltjük a Prolog fájlt, majd arról készítünk lekérdezéseket.
+        </para>
+        <para>
+            A <filename>family.pl</filename> fájl tartalmazza a pdf-ben megadott Prolog programot.
+            <programlisting language="perl">
+                férfi(nándi).
+                férfi(matyi).
+                férfi(norbi).
+                férfi(dodi).
+                férfi(joska).
+                nő(gréta).
+                nő(erika).
+                nő(kitti).
+                nő(marica).
+                gyereke(nándi, norbi).
+                gyereke(matyi, norbi).
+                gyereke(gréta, norbi).
+                gyereke(nándi, erika).
+                gyereke(matyi, erika).
+                gyereke(gréta, erika).
+                gyereke(norbi, dodi).
+                gyereke(norbi, kitti).
+                gyereke(erika, joska).
+                gyereke(erika, marica).
+
+                        . . .
+
+            </programlisting>
+            Ezt a programunkba a következő módon fogjuk beolvasni.
+            <programlisting language="java">
+                String s = "consult('family.pl')";
+                Query q = new Query(s);
+                System.out.println(q.hasSolution());        
+            </programlisting>
+            Itt jól látható, hogy hogyan fog működni maga az alkalmazás. Elsőnek megadunk egy stringet, mely kiértékelni kívánt formulát tartalmazza.
+            Majd létrehozunk egy <classname>Query</classname> osztályú objektumot hozunk létre. Ez az osztály teszi lehetővé, hogy kiértékeljük a 
+            formula igazságértékét, vagy az egyes változók lehetséges értékeit. Ha csak az igazságértékre vagyunk kíváncsiak, akkor a <function>hasSolution()</function>
+            függvényt kell használni. Ha itt hamis eredményt ad, akkor a fájlt nem találja.
+            <programlisting language="java">
+                String t2 = "apa(gréta)";
+                System.out.println(t2 + " is " + (Query.hasSolution(t2) ? "provable" : "not provable"));        
+            </programlisting>
+            Az első példa tehát azt mutatja be, hogy hogyan lehet megtudni a formula igazságértékét. Jelen esetben az vizsgáljuk, hogy 
+            Gréta apának tekinthető-e. Nyilván nem, vagyis a terminálban a "not provable" kifejezés jelenik meg.
+            <programlisting language="java"><![CDATA[
+                String t3 = "nagyapja(X, matyi)";
+                System.out.println("each solution of " + t3);
+                Query q3 = new Query(t3);
+                while (q3.hasMoreSolutions()) {
+                    Map<String, Term> s3 = q3.nextSolution();
+                    System.out.println("X = " + s3.get("X"));
+                }]]>                
+            </programlisting>
+            A változók értékének lehetséges értékeit kétféleképpen lehet felsorolni. A fenti példában azokat az X-eket keressük, akik Matyi nagyapjai lehetnek.
+            Ezt úgy tudjuk megfogalmazni matematikai logikával, hogy azokat az X-eket keressük, akik Matyi apjának vagy anyjának az apja. Tehát 
+            végig iterálunk a lehetséges X-eken. Ehhez a <function>hasMoreSolution()</function> használjuk, mely azt adja vissza, hogy van-e még több megoldás.
+            A <function>nextSolution()</function> eredményét eltároljuk kulcs-érték formátumban. Ezt a <classname>Map</classname> interfész segítségével oldjuk
+            meg. Ebből az adatszerkezetből a <function>get</function> tagfüggvénnyel tudjuk kinyerni az "X"-hez tartozó értéket.
+            Lássuk, hogyan lehet másképpen kilistázni a változóértékeket.
+            <programlisting language="java"><![CDATA[        
+                String t6 = "testvér(matyi, X)";
+                Map<String, Term>[] ss6 = Query.allSolutions(t6);
+                System.out.println("all solutions of " + t6);
+                for (int i = 0; i < ss6.length; i++) {
+                    System.out.println("X = " + ss6[i].get("X"));
+                }]]>        
+            </programlisting>
+            Most azt fogjuk használni, hogy a kulcs-érték párokból tömböt készítünk, és egy <function>for</function> ciklus segítségével
+            végig megyünk rajta és kiírjuk. Ebben a részben azt viszgáljuk, hogy kik Matyi testvérei. Matyi testvérei azok akiknek ugyanaz 
+            az apja és anyja. 
+            <programlisting language="java">
+                String t4 = "nagyapa(X)";
+                System.out.println("first solution of " + t4 + ": X = " + Query.oneSolution(t4).get("X"));        
+            </programlisting>
+            Egy másik példában azokat az X-eket keressük, akik nagyapák, vagyis olyan személyeket, akik 
+            gyermeke szülő. 
+            <programlisting language="java"><![CDATA[
+                String t7 = "gyereke(X, norbi)";
+                System.out.println("each solution of " + t7);
+                Query q7 = new Query(t7);
+                while (q7.hasMoreSolutions()) {
+                    Map<String, Term> s7 = q7.nextSolution();
+                    System.out.println("X = " + s7.get("X"));
+                }]]>               
+            </programlisting>
+            Utolsó példaként vizsgáljuk meg, hogy kik Norbi gyermekei. Ahhoz, hogy Norbi gyermekeit megtaláljuk, ahhoz jelenleg nem kell semmit
+            tennünk, hiszen, ezt a <filename>family.pl</filename> fájlban explicite leírtuk. 
         </para>
     </section>        
 
