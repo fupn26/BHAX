@@ -21,6 +21,87 @@
         <para>
             Megoldás forrása:                
         </para>
+        <caution>
+            <title>JavaFx beizzítása NetBeans-ben</title>
+            <para>
+                Ez a leírás azért szükséges, mert a JavaFx már nem része a Java JDK-nak. Én a programomhoz a Java JDK 11-et és a JavaFX 11-et használtam.
+            </para>
+            <para>
+                <orderedlist>
+                    <listitem>
+                        <para>Elsőnek töltsd le a JavaFX SDK-t a következő oldalról:<link xlink:href="https://gluonhq.com/products/javafx/">https://gluonhq.com/products/javafx/</link></para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Következő lépés, hogy a JavaFX <filename>*.jar</filename> fájljait láthatóvá tesszük a NetBeans számára.
+                            Ehhez a <emphasis role="strong"><![CDATA[Tools -> Libraries]]></emphasis> menüpontba kell navigálni. Ahol
+                            létre kell hozni egy új könyvtárat, és hozzáadni a <filename>*.jar</filename> fájlokat.
+                            <figure>
+                                    <title>JavaFX könyvtár létrehozása</title>
+                                        <mediaobject>
+                                            <imageobject>
+                                                <imagedata fileref="../../attention_raising/Source/FutureJavaFX/JavaFX_help/createlibrary.png" format="PNG"/>
+                                            </imageobject>
+                                        </mediaobject>
+                            </figure>                    
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Létrehozunk egy új ANT projektet (simát, nem JavaFX-eset), majd a projekten belül a <emphasis role="strong"><![CDATA[Libraries]]></emphasis>-ra kattintva jobb egérgombbal a 
+                            <emphasis role="strong"><![CDATA[Add Library]]></emphasis> lépéseket
+                            követve hozzáadjuk a korábban létrehozott könyvtárat.
+                            <figure>
+                                    <title>JavaFX könyvtár hozzáadása a projekthez</title>
+                                        <mediaobject>
+                                            <imageobject>
+                                                <imagedata fileref="../../attention_raising/Source/FutureJavaFX/JavaFX_help/addlibrary.png" format="PNG"/>
+                                            </imageobject>
+                                        </mediaobject>
+                            </figure>                    
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Most, ha futtatod a programod, hibát fogsz kapni.
+                            <programlisting>
+Error: JavaFX runtime components are missing, and are required to run this application
+                            </programlisting>
+                            Ennek orvoslása érdekében el kell navigálni a projekt <emphasis role="strong"><![CDATA[Properties -> Run]]></emphasis> menüpontjába, ahol a 
+                            következő sort kell beilleszteni a <emphasis role="strong"><![CDATA[VM options]]></emphasis> mezőbe:
+                            <programlisting>
+--module-path /path/to/javafx-sdk-12/lib --add-modules javafx.controls,javafx.fxml
+                            </programlisting>
+                            <figure>
+                                    <title>VM opciók hozzáadása</title>
+                                        <mediaobject>
+                                            <imageobject>
+                                                <imagedata fileref="../../attention_raising/Source/FutureJavaFX/JavaFX_help/VMoptions.png" format="PNG"/>
+                                            </imageobject>
+                                        </mediaobject>
+                            </figure>                    
+                            Erre azért van szükség, mert a fő osztályunknak az őse a javafx.application.Application osztály. Emiatt kell megadnunk a <function>module-path</function>-t is.
+                            Ezután már sikeresen el fog indulni a programod.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            De ha nem, akkor a következőt kell tenned. Menj a <emphasis role="strong"><![CDATA[Properties -> Build -> Compiling]]></emphasis> menüpontba, majd 
+                            pipáld ki a <function>Compile on Save</function> opciót.
+                            <figure>
+                                    <title>Rejtett hibalehetőség</title>
+                                        <mediaobject>
+                                            <imageobject>
+                                                <imagedata fileref="../../attention_raising/Source/FutureJavaFX/JavaFX_help/errormaker.png" format="PNG"/>
+                                            </imageobject>
+                                        </mediaobject>
+                            </figure>                    
+                            Ezután már tényleg futni fog a program.
+                        </para>
+                    </listitem>
+                </orderedlist>
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
