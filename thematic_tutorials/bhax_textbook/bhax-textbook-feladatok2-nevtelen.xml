@@ -21,12 +21,11 @@
         <para>
             Megoldás forrása:                
         </para>
-        <caution>
-            <title>JavaFx beizzítása NetBeans-ben</title>
-            <para>
+        <para>
+            <emphasis role="strong">JavaFx beizzítása NetBeans-ben</emphasis>
+        </para>
+        <para>
                 Ez a leírás azért szükséges, mert a JavaFx már nem része a Java JDK-nak. Én a programomhoz a Java JDK 11-et és a JavaFX 11-et használtam.
-            </para>
-            <para>
                 <orderedlist>
                     <listitem>
                         <para>Elsőnek töltsd le a JavaFX SDK-t a következő oldalról:<link xlink:href="https://gluonhq.com/products/javafx/">https://gluonhq.com/products/javafx/</link></para>
@@ -55,7 +54,7 @@
                                     <title>JavaFX könyvtár hozzáadása a projekthez</title>
                                         <mediaobject>
                                             <imageobject>
-                                                <imagedata fileref="../../attention_raising/Source/FutureJavaFX/JavaFX_help/addlibrary.png" format="PNG"/>
+                                                <imagedata fileref="../../attention_raising/Source/FutureJavaFX/JavaFX_help/addlibrary.png" format="PNG" scale="90"/>
                                             </imageobject>
                                         </mediaobject>
                             </figure>                    
@@ -100,10 +99,227 @@ Error: JavaFX runtime components are missing, and are required to run this appli
                         </para>
                     </listitem>
                 </orderedlist>
-            </para>
-        </caution>
+        </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Mivel a feldat az volt, hogy módosítsuk a megadott programot, ezért részletsen nem tárgyaljuk a program működését. A lényeg, hogy vannak tevékenységeink, melyekhez 
+            tulajdonságokat tudunk társítani. A tulajdonságokhoz pedig értékeket adunk meg.
+        </para>
+        <para>
+            Lássuk, hogy milyen módosításokat végeztünk. Az első, manapság egyre gyakoribb lehetőség a sötét mód lehetővététele volt. JavaFX-ben ezt CSS stíluslapokkal tudjuk megoldani.
+            A szükséges stílus információkat a <filename>style.css</filename> fájl tartalmazza.
+            <programlisting>
+                    .root { 
+                        -fx-accent: #eba308;
+                        -fx-focus-color: -fx-accent;
+                        -fx-base: #111;
+                        -fx-control-inner-background: derive(-fx-base,50%);
+                        -fx-control-inner-background-alt: derive(-fx-control-inner-background, 30%);
+                    }
+                    
+                    .label{
+                        -fx-text-fill: lightgray;
+                    }
+                    
+                    .separator *.line { 
+                        -fx-background-color: #3C3C3C;
+                        -fx-border-style: solid;
+                        -fx-border-width: 1px;
+                    }
+                    
+                    .scroll-bar{
+                        -fx-background-color: derive(-fx-base,45%)
+                    }
+                    
+                    .button:default {
+                        -fx-base: -fx-accent ;
+                    } 
+                    
+                    .table-view{
+                        -fx-background-color: derive(-fx-base, 10%);
+                        -fx-selection-bar-non-focused: derive(-fx-base, 85%);
+                    }
+                        
+                        . . .
+
+            </programlisting>
+            Ahhoz, hogy ezt a stíluslapot használja a programunk, a következő változtatást kellett eszközölni az <classname>ActivityEditor</classname> osztályban:
+            <programlisting language="java">
+scene.getStylesheets().add("style.css");
+            </programlisting>
+            3 fő widgetből áll a 
+            programunk. Az egyik a <classname>FileTree</classname>, mely a mappaszerkezetet tartalmazza, ezen keresztül érhetjük el a 
+            tevékenységeket. A másik a <classname>StringTree</classname>, mely a tulajdonságokat tartalmazza, amik a tevékenységekhez adhatóak hozzá.
+            Az utolsó widget pedig egy szövegdoboz, mely megmutatja a tevékenységekhez tartozó fájl tartalmát, és kezdetben szerkeszthető is.
+            Az ablak egyes elemeit csoportosítottuk. Az eredeti verzióban külön váltak a widgetek és azokhoz tartozó nevek. Ezt úgy vontuk össze, 
+            hogy létrehoztunk egy <classname>VBox</classname> réteget. Ez a réteg azért megfelelő, mert az egyes elemeket egymás alatt jeleníti meg. Ehhez hozzáadtuk a widgetet és a nevét tartalmazó cimkét.
+            Összevonás megvalósítása a szövegdobozon:
+            <programlisting language="java"><![CDATA[
+javafx.scene.control.Label actPropsLabel = new javafx.scene.control.Label("A tevékenységekhez hozzárendelt tulajdonságok");
+javafx.scene.control.TextArea propsEdit = new javafx.scene.control.TextArea();
+javafx.scene.layout.VBox propsEditLayout = new javafx.scene.layout.VBox();
+propsEditLayout.getChildren().add(actPropsLabel);
+propsEditLayout.getChildren().add(propsEdit);]]>            
+            </programlisting>
+            A másik két widgetet az eredetitől eltérően nem egymás alatt, hanem egymás mellett szeretnénk megjeleníteni, ezért egy újabb réteget kellett létrehozni.
+            Mivel, most vízszintesen szeretnénk elhelyezni az elemeket, ezért <classname>HBox</classname> osztályt használjuk.
+            <programlisting language="java"><![CDATA[
+javafx.scene.layout.HBox treesLayout = new javafx.scene.layout.HBox();
+treesLayout.prefHeightProperty().bind(box.heightProperty());
+treesLayout.prefWidthProperty().bind(box.widthProperty());
+
+javafx.scene.control.TreeView<String> stringTree = new StringTree(properties, true, propsEdit);
+javafx.scene.layout.VBox stringTreeLayout = new javafx.scene.layout.VBox();
+stringTree.prefHeightProperty().bind(treesLayout.heightProperty());
+stringTreeLayout.prefHeightProperty().bind(treesLayout.heightProperty());
+stringTreeLayout.prefWidthProperty().bind(treesLayout.widthProperty());
+stringTree.setEditable(false);
+stringTreeLayout.getChildren().add(new javafx.scene.control.Label("Tulajdonságok fája"));
+stringTreeLayout.getChildren().add(stringTree);
+
+javafx.scene.control.TreeView<java.io.File> fileTree = new FileTree(city, true, propsEdit, propsEditLayout, actPropsLabel);
+javafx.scene.layout.VBox fileTreeLayout = new javafx.scene.layout.VBox();
+fileTree.prefHeightProperty().bind(treesLayout.heightProperty());
+fileTreeLayout.prefHeightProperty().bind(treesLayout.heightProperty());
+fileTreeLayout.prefWidthProperty().bind(treesLayout.widthProperty());
+fileTreeLayout.getChildren().add(new javafx.scene.control.Label("Tevékenységek fája és a tevékenységekhez hozzárendelt tulajdonságok"));
+fileTreeLayout.getChildren().add(fileTree);
+fileTree.setEditable(true);
+
+treesLayout.getChildren().add(fileTreeLayout);
+treesLayout.getChildren().add(stringTreeLayout);]]>            
+            </programlisting>
+            Ahogy látható képesek vagyunk rétegekhez új rétegeket hozzáadni. Végezetül a <varname>treesLayout</varname>-ot és a <varname>propsEditLayout</varname> fogjuk 
+            hozzáadni a fő réteghez, a <varname>box</varname>-hoz, mely szintén egy <classname>VBox</classname>. Ahhoz, hogy biztosítsuk az egyes rétegek megefelelő
+            átméretezését az ablak átméretezése során a <function>bind</function> függvényt használhatjuk. Ezzel azt tudjuk elérni, hogy a paraméterként megadott objektummal
+            együtt változzon az egyes rétegek mérete.
+            Példa a forrásból:
+            <programlisting language="java">
+fileTreeLayout.prefHeightProperty().bind(treesLayout.heightProperty());
+fileTreeLayout.prefWidthProperty().bind(treesLayout.widthProperty());
+            </programlisting>
+        </para>
+        <para>
+            Az eredeti verzióban az egyes tulajdonságokhoz tartozó értéket nekünk kellett külön begépelni a <varname>propsEdit</varname> widgeten keresztül, és nem 
+            volt garantált, hogy a felhasználó biztosan megad valamilyen számértéket. Ezt úgy oldottuk meg, hogy amikor hozzá akarunk adni egy tulajdonságot egy tevékenységhez, 
+            akkor egy <classname>TextInputDialog</classname> ablak jelenik meg. Ezek a módosítások a <classname>StringTree</classname> osztályban találhatóak.
+            <programlisting language="java"><![CDATA[
+setOnMouseClicked((javafx.scene.input.MouseEvent mouseEvent) -> {
+    {
+        if (mouseEvent.getClickCount() == 2) {
+            javafx.scene.control.TreeItem<String> item = getSelectionModel().getSelectedItem();
+            if (item != null) {
+                javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog("Add meg az értéket!");
+                dialog.setTitle("Érték megadása");
+                dialog.setHeaderText(item.getValue());
+                dialog.setContentText("Érték (0-100)");
+
+                java.util.Optional<String> result = dialog.showAndWait();
+
+                result.ifPresent(name -> {
+                    propsEdit.appendText(item.getValue() + " " + name);
+                    propsEdit.appendText(System.getProperty("line.separator"));
+
+                });
+            }
+        }
+    }
+});]]>            
+            </programlisting>
+            Ha nem adod meg az ablak címét és feljlécét, akkor egy alapértelmezett verziót generál a program. Viszont jelen állapotában bármilyen bemenetet elfogad, ami nem 
+            kívánatos. Ezt úgy érjük el, hogy egészen addig nem lehet az OK gombra nyomni, ameddig a bemenet nem megfelelő. A bemenete folyamataos ellenőrzését a következő
+            kódrészlet muataja be:
+            <programlisting language="java"><![CDATA[
+javafx.scene.Node okButton = dialog.getDialogPane().lookupButton(javafx.scene.control.ButtonType.OK);
+okButton.setDisable(true);
+javafx.scene.control.TextField inputField = dialog.getEditor();
+inputField.textProperty().addListener((observable, oldValue, newValue) -> {
+    okButton.setDisable(isInvalid(newValue));
+});]]>
+            </programlisting>
+            Az OK gombot alapértelmezetten kikapcsoljuk, hogy ne fogadja el a bemenetet az első alkalomra se. Utána pedig akkor, futtajuk a vizsgálatot, ha változott a szöveg a 
+            mezőben. Ennek ellenőrzését a <function>addListener</function> függvény segítségével oldjuk meg. Maga az ellenőrző függvény pedig a következő:
+            <programlisting language="java"><![CDATA[
+private boolean isInvalid(String text) {
+    try {
+        int d = Integer.parseInt(text);
+    } catch (NumberFormatException | NullPointerException nfe) {
+        return true;
+    }
+    if(Integer.parseInt(text) < 0 || Integer.parseInt(text) > 100) return true;
+    return false;
+}]]>               
+            </programlisting>
+            Elsőnek azt vizsgáljuk, hogy egyáltalán számmá alakítható-e a bemenet. Ha nem, akkor igaz értékkel térünk vissza. Viszont az sem jó nekünk, ha a felhasználó 
+            negatív, vagy 100-nál nagyobb értéket ad meg. Ekkot is igaz értékkel térünk vissza. Ha minegyik teszten átmegy a bemenet, akkor pedig hamissal térünk vissza.
+            A logika fordítottnak tűnhet, de a <function>isInValid</function> függvény azt vizsgálja, hogy nem megfelelő-e az megadott érték. 
+        </para>
+        <para>
+            A <varname>propsEdit</varname> widget csak akkor jelenít meg tartalmat, amikor egy fájlra kattintunk rá a <varname>fileTree</varname> widgetben. Tehát 
+            fölösleges folyamatosan megjeleníteni. Ezért csak akkor fog megjelenni, ha tényleg szükség van rá. A módosítások a következőek:
+            <programlisting language="java"><![CDATA[
+//ActivityEditor.java
+propsEditLayout.setVisible(false);
+propsEditLayout.managedProperty().bind(propsEditLayout.visibleProperty());
+propsEdit.setEditable(false);
+
+//FileTree.java
+setOnMouseClicked((javafx.scene.input.MouseEvent evt) -> {
+
+    if (evt.getClickCount() == 1) {
+
+        javafx.scene.control.TreeItem<java.io.File> item = getSelectionModel().getSelectedItem();
+
+        if (item != null) {
+
+            java.io.File f = item.getValue();
+
+            try {
+                java.util.Scanner scanner = new java.util.Scanner(f);
+                StringBuilder fileContents = new StringBuilder();
+                while (scanner.hasNextLine()) {
+                    fileContents.append(scanner.nextLine());
+                    fileContents.append(System.getProperty("line.separator"));
+
+                }
+                scanner.close();
+                
+                System.out.println("File");
+                
+                propsEditLayout.setVisible(true);
+                
+                save(propsEdit, actPropsLabel);
+                
+                actPropsLabel.setText(f.getPath());
+                propsEdit.setVisible(true);
+                propsEdit.setText(fileContents.toString());
+
+            } catch (java.io.FileNotFoundException fnfE) {
+                
+                propsEditLayout.setVisible(false);
+                save(propsEdit, actPropsLabel);
+
+                propsEdit.setText("");
+                actPropsLabel.setText("");
+
+            }]]>
+            </programlisting>
+            Azt már korábban megoldottuk, hogy ne lehessen bármilyen értéket adni az egyes tulajdonságokhoz. Viszont a <varname>propsEdit</varname>-ben teljesen át tudjuk alakítani
+            a fájlok tartalmát. Akár új, a programban nem létező tulajdonságokat tudunk beleírni.
+            Mivel ezt a területet nem szeretnénk, hogy szerkeszthető legyen, ezért kikapcsoltuk a szerkesztési lehetőséget.
+            <programlisting language="java">
+propsEdit.setEditable(false);
+            </programlisting>
+            <figure>
+                    <title>Végeredmény</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/FutureJavaFX/program.png" format="PNG" scale="160"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>                    
         </para>
     </section>        
 

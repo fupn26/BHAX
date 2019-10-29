@@ -21,12 +21,12 @@ class StringTree extends javafx.scene.control.TreeView<String> {
     javafx.scene.control.TextArea propsEdit;
 
     private boolean isInvalid(String text) {
-        System.out.println("Called");
         try {
             int d = Integer.parseInt(text);
         } catch (NumberFormatException | NullPointerException nfe) {
             return true;
         }
+        if(Integer.parseInt(text) < 0 || Integer.parseInt(text) > 100) return true;
         return false;
     }
 
