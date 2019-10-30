@@ -261,9 +261,13 @@ private boolean isInvalid(String text) {
             fölösleges folyamatosan megjeleníteni. Ezért csak akkor fog megjelenni, ha tényleg szükség van rá. A módosítások a következőek:
             <programlisting language="java"><![CDATA[
 //ActivityEditor.java
-propsEditLayout.setVisible(false);
-propsEditLayout.managedProperty().bind(propsEditLayout.visibleProperty());
-propsEdit.setEditable(false);
+public void start(javafx.stage.Stage stage) {
+    ...
+    propsEditLayout.setVisible(false);
+    propsEditLayout.managedProperty().bind(propsEditLayout.visibleProperty());
+    propsEdit.setEditable(false);
+    ...
+}
 
 //FileTree.java
 setOnMouseClicked((javafx.scene.input.MouseEvent evt) -> {
@@ -309,8 +313,41 @@ setOnMouseClicked((javafx.scene.input.MouseEvent evt) -> {
             Azt már korábban megoldottuk, hogy ne lehessen bármilyen értéket adni az egyes tulajdonságokhoz. Viszont a <varname>propsEdit</varname>-ben teljesen át tudjuk alakítani
             a fájlok tartalmát. Akár új, a programban nem létező tulajdonságokat tudunk beleírni.
             Mivel ezt a területet nem szeretnénk, hogy szerkeszthető legyen, ezért kikapcsoltuk a szerkesztési lehetőséget.
-            <programlisting language="java">
-propsEdit.setEditable(false);
+            <programlisting language="java"><![CDATA[
+//ActivityEditor.java
+public void start(javafx.stage.Stage stage) {
+    ...
+    propsEdit.setEditable(false);
+    ...
+}]]>
+            </programlisting>
+            Az utolsó simítás pedig az, hogy csak akkor tudjunk tulajdonságot hozzáadni a tevékenységhez, ha már kiválasztottuk a fájl, amit szerkeszteni szeretnénk. Emiatt a 
+            <varname>stringTreeLayout</varname> réteget kikapcsoljuk, és csak a <varname>propsEdit</varname> megjelenésével együtt kapcsoljuk vissza.
+            <programlisting language="java"><![CDATA[
+//ActivityEditor.java
+public void start(javafx.stage.Stage stage) {
+    ...
+    stringTreeLayout.setDisable(true);
+    ...
+}
+
+//FileTree.java
+setOnMouseClicked((javafx.scene.input.MouseEvent evt) -> {
+                ...
+                
+                propsEditLayout.setVisible(true);
+                stringTreeLayout.setDisable(false);
+                
+                ...
+
+            } catch (java.io.FileNotFoundException fnfE) {
+                
+                stringTreeLayout.setDisable(true);
+                propsEditLayout.setVisible(false);
+                
+                ...
+            }
+        }]]>
             </programlisting>
             <figure>
                     <title>Végeredmény</title>

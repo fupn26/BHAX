@@ -85,10 +85,11 @@ public class ActivityEditor extends javafx.application.Application {
         stringTreeLayout.prefHeightProperty().bind(treesLayout.heightProperty());
         stringTreeLayout.prefWidthProperty().bind(treesLayout.widthProperty());
         stringTree.setEditable(false);
+        stringTreeLayout.setDisable(true);
         stringTreeLayout.getChildren().add(new javafx.scene.control.Label("Tulajdonságok fája"));
         stringTreeLayout.getChildren().add(stringTree);
 
-        javafx.scene.control.TreeView<java.io.File> fileTree = new FileTree(city, true, propsEdit, propsEditLayout, actPropsLabel);
+        javafx.scene.control.TreeView<java.io.File> fileTree = new FileTree(city, true, propsEdit, propsEditLayout, stringTreeLayout, actPropsLabel);
         javafx.scene.layout.VBox fileTreeLayout = new javafx.scene.layout.VBox();
         fileTree.prefHeightProperty().bind(treesLayout.heightProperty());
         fileTreeLayout.prefHeightProperty().bind(treesLayout.heightProperty());

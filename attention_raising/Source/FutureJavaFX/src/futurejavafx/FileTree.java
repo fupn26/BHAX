@@ -94,7 +94,7 @@ class FileTree extends javafx.scene.control.TreeView<java.io.File> {
 
     }
 
-    public FileTree(String cityName, boolean expanded, javafx.scene.control.TextArea propsEdit, javafx.scene.layout.VBox propsEditLayout, javafx.scene.control.Label actPropsLabel) {
+    public FileTree(String cityName, boolean expanded, javafx.scene.control.TextArea propsEdit, javafx.scene.layout.VBox propsEditLayout, javafx.scene.layout.VBox stringTreeLayout, javafx.scene.control.Label actPropsLabel) {
         super();
         javafx.scene.control.TreeItem<java.io.File> root = new FileTreeItem(new java.io.File(cityName), new javafx.scene.image.ImageView(actIcon));
         root.setExpanded(expanded);
@@ -125,6 +125,7 @@ class FileTree extends javafx.scene.control.TreeView<java.io.File> {
                         System.out.println("File");
                         
                         propsEditLayout.setVisible(true);
+                        stringTreeLayout.setDisable(false);
                         
                         save(propsEdit, actPropsLabel);
                         
@@ -134,6 +135,7 @@ class FileTree extends javafx.scene.control.TreeView<java.io.File> {
 
                     } catch (java.io.FileNotFoundException fnfE) {
                         
+                        stringTreeLayout.setDisable(true);
                         propsEditLayout.setVisible(false);
                         save(propsEdit, actPropsLabel);
 
