@@ -649,10 +649,119 @@ connect ( brainBThread, SIGNAL ( endAndStats ( int ) ),
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/GoogleMapsLocationTracker">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/GoogleMapsLocationTracker</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ebben a feladatban a GPS trackert készítjük el, melyhez szükségünk lesz az Android Studio-ra. Ahhoz, hogy használhassuk a Google Maps API-t, ahhoz regisztálnunk kell
+            a következő oldalon <link xlink:href="https://cloud.google.com/maps-platform/?_ga=2.252747598.631078138.1572438536-1885212309.1570903858#get-started">https://cloud.google.com/maps-platform/?_ga=2.252747598.631078138.1572438536-1885212309.1570903858#get-started</link>.
+            Ha sikerült megszereznünk az API kulcsot, akkor létre kell hoznunk egy új projektet az Android Studio-ban. Az Acvtivity-k közül válasszuk a Google Maps Activity-t. HA megnyílik a 
+            projekt, egy látni fogjuk a <filename>google_maps_api.xml</filename> fájl tartalmát.
+            <programlisting><![CDATA[
+                <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">YOUR_KEY_HERE</string>]]>
+            </programlisting>
+            Ebbe a sorba kell beillesztenünk a Google-től kapott API kulcsot. Ezután pedig kezdhetjük az érdemi munkát. Alapértelmezetten a program arra képes, hoyg megnyisson egy 
+            tréképet, és azon megjelölje Sydney-t. A mi feladatunk az, hogy a saját helyünket adja meg a program induláskor, majd pedig kövessen minket.
+            <programlisting language="java">
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
+    ...
+}
+            </programlisting>
+            Első lépséként át kell alakítanunk az osztályunkat, hogy implementálja a <classname>LocationListener</classname> interfészt. Erre azért lesz szükség, mert
+            a pozíciónk változását ezen keresztül fogjuk tudni követni. Ahhoz, hogy biztosan működjön a saját pozició meghatározása, ellenőrizni kell, hogy a program hozzáfér-e a 
+            helyadatokhoz, és ha nem, akkor a felhasználó engedélyét kerjük. Ezt valósítja meg a <function>checkPermission()</function> függvény,
+            <programlisting language="java"><![CDATA[
+public void CheckPermission() {
+    if (ContextCompat.checkSelfPermission(getApplicationContext(),
+        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+        ActivityCompat.checkSelfPermission(getApplicationContext(), 
+        android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, 
+                                                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+    }
+}]]>            
+            </programlisting>
+            Majd definiáljuk a <classname>FragmentActivity</classname> egy virtuális függvényét, az <function>onResume</function>.
+            <programlisting language="java"><![CDATA[
+@Override
+public void onResume() {
+    super.onResume();
+    getLocation();
+}]]>            
+            </programlisting>
+            Ez a függvény a program megnyitásakor hívódik meg. Tehát ennek kell meghívnia a <function>getLocation()</function> metódust, mellyel
+            megkapjuk az aktuális pozicíónkat.
+            <programlisting language="java"><![CDATA[
+public void getLocation() {
+    try {
+        mlocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 50, 1f, this);
+//           mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 1f, this);
+    } catch (SecurityException e) {
+        e.printStackTrace();
+    }
+}]]>            
+            </programlisting>
+            A <classname>LocationManager</classname> osztály felel a helyadatok kezeléséért. Ezt úgy érjük el, hogy a <function>getSystemService</function> függvénnyel 
+            visszaadjuk a helyadatok kezeléséért felelős szolgáltatás kezelőjét. Majd a <function>requestLocationUpdates</function> függvénnyel pedig megadjuk, hogy 
+            melyik helykiszolgálót szeretnénk használni, milyen időközönként kérjünk frissítést, milyen távolságonként, és végül megadjuk a saját osztályunkat, melynek
+            <function>onLocationChanged</function> függvénye fog meghívódni, minden egyes frissítéskor. Helykiszolgáló, vagyis az, amin keresztül hozzáférünk a helyadatokhoz,
+            jelen esetben az Internet, de használhatnánk a GPS-t is. A jelen paraméterek szerint 50 ezredmásodpercenként kérünk frissítést, vagy 1 méterenként. Lássuk, hogy a 
+            frissítés során mi történik.
+            <programlisting language="java"><![CDATA[
+@Override
+public void onLocationChanged(@org.jetbrains.annotations.NotNull Location location) {
+    LatLng mylocation = new LatLng(location.getLatitude(), location.getLongitude());
+    if(firstCall){
+        marker = mMap.addMarker(new MarkerOptions().position(mylocation).title("You are in " + getLocationName(location)));
+        marker.showInfoWindow();
+        firstCall = false;
+    }else {
+        mMap.addPolyline(new PolylineOptions()
+                .add(marker.getPosition(), mylocation)
+                .width(5)
+                .color(Color.BLUE));
+        marker.remove();
+        marker = mMap.addMarker(new MarkerOptions().position(mylocation).title("You are in " + getLocationName(location)));
+        marker.showInfoWindow();
+    }
+    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 17f));
+
+}]]>
+            </programlisting>
+            Az <function>onLocationChanged</function> metódus a <classname>LocationListener</classname> interfész egy virtuális függvénye. Ez pereméteréül mindig az 
+            aktuális pozíciót kapja. A <classname>LatLng</classname> osztály segítségével eltároljuk a hosszúsági és szélességi adatokat a <varname>mylocation</varname>
+            változóban. Ha először hívódik meg a függvény, akkor csak egy jelet rakunk a térképen az aktuális helyünkre. Viszont ha nem, akkor húzunk egy vonalat a 
+            a korábban lerakott jel és az új pozíció között, majd töröljük a korábbi jelet, és rakunk egyet az új helyre. Ezzel lényegében azt érjük el, hogy a 
+            csík mutatja az általunk megtett utat, a jel pedig mutatja a pozíciónkat. A jel felett egy buborékban pedig az jelenik meg, hoyg melyik 
+            településen vagyunk éppen. Ehhez a <function>getLocationName</function> függvényre van szükségünk.
+            <programlisting language="java"><![CDATA[
+public String getLocationName(Location location){
+    Geocoder gcd = new Geocoder(this, Locale.getDefault());
+    try {
+        List<Address> addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+        if (addresses.size() > 0) {
+            return addresses.get(0).getLocality();
+        }else return "error";
+    }catch(Exception e) {
+        throw new RuntimeException(e);
+    }
+}]]>               
+            </programlisting>
+            A <classname>Geocoder</classname> osztály a geokódolást és a fordított geokódolást teszi lehetővé. Számunkra az utóbbi az érdekes, amikor a 
+            heyadatokból megadjuk a település nevét. Ehhez elsőnek létrehozzuk a <varname>gcd</varname> objetumot. Majd a <function>getFromLocation</function>
+            függvény segítségével kinyerjük az adott területhez tartozó címtalálatokat. Az utolsó paraméter azt határozza meg, hogy maximum hány találatot szeretnénk 
+            visszakapni. Az kapott <classname>Address</classname> típusú objetumokat egy listában tároljuk. Majd ellenőrizzük, hogy van-e elem a listában, ha van, akkor 
+            pedig visszaadjuk a címből a település nevét a <function>getLocality</function> függvény segítségével. 
+        </para>
+        <para>
+            A lényegi része a feladatnak ezzel kész, néhány függvényt még definiálni kell a <classname>LocationListener</classname> interfészből, de ezekről már
+            nem beszélünk részletesen, a linkelt forrásban látható.
+        </para>
+        <para>
+            Végezetül lássuk, hogyan működik a program.
         </para>
     </section>        
 

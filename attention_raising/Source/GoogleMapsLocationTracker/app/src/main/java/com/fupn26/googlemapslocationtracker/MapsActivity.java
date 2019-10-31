@@ -79,10 +79,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-//        LatLng mylocation = new LatLng(mlocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER).getLatitude(), mlocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER).getLatitude());
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     public void CheckPermission() {
@@ -132,18 +128,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 17f));
 
-//        // Getting reference to TextView tv_longitude
-//        tvLongitude = (TextView) findViewById(R.id.adjust_height);
-//        // Getting reference to TextView tv_latitude
-//        tvLatitude = (TextView) findViewById(R.id.adjust_width);
-//
-//        tvLongi = String.valueOf(location.getLongitude());
-//        tvLati = String.valueOf(location.getLatitude());
-//
-//        // Setting Current Longitude
-//        tvLongitude.setText("Longitude:" + tvLongi);
-//        // Setting Current Latitude
-//        tvLatitude.setText("Latitude:" + tvLati);
     }
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
