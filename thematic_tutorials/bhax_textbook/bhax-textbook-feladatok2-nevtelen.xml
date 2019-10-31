@@ -386,10 +386,149 @@ setOnMouseClicked((javafx.scene.input.MouseEvent evt) -> {
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/nbatfai/SamuCam">https://github.com/nbatfai/SamuCam</link>                
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <caution>
+            <title>OpenCV telepítése</title>
+            <para>
+                <programlisting>sudo apt install libopencv-dev</programlisting>
+            </para>
+        </caution>
+        <para>
+            Ebben a feladatban arról lesz szó, hogy az OpenCV segítségével hogyan tudjuk kezelni a webkameránkat, és annak adatait feldolgozni.
+            Ha csatlakoztatva van webkamera a gépedhez, akkor érdemes telepíteni a <function>Motion</function> alkalmazást, mely segítségével egy 
+            webkamera servert indíthatsz a géped 8081-es portján. Részletes leírásért lásd: <link xlink:href="https://www.maketecheasier.com/setup-motion-detection-webcam-ubuntu/">https://www.maketecheasier.com/setup-motion-detection-webcam-ubuntu/</link>
+            Ha viszont nincs webkamerád, akkor jó lesz a telefonod kamerája is, ehhez le kell töltened az <function>IP Webcam</function> alkalmazást.
+            Bármelyiket is választod, a forrsában a következő részt módosítanod kell a megfelelő IP címre:
+            <programlisting language="c++"><![CDATA[
+//main.cpp
+int main ( int argc, char** argv )
+{
+    ...
+
+    QCommandLineOption webcamipOption ( QStringList() << "ip" << "webcamip",
+                                        QCoreApplication::translate ( "main", "Specify IP address of your IP webcam app on Android phone (default is http://192.168.0.18:8080/video?x.mjpeg)." ),
+                                      QCoreApplication::translate ( "main", "webcamip" ), "http://192.168.0.100:8080/video?x.mjpeg" ); //ezt kell módosítani
+
+    ...
+}]]>
+            </programlisting>
+            Emellett még szükség lesz a <filename>lbpcascade_frontalface.xml</filename> fájlra, mely a <link xlink:href="https://github.com/Itseez/opencv/tree/master/data/lbpcascades">https://github.com/Itseez/opencv/tree/master/data/lbpcascades</link>
+            oldalon érhető el. Ezt a projekt mappájába kell helyezned, hogy megtalálj a program. 
+        </para>
+        <para>
+            Ahhoz, hogy hozzá tudjunk férni a kameránk áltak biztosított adatokhoz, a <classname>cv::VideoCapture</classname> osztály van segítségünkre. Ahhoz, hogy megnyissuk a 
+            webkamera servere által biztosított felvételt, a <function>SamuCam::openVideoStream()</function> függvényt használjuk.
+            <programlisting language="c++"><![CDATA[
+void SamuCam::openVideoStream()
+{
+    videoCapture.open ( videoStream );
+
+
+    videoCapture.set ( CV_CAP_PROP_FRAME_WIDTH, width );
+    videoCapture.set ( CV_CAP_PROP_FRAME_HEIGHT, height );
+    videoCapture.set ( CV_CAP_PROP_FPS, 10 );
+}]]>
+            </programlisting>
+            Az <function>open</function> függvénynek paraméteréül adhatjuk a kameránk számát, a nulla az alapértelmezett kamera, ami elérhető a gépen. De adhatunk meg 
+            videó fájlt vagy ahogy a <function>SamuCam</function> osztályban látható, IP címet is. A <function>set</function> függvénnyel pedig tulajdonságokat tudunk megadni a
+            <varname>videoCapture</varname> objektumunknak. Jelen esetben azt, hogy milyen méretben jelenítse meg a kameránk képét, és korlátozatjuk az FPS számot is.  
+        </para>
+        <para>
+            Ahogy feljebb említettem szükség van a program megfelelő működéséhez a <filename>lbpcascade_frontalface.xml</filename> fájlra. Mégpedig azért, mert a
+            program arcfelismerésen alapul, melyet a <classname>cv::CascadeClassifier</classname> osztály tesz lehetővé. Ez az osztály kifejezetten objektumok felismerését valósítja 
+            meg. Az xml fájlon keresztül adjuk meg neki, hogy milyen felimerést szeretnénk használni.  
+            Annyi a lényeg, hogyha a <varname>faceClassifier</varname>
+            objektum egy emberi arcot ismer fel a kamera képén, akkor arról készít egy másolatot, és megjeleníti a képernyőn. Lássuk a <classname>SamuCam</classname> osztály
+            <function>run</function> függvényét, melyben látható az arcfelimerés kezelése.
+            <programlisting language="c++"><![CDATA[
+void SamuCam::run()
+{
+
+    cv::CascadeClassifier faceClassifier;
+
+    std::string faceXML = "lbpcascade_frontalface.xml"; // https://github.com/Itseez/opencv/tree/master/data/lbpcascades
+
+    if ( !faceClassifier.load ( faceXML ) )
+    {
+        qDebug() << "error: cannot found" << faceXML.c_str();
+        return;
+    }
+
+    cv::Mat frame;
+
+    while ( videoCapture.isOpened() )
+    {
+
+        QThread::msleep ( 50 );
+        while ( videoCapture.read ( frame ) )
+        {
+
+            if ( !frame.empty() )
+            {
+
+                cv::resize ( frame, frame, cv::Size ( 176, 144 ), 0, 0, cv::INTER_CUBIC );
+
+                std::vector<cv::Rect> faces;
+                cv::Mat grayFrame;
+
+                cv::cvtColor ( frame, grayFrame, cv::COLOR_BGR2GRAY );
+                cv::equalizeHist ( grayFrame, grayFrame );
+
+                faceClassifier.detectMultiScale ( grayFrame, faces, 1.1, 4, 0, cv::Size ( 60, 60 ) );
+
+                if ( faces.size() > 0 )
+                {
+
+                    cv::Mat onlyFace = frame ( faces[0] ).clone();
+
+                    QImage* face = new QImage ( onlyFace.data,
+                                                onlyFace.cols,
+                                                onlyFace.rows,
+                                                onlyFace.step,
+                                                QImage::Format_RGB888 );
+
+                    cv::Point x ( faces[0].x-1, faces[0].y-1 );
+                    cv::Point y ( faces[0].x + faces[0].width+2, faces[0].y + faces[0].height+2 );
+                    cv::rectangle ( frame, x, y, cv::Scalar ( 240, 230, 200 ) );
+
+
+                    emit  faceChanged ( face );
+                }
+
+                QImage*  webcam = new QImage ( frame.data,
+                                                frame.cols,
+                                                frame.rows,
+                                                frame.step,
+                                                QImage::Format_RGB888 );
+
+                emit  webcamChanged ( webcam );
+
+            }
+
+            QThread::msleep ( 80 );
+
+        }
+
+        if ( ! videoCapture.isOpened() )
+        {
+            openVideoStream();
+        }
+
+    }
+
+}]]>
+            </programlisting>
+            Ebből a kódrészetből a <function>while</function> ciklus tartalma a lényeg. Ezt nézzük át most egy kicsit részletesebben. Elsőnek szükségünk van egy 
+            <classname>cv::Mat</classname> osztályú objektumra. Ennek segítségével az egyes képkockákat egy többdimenziós tömbben tudjuk tárolni. 
+            A <function>while</function> ciklus törzse addig ismétlődik, ameddig a kamera meg van nyitva. Beolvassuk a <varname>frame</varname> tömb tartalmát, 
+            ha üres, akkor pedig beolvasunk a kamera képéről egy arcot. Ehhez a <function>detectMultiScale</function> függvényt használjuk, mely különböző méretű
+            objektumokat, jelen esetben arcokat képes felismerni, és egy vektorba négyzetek formájában adja vissza az eredményt. Majd ebből a vektorból 
+            kiolvassuk az első felismert ojektumot, azt képpé alakítjuk, és jelezzük, hogy megváltozott a kamera képe. Az <function>emit</function> utasításról a 
+            következő feladatban lesz szó.
         </para>
     </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
@@ -402,10 +541,94 @@ setOnMouseClicked((javafx.scene.input.MouseEvent evt) -> {
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/BrainB">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/BrainB</link>               
         </para>
+        <caution>
+            <title>Szükséges csomag</title>
+            <para>
+                <programlisting>sudo apt install libopencv-dev</programlisting>
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Az könyv első részében már volt szó a BrainB-ről. Ez a program a karakter-elvesztés problémakörét vizsgálja. Ha játszol League of Legends-el, biztos
+            voltál már olyan helyzetben, hogy túl sok karakter volt egy helyen, és nem találtad a sajátodat. Pontosan ezt szimulálja a program is. Rajta kell tartanod az
+            egeret <varname>Samu Entropy</varname>-n, eközben folyamatosan nő a négyzetek száma a képernyőn. Ha kilépsz a programból, akkor kapsz egy értékelést az elért 
+            eredményediről.
+            <figure>
+                <title>BrainB</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/BrainB/program.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+        </figure>                    
+        </para>
+        <para>
+            Most, hogy felelevenítettük a BrainB működését, foglalkozzunk a feladat témájával. A Qt egy alkalmazás-keretrendszer, mely lehetővé teszi GUI-s alkalmazások készítését,
+            de hagyományos parancssoros alkalmazásokat is fejleszthetünk vele. A C++ programnyelv mellett akár Python nyelven is készíthetünk alkalmazásokat Qt segítségével. Nagy 
+            előnye, hogy a Qt segítségével keresztplatformos alkalmazásokat készíthetünk. 
+        </para>
+        <para>
+            Grafikus felületek fejlesztésekor elvárás, hogy egyes elemeken végrehajtott interakciók, más elemeken fejtsék ki hatásukat. Vegyük példának azt, hogyha megnyomunk egy 
+            gombot, annak hatására jelenjen meg egy új abalak. Ennek érdekében a Qt egy új mechanizmust vezetett be, mely a signal-slot. Visszatérve a példához, ha megnyomjuk a gombot, az egy
+            signalt vált ki, melynek hatására a vele összekapcsolt objektum egyik slotját hajtja végre.
+            Nézzük meg, hogy ez a példa hogyan is nézne ki Qt-ban:
+            <programlisting language="c++"><![CDATA[
+connect(button, &QPushButton::clicked, window, &QWidget::createNewWindow);]]>
+            </programlisting>
+            Ha megnézed a BrainB program forrását, akkor ez egy kicsit más szintaxissal fog szerepelni. Tehát emeljünk most ki egy példát a BrainB-ből.
+            <programlisting language="c++"><![CDATA[
+connect ( brainBThread, SIGNAL ( heroesChanged ( QImage, int, int ) ),
+    this, SLOT ( updateHeroes ( QImage, int, int ) ) ); ]]>
+            </programlisting>
+            Utóbbiban explicit módon szerepel, hogy melyik a signal, és melyik a slot. Fontos megjegyezni, hogy ez a régi szintaxis, ha Qt-ban fejlesztenél a 
+            másikat használd inkább. 
+        </para>
+        <para>
+            Mielőtt rátérnénk arra, hogy mi a szerepe a signal-slot mechanizmusnak a BrainB-ben, imserkedjünk meg egy kicsit jobban vele. A signal-ok olyan 
+            függvényeknek tekinthetőek, amik nem rendelkeznek definícióval, csak deklarációval. Nem lehet visszatérési értéke, viszont lehetnek paramétereik.
+            Fontos tulajdonságuk a signal-oknak, hogy nem lehet őket hagyományos módon meghívni, ehhez <function>emit</function> makrót kell használni.
+            <programlisting>
+                emit mysignal(value);
+            </programlisting>
+            A slot-ok ezzel szemben teljes mértékben a függvényekre hasonlítanak, meg lehet őket hívni, mint a függvényeket, van definíciójuk, lehetnek paramétereik, viszont ezeknek
+            sem lehet visszatérési értékük. Fontos, hogy csak olyan signal-slot párokat tudunk összekötni, melyek kompatiblisek egymással. Ez alatt azt kell érteni, hogyha a signal
+            paramétere 2 db egész, akkor a slot-nak vagy nem szabad lennie paraméterének, vagy pedig azonos paramétereket kell kérnie. Ez azért fontos, mert a signal paramétereinek 
+            értékei át tudnak adódni a slot-nak. A régebbi szintaxisban a paraméterlistát mindig ki kell írni, ez az újban már nem szükséges. 
+        </para>
+        <para>
+            A Qt által biztosított osztályok mind tartalmaznak beépített signal-okat és slot-okat. Ha szeretnénk egyedi megoldásokat is használni, akkor 
+            készíthetünk leszármazott osztályokat. Ha olyan osztályt akarunk készíteni, ami képes kezelni a signal-slot mechanizmust, akkor mindenképpen 
+            tartalmaznia kell az osztálynak a <function>Q_OBJECT</function> makrót. Egy pontosítás még szükséges, ugyanis csak akkor lehet ezt a makrót
+            használni, ha az osztályunk őse a <classname>QObject</classname> osztály, vagy a ős osztályunk leszármazottja a <classname>QObject</classname>
+            osztálynak. A Qt összes saját osztálya leszármazottja ennek az osztálynak, tehát csak az általunk készített osztályokkal kell figyeelni erre a 
+            kitételre.
+        </para>
+        <para>
+            Egy érdekességet még említsünk meg, mielőtt rátérünk a BrainB-re. A programunk túl sok signal-slot párt tartalmaz, jelentős lassulás eredményezhet, 
+            szóval érdemes csak szükséges esetben használni. Egy másik hátránya ennek a megoldásnak, hogy a C++ nyelvben gyakran használt sablon osztályokat nem támogatja.
+            Ha a programunk fejlesztése során szükségünk lenne sablon osztályokra, akkor érdemes megismekedni a Woboq GmbH áltral fejlesztett Verdigris 
+            projektre (<link xlink:href="https://github.com/woboq/verdigris">https://github.com/woboq/verdigris</link>). A templatelt osztályok támogatása mellett 
+            gyorsabb fordítási időt érhetünk el, és programunk működése is egy kicsit gördülékenyebb lesz. A fordítási idő azért gyorsul, mert a Qt saját mechanizmusát 
+            a Meta-Object Compiler(moc) biztosítja, mely fordításkor külön állományokat hoz létre, ha valamelyik header a <function>Q_OBJECT</function> makrót tartalmazza,
+            erre a Verdigris-ben használt megoldásban nincs szükség.
+        </para>
+        <para>
+            Akkor lássuk, hogy mire használjuk a signa-slot mechanizmust a BrainB-ben.
+            <programlisting language="c++"><![CDATA[
+connect ( brainBThread, SIGNAL ( heroesChanged ( QImage, int, int ) ),
+    this, SLOT ( updateHeroes ( QImage, int, int ) ) );
+
+connect ( brainBThread, SIGNAL ( endAndStats ( int ) ),
+    this, SLOT ( endAndStats ( int ) ) );]]>
+            </programlisting>
+            A BrainB-ben két fő osztályunk van, az egyik az ablak, és az abban lévő objektumok mejelenítéséért felel, még a számításokért. Az első <function>connect</function>
+            függvénynél azt láthatjuk, hogy ha megváltozik a hődök száma/pozíciója, akkor a <varname>brainBThread</varname> objektum <function>heroesChanged</function> signal-ja 
+            kiváltódik, ehhez hozzákötjük az ablakunkat kezelő osztály <function>updateHeroes</function> slot-ját. Ezzel érjük el azt, hoyg minden a számítási osztály által végzett módosulás
+            láthatóvá váljon a képernyőn. A másik <function>connect</function> pedig azt teszi lehetővé, hogyha  leállítjuk a programot, akkor az záródjon be az ablak. 
         </para>
     </section>        
 
