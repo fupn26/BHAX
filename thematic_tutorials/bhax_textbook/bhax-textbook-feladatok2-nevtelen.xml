@@ -363,7 +363,7 @@ setOnMouseClicked((javafx.scene.input.MouseEvent evt) -> {
     <section>
         <title>OOCWC Boost ASIO hálózatkezelése</title> <!-- Egy megoldási javaslat, hogy írjuk át Protobufferes kommunikációra-->
         <para>
-            Mutassunk rá a scanf szerepére és használatára! <link xlink:href="https://github.com/nbatfai/robocaremulator/blob/master/justine/rcemu/src/carlexer.ll">https://github.com/nbatfai/robocaremulator/blob/master/justine/rcemu/src/carlexer.ll</link>
+            Mutassunk rá a scanf szerepére és használatára! <link xlink:href="https://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/carlexer.ll">https://github.com/nbatfai/robocaremulator/blob/master/justine/rcemu/src/carlexer.ll</link>
         </para>
         <para>
             Megoldás videó:
@@ -373,6 +373,25 @@ setOnMouseClicked((javafx.scene.input.MouseEvent evt) -> {
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Már korábban beszéltünk arról, hogy az OOCWC projetk lexerjében mire használjuk a <function>sscanf</function>-et. Ez a függvény egy formázott sztringet vár
+            bemenetéül. Az első paramétere az a sztring, amiből olvassa a bemenetet, a többi paraméterrel pedig azt adjuk meg, hogyan tárolja azt.
+            Lássunk egy példát az OOCWC projekt <filename>myshmclient.cpp</filename> fájljából.
+            <programlisting language="c++"><![CDATA[
+while ( std::sscanf ( data+nn, "<OK %d %u %u %u>%n", &idd, &f, &t, &s, &n ) == 4 )
+    {
+        nn += n;
+        gangsters.push_back ( Gangster {idd, f, t, s} );
+    }]]>                
+            </programlisting>
+            Ebben az esetben olyan stringet olvasunk be, amely <![CDATA[<OK]]>-val kezdődik. Utána várunk egy egészt, és 3 előjel nélküli egészt. Az utolsó paraméter az 
+            érdekesebb, hiszen az eddigiekkel már találkozhattunk a <function>printf</function> használatakor is. Az utolsó paraméternek egy olyan egészt adunk meg, melyben a 
+            <function>sscanf</function> a beolvasott bájtok számát adja meg. Ezt tároljuk el az <varname>n</varname> változóban. Értékét arra használjuk fel, hogy 
+            a beolvasni kívánt sztingen tovább lépjünk, ne olvassuk be újra ugyanazt az elemet. Azért van arra szükség, hogy ezt a beolvasást egy 
+            cikluson belül hajtsuk végre, mert nem tudhatjuk biztosan, hogy hány gengszter van a térképen. A ciklus addig folytatódik, ameddig a 
+            az argumentumlista 4 elemének értéket tud adni. Ugyanis a <function>sscanf</function> sikeres beolvasás esetén a 
+            helyesen "kitöltött" elemek számát adja vissza.   
         </para>
     </section>        
         

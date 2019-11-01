@@ -343,6 +343,22 @@
             Hello Stroustrup2 kidolgozva
         </revremark>
     </revision>
-    
+    <revision>
+    <revnumber>0.4.2</revnumber>
+        <date>2019-10-28</date>
+        <authorinitials>fupn26</authorinitials>
+        <revremark>
+            Hello Godel kidolgozva
+        </revremark>
+    </revision>
+    <revision>
+        <revnumber>0.4.3</revnumber>
+            <date>2019-11-01</date>
+            <authorinitials>fupn26</authorinitials>
+            <revremark>
+                Hello ... kidolgozva
+            </revremark>
+    </revision>
+                
 
 </revhistory>
