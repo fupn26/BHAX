@@ -31,15 +31,15 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     LocationManager mlocationManager;
-    TextView tvLatitude;
-    TextView tvLongitude;
-    public static String tvLongi;
-    public static String tvLati;
+    LocationListener listenerGPS;
+    LocationListener listenerNetwork;
     private boolean firstCall = true;
+    private boolean gps_enabled;
+    private boolean network_enabled;
     private Marker marker;
 
     @Override
@@ -52,6 +52,84 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         CheckPermission();
+
+        listenerGPS = new LocationListener() {
+            @Override
+            public void onLocationChanged(@org.jetbrains.annotations.NotNull Location location) {
+                LatLng mylocation = new LatLng(location.getLatitude(), location.getLongitude());
+                if(firstCall){
+                    marker = mMap.addMarker(new MarkerOptions().position(mylocation).title("You are in " + getLocationName(location)));
+                    marker.showInfoWindow();
+                    firstCall = false;
+                }else {
+                    mMap.addPolyline(new PolylineOptions()
+                            .add(marker.getPosition(), mylocation)
+                            .width(5)
+                            .color(Color.BLUE));
+                    marker.remove();
+                    marker = mMap.addMarker(new MarkerOptions().position(mylocation).title("You are in " + getLocationName(location)));
+                    marker.showInfoWindow();
+                }
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 17f));
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+
+
+        listenerNetwork = new LocationListener() {
+            @Override
+            public void onLocationChanged(@org.jetbrains.annotations.NotNull Location location) {
+                LatLng mylocation = new LatLng(location.getLatitude(), location.getLongitude());
+                if(firstCall){
+                    marker = mMap.addMarker(new MarkerOptions().position(mylocation).title("You are in " + getLocationName(location)));
+                    marker.showInfoWindow();
+                    firstCall = false;
+                }else {
+                    mMap.addPolyline(new PolylineOptions()
+                            .add(marker.getPosition(), mylocation)
+                            .width(5)
+                            .color(Color.BLUE));
+                    marker.remove();
+                    marker = mMap.addMarker(new MarkerOptions().position(mylocation).title("You are in " + getLocationName(location)));
+                    marker.showInfoWindow();
+                }
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 17f));
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        
     }
 
     /* Request updates at startup */
@@ -64,7 +142,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     protected void onPause() {
         super.onPause();
-        mlocationManager.removeUpdates(this);
+        if(gps_enabled) mlocationManager.removeUpdates(listenerGPS);
+        if(network_enabled) mlocationManager.removeUpdates(listenerNetwork);
     }
     /**
      * Manipulates the map once available.
@@ -78,7 +157,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
     }
 
     public void CheckPermission() {
@@ -91,8 +169,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void getLocation() {
         try {
             mlocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 50, 1f, this);
-//           mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 1f, this);
+            if(network_enabled = mlocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 50, 1f, listenerNetwork);
+            }
+            if(gps_enabled = mlocationManager.isProviderEnabled((LocationManager.GPS_PROVIDER))) {
+                mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 1f, listenerGPS);
+            }
         } catch (SecurityException e) {
             e.printStackTrace();
         }
@@ -109,39 +191,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public void onLocationChanged(@org.jetbrains.annotations.NotNull Location location) {
-        LatLng mylocation = new LatLng(location.getLatitude(), location.getLongitude());
-        if(firstCall){
-            marker = mMap.addMarker(new MarkerOptions().position(mylocation).title("You are in " + getLocationName(location)));
-            marker.showInfoWindow();
-            firstCall = false;
-        }else {
-            mMap.addPolyline(new PolylineOptions()
-                    .add(marker.getPosition(), mylocation)
-                    .width(5)
-                    .color(Color.BLUE));
-            marker.remove();
-            marker = mMap.addMarker(new MarkerOptions().position(mylocation).title("You are in " + getLocationName(location)));
-            marker.showInfoWindow();
-        }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mylocation, 17f));
-
-    }
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        Toast.makeText(this, "Enabled new provider!" + provider,
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Toast.makeText(MapsActivity.this, "Please Enable GPS and Internet", Toast.LENGTH_SHORT).show();
-    }
 }
+

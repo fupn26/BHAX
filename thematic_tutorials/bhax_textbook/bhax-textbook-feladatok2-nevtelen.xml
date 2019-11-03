@@ -548,6 +548,14 @@ void SamuCam::run()
             objektumokat, jelen esetben arcokat képes felismerni, és egy vektorba négyzetek formájában adja vissza az eredményt. Majd ebből a vektorból 
             kiolvassuk az első felismert ojektumot, azt képpé alakítjuk, és jelezzük, hogy megváltozott a kamera képe. Az <function>emit</function> utasításról a 
             következő feladatban lesz szó.
+            <figure>
+                <title>Program működés közben</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/SamuCam/program.png" format="PNG" scale="160"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>                    
         </para>
     </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
