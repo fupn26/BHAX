@@ -552,7 +552,7 @@ void SamuCam::run()
                 <title>Program működés közben</title>
                     <mediaobject>
                         <imageobject>
-                            <imagedata fileref="../../attention_raising/Source/SamuCam/program.png" format="PNG" scale="160"/>
+                            <imagedata fileref="../../attention_raising/Source/SamuCam/program.png" format="PNG"/>
                         </imageobject>
                     </mediaobject>
             </figure>                    
@@ -789,6 +789,14 @@ public String getLocationName(Location location){
         </para>
         <para>
             Végezetül lássuk, hogyan működik a program.
+            <figure>
+                    <title>GoogleTracker</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/GoogleMapsLocationTracker/googletracker.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>  
         </para>
     </section>        
 

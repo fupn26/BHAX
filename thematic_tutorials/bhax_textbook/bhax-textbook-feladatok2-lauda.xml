@@ -1,3 +1,4 @@
+<!DOCTYPE chapter SYSTEM "docbook.dtd">
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
     <info>
         <title>Helló, Lauda!</title>
@@ -15,13 +16,71 @@
             <link xlink:href="https://www.tankonyvtar.hu/hu/tartalom/tkt/javat-tanitok-javat/ch01.html#id527287">https://www.tankonyvtar.hu/hu/tartalom/tkt/javat-tanitok-javat/ch01.html#id527287</link>
         </para>
         <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
-        </para>
-        <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A kivételkezelésről már többször szóesett ebben a könyvben. A Java nyelvben kiemelt szerepe van a ennek a hibakezelési metódusnak, ugyanis szerves része a nyelvnek.
+            Sok esetben a Java VM nem is engedi fordítani a kódot, ha nem kezeljük a lehetséges kivételeket. Ez C++ programozóknak furcsa lehet, mivel ott a teljes szabadságot élvezünk 
+            ebben a tekintetben. Most foglaljuk össze, hogy miért is érdemes használni a hibakezelést, és mit is csinál pontosa. 
+        </para>
+        <para>
+            A kivétel a program végrehatása során keletkezik, mely megszakítja azutsaítások végrehajtását.   
+            A nem objektumorientált nyelvekben, mint a C, minden gyanús helyen külön kellett
+            kezelnünk az egyes kivételeket, mely a egy hibaüzenet kiírásából és a program leállításából állt. Ezzel szemben C++/Java-ban akár egy helyen is kezelhetjük őket. 
+            Az alap szintaxisa a objektum orientált nyelvekben a kivételkezelésnek a következő:
+            <programlisting language="c++">
+                try{
+                    ....
+                }
+                catch(kivétel deklaráció) {
+                    ....
+                }
+                finally{
+                    ....
+                }
+            </programlisting>
+            Tehát a vizsgálni kívánt kódrészt egyszerűen behelyezzük egy <function>try</function> blokkba, majd pedig tetszőleges számú <function>catch</function> blokk
+            segítségével kezeljük a kivételeket. A <function>finally</function> blokk mindig meghívódik, függetlenül attól, hoyg történt-e kivételdobás vagy sem. Ezért 
+            ebben a blokkban tehetünk "rendet" magubk után, például itt zárjuk be a megnyitott fájlokat, amire már nem lesz szükség. 
+            Ahhoz, hogy kivételkezléssel tudjunk foglalkozni, ahhoz kellenek kivételek, melyeket a metódusoka <function>throw</function> kulcszsóval teszik meg. 
+            Ezután vesszővel elválasztva tudjuk felsorolni a dobható kivételek típusát. A Java nyelv több osztályt biztosít a kivétlek kezeléséhez, melyek mind
+            a <classname>Throwable</classname> osztály leszármazottai. De mi is hozhatunk létre saját osztályt ennek érdekében. 
+        </para>
+        <para>
+            Most lássuk a feladatot. A tárgyalni kívánt kódrészlet a következő:
+            <programlisting language="java"><![CDATA[
+public class KapuSzkenner {
+
+    public static void main(String[] args) {
+        
+        for(int i=0; i<1024; ++i)
+            
+            try {
+                
+                java.net.Socket socket = new java.net.Socket(args[0], i);
+                
+                System.out.println(i + " figyeli");
+                
+                socket.close();
+                
+            } catch (Exception e) {
+                
+                System.out.println(i + " nem figyeli");
+                
+            }
+    }
+    
+}]]>
+            </programlisting>
+            Ennek a kódrészletnek a futtatását a saját géped vizsgálatán kívül nem javasoljuk, mivel a Port scannelés nem teljesen legális dolog, de szemléltetésnek kiváló. Maga a 
+            program annyit csinál, hogy a prancssori argumentumként kapott gép 1024-nél kisebb portjahoz próbál kapcsolódni. Java-ban a 
+            kapcsolódás nagyon egyszerű, csak egy <classname>Socket</classname> típusú objektumra van szükségünk. Ennek a konstruktorába meg kell adni az 
+            IP-címet és a portot, ahova csatlakozni szeretnénk. Viszont mi történik akkor, ha nem tudunk csatlakozni a megadott porthoz? Ekkor
+            a <varname>socket</varname> objektumunk konstruktora <classname>IOException</classname> típusú kivételt dob. Ha tudunk csatlakozni, akkor
+            a cél gép adott portján egy szerver folyamat ül, ellenkező esetben pedig nem. Mivel a dobhat kivételt a programunk, ezért azt kezeljük, 
+            tehát berakjuk egy <function>try-catch</function> blokkba. Ha a nem dob hibát a csatlakozás során a program, akkor kiírjuk a terminálba, hogy 
+            az adott port figyelt, hiba esetén pedig azt, hogy nem figyelt. A kivételkezlés nélkül nem is tudjuk lefordítani a programunkat, ebből jól látszik, amit
+            korábban említettem, hogy a kivételek kezelése a Java nyelv szerves része.  
         </para>
     </section>        
 
@@ -39,6 +98,110 @@
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ebben a feladatban az átszövés orientált programozással fogunk megismerkedni, melyhez az AspectJ programozási nyelvet fogjuk használni. Az átszövés lényegében annyit tesz,
+            hogy a régebbi programunk működését úgy tudjuk módosítani, hogy nem kell módosítani a forráskódon. Helyette írunk egy szövést (aspect-et), mellyel megváltoztathatjuk például egy
+            függvény működését, vagy esetleg megadhatjuk, hogy a függvény végrehajtása előtt/után mit csináljon a program. Példák ebben a diasorban találhatóak: <link xlink:href="https://arato.inf.unideb.hu/batfai.norbert/UDPROG/deprecated/Prog2_6.ppt">https://arato.inf.unideb.hu/batfai.norbert/UDPROG/deprecated/Prog2_6.ppt</link>.
+            Mi most az AspectJ nyelv <function>around</function> függvényével fogunk foglalkozni, melynek utasításait egy adott függvény helyett hajtjuk végre.
+        </para>
+        <para>
+            Mielőtt megnéznénk a kódot, előtte térjünk ki egy kicsit az aspektusok felépítésére. Tehát van a már korábbi fejezetben megírt <filename>LZWBinFa.java</filename> forrásunk,
+            és ennek a függvényét szeretnénk módosítani. Az aspektusok önállóan nem használhatóak, mindig kell egy program hozzá, AspectJ esetén Java. Majd létrehozunk egy aspektust, mely 
+            olyan, mint egy normál Java osztály. Össezsségében 3 fogalommal kell megismerkedni ezzel kapcsolatban. Az első a <emphasis role="strong">kapcsolódási pont</emphasis>, mely 
+            az eredeti programban van, vagyis az erdeti program egyik függvénye. A másik fontos fogalom az <emphasis role="strong">vágási pont</emphasis>, mely az aspektus része, és 
+            a csatlakozási pontokat tudjuk jelöljük vele. Végezetül pedig szükség van még <emphasis role="strong">tanácsra</emphasis>, mely lényegében azt tartalmazza, hogy 
+            hogyna szeretnénk módosítani az eredeti program működését. 
+        </para>
+        <para>
+            Most azt nézzük meg, hogyan lehet megoldani azt, hogy a programunk a fát preorder módon járja be. Ezt már korábbi feladatokban megcsináltuk, viszont a akkor a forráskódot
+            közvetlenül módosítottuk. Lássuk is az <filename>Aspect.aj</filename> fájl tartalmát.
+            <programlisting language="java"><![CDATA[
+privileged aspect Aspect{
+    void around(LZWBinFa fa, LZWBinFa.Csomopont elem, java.io.BufferedWriter os):
+        call(public void LZWBinFa.kiir(LZWBinFa.Csomopont, java.io.BufferedWriter)) 
+            && target(fa) && args(elem, os){
+        if (elem != null)
+        {
+            try{
+                ++fa.melyseg;
+                for (int i = 0; i < fa.melyseg; ++i)
+                    os.write("---");
+                os.write(elem.getBetu () + "(" + (fa.melyseg - 1) + ")\n");
+                fa.kiir(elem.egyesGyermek (), os);
+                fa.kiir(elem.nullasGyermek (), os);
+                --fa.melyseg;
+            }
+            catch(java.io.IOException e){
+                System.out.println("Csomópont írása nem sikerült.");
+            }
+        }
+
+    }
+}]]>
+            </programlisting>
+            Láthatjuk, hogy szintaktikailag alig van különbség egy sima Java forráshoz képest. Az első kulcszsó, amit eddig nem láttunk, az a <function>privilaged</function>, melyre
+            azért van szükség, hogy az aspektusunk hozzá tudjon férni az osztályok privát tagjaihoz. Az <function>aspect</function> kulcszsó jelöli, hogy most aspektust írunk, nem
+            pedig hagyomásnyos osztályt. Az aspektusunk egyetlen függvényből áll, ez a <function>around</function>. Ahhoz, hogy a bejárás módját módosítani tudjuk elsőnek 
+            a <function>kiir(Csomopont, BufferedWriter)</function> függvényre vany szükségünk. Mivel ez a függvény olyan tagváltozókat és tagfüggvényeket tartalmaz, melyek nem statikusak, ezért 
+            az <function>around</function> függvény paraméterének meg kell adnunk egy <classname>LZWBinFa</classname> objektumot, melyen keresztül ezeket a tagokat el tudjuk érni. 
+            Majd megadjuk, hogy az <function>around</function> melyik függvény helyett hívódjon meg, ehhez meg kell adnunk a teljes paraméterlistáját, mivel enélkül a fordító nem tudná
+            egyértelműen azonosítani, melyikre gondolunk. Ezután <![CDATA[&&]]> elválasztva megadjuk, hogy az <function>around</function> paraméterei közül melyiket szeretnénk paraméterként
+            átadni a <function>kiir</function> függvénynek, és azt is, hogy melyik <classname>LZWBinFa</classname> objektumra szeretnénk végrehajtani a függvényt. Az előbbihez a 
+            <function>args</function>, utóbbihoz a <function>target</function> kulcsszót használjuk. Ezután következik a <function>around</function> függvény törzse, mely 
+            a már ismert kódrészletet tartalmazza.
+        </para>
+        <caution>
+            <title>Program futtatása</title>
+            <para>
+                <programlisting language="bash">
+sudo apt install aspectj
+ajc LZWBinFa.java Aspect.aj
+java -cp /usr/share/java/aspectjrt.jar:. LZWBinFa input.txt -o output.txt
+                </programlisting>
+            </para>
+        </caution>
+        <para>
+            A alap programunk a következő kimenetet adja a <filename>input.txt</filename>-ben található szövegre:
+            <programlisting>
+---------1(2)
+------------0(3)
+------------------1(5)
+---------------0(4)
+------1(1)
+---------0(2)
+------------0(3)
+---------------0(4)
+---/(0)
+---------1(2)
+------0(1)
+---------0(2)
+------------0(3)
+depth = 5
+mean = 3.5
+var = 1.2909944487358056
+            </programlisting>
+            Aspektus használatával pedig a követkkező:
+            <programlisting>
+---/(0)
+------1(1)
+---------1(2)
+------------0(3)
+---------------0(4)
+------------------1(5)
+---------0(2)
+------------0(3)
+---------------0(4)
+------0(1)
+---------1(2)
+---------0(2)
+------------0(3)
+depth = 5
+mean = 3.5
+var = 1.2909944487358056
+            </programlisting>
+            Az aspektusok használatával a mindig a nekünk szükséges bejárási módot tudjuk használni. Összegezve, az aspektusok legnagyobb előnye, hogy nem szükséges komolyabban 
+            belenyúlnunk a régi kódunkba, ahhoz módosítsunk a működésén. 
         </para>
     </section>        
         
