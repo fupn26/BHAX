@@ -224,7 +224,7 @@ var = 1.2909944487358056
     </section>        
 
     <section>
-        <title>Junit teszt</title>
+        <title>JUnit teszt</title>
         <para>
             A <link xlink:href="https://progpater.blog.hu/2011/03/05/labormeres_otthon_avagy_hogyan_dolgozok_fel_egy_pedat">https://progpater.blog.hu/2011/03/05/labormeres_otthon_avagy_hogyan_dolgozok_fel_egy_pedat</link>
             poszt kézzel számított mélységét és szórását dolgozd be egy Junit tesztbe (sztenderd védési feladat
@@ -234,10 +234,69 @@ var = 1.2909944487358056
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW/LZWBinFaJunit">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW/LZWBinFaJunit</link>              
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            A JUnit egy a Java nyelvhez kifejleszettet egységtesztelő keretrendszer. Segítségével automatizált módon tudjuk tesztelni, hogy a programunk a várt módon működik-e. 
+            Mi ebben a feladatban azt fogjuk letesztelni, hogy a mélység, a szórás és az átlag értékek megfelelnek-e annak, amit korábban egy posztban már láthattunk. A 
+            NetBeans-ben létre kell hoznunk egy projektet, amibe belerakjuk a <classname>LZWBinFa</classname> osztály forrását, majd ha erre rákattintunk a 
+            Tools menüpontban létrehozunk egy tesztet.
+            <figure>
+                <title>Teszt létrehozása</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/LZW/LZWBinFaJunit/create_test.png" format="PNG" scale="50"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Célszerű csak a képen látható opciókat kipipálni a létrehozás során. Ha elkészítettük a tesztet, akkor a "Test Libraries"-hoz hozzás kell adni a Junit 4.x könyvtárát. Majd nyissuk 
+            meg újra a projektet. Ekkor a Netbeans hibát fog írni, de hagyjuk rá a megoldást. Ezután pedig a forrásunkra kattintva jobb egér gombbal lesz egy olyan opció, hogy 
+            "Test file". Ha mindent jól csináltunk, akkor lefut a teszt hiba nélkül.
+        </para>
+        <para>
+            Nézzük meg a teszthez tartozó forrást.
+            <programlisting language="java"><![CDATA[
+import static junit.framework.TestCase.assertEquals;
+import org.junit.Test;
+
+public class LZWBinFaTest {
+    LZWBinFa binfa = new LZWBinFa();
+    
+    @Test
+    public void testHozzarendel() {
+        char[] minta = "01111001001001000111".toCharArray();
+        
+        for(char betu: minta ){
+            binfa.hozzarendel(betu);
+        }
+        
+        assertEquals(4, binfa.getMelyseg());
+        assertEquals(2.75, binfa.getAtlag(), 0.01);
+        assertEquals(0.957427, binfa.getSzoras(), 0.000001);
+    }    
+    
+}]]>           
+            </programlisting>
+            Szintaktikailag egy normál Java osztályt látunk. A különlegességét az adja, hogy tartalmazza a <![CDATA[@Test]]> makrót, melyel jelöljük, hogy ezután 
+            egy tesztelő függvényt definiálunk. Az <classname>LZWBinFaTest</classname> osztályban példányosítunk egy <classname>LZWBinFa</classname> típusú objektumot. 
+            Majd a <function>testHozzarendel</function> függvény segítségével teszteljük, hogy a <function>hozzarendel</function> függvény megfelelőeb építi-e fel a fát.
+            A <varname>minta</varname> tömbben eltároljuk a honlapon található mintát, majd maszkolás nélkül belerakjuk az 1-eseket és a 0-ákat a fába. Ha ezzel végeztünk, 
+            akkor a <function>assertEquals</function> függvény segítségével ellenőrizzük, hogy azokat a szórás, mélység és átlag értékeket kaptuk, amire számítottunk. 
+            A forrásban ennek a függvénynek 2 verzióját használtuk. Az első esetben sima összehasonlítást végzünk, a többi esetben pedig megadunk egy delta számot, amivel 
+            eltérhet a várt érték a kapott értéktől. Erre azért van szükség, mert nem egész számokat hasonlítunk össze, és ebben az esetben így kell eljárni. Sőt 
+            igazából, akkor minden programban, ahol <type>double/float</type> típusú változókat hasonlítunk, ott szükség mindeig meg kéne adni egy tetszőlegesen kicsi 
+            delta számot, aminél ha kisebb az eltérés a két szám között, akkor egyenlőnek tartjuk őket.
+            <figure>
+                <title>Eredmény</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/LZW/LZWBinFaJunit/result.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>   
         </para>
     </section>        
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
