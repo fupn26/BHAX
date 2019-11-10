@@ -201,7 +201,7 @@ mean = 3.5
 var = 1.2909944487358056
             </programlisting>
             Az aspektusok használatával a mindig a nekünk szükséges bejárási módot tudjuk használni. Összegezve, az aspektusok legnagyobb előnye, hogy nem szükséges komolyabban 
-            belenyúlnunk a régi kódunkba, ahhoz módosítsunk a működésén. 
+            belenyúlnunk a régi kódunkba, ahhoz, hogy módosítsunk a működésén. 
         </para>
     </section>        
         
