@@ -94,7 +94,7 @@ public class KapuSzkenner {
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW/AspectJ">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/LZW/AspectJ</link>               
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
