@@ -218,11 +218,567 @@ var = 1.2909944487358056
         <para>
             Megoldás forrása:                
         </para>
+        <caution>
+            <title>A feladat megoldásának alapjául ez a vidoeósorozat szolgált:</title>
+            <para>
+                <link xlink:href=""></link>
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
-    </section>        
+        <para>
+            Ebben a fejezetben egy Snake játékot fogunk elkészíteni Android-ra. A feljlesztéshez az Android Studio-t fogjuk használni. 
+        </para>
+        <para>
+            Első lépésben szükségünk van egy játék motorra, ami kezeli majd a kígyó mozgását, növekedését, és a játék állapotát.
+            Lássuk a <filename>GameEngine.java</filename> fontosabb részeit.
+            <programlisting language="java">
+public void initGame(){
+    AddSnake();
+    AddWalls();
+    AddApples();
+}
+            </programlisting>
+            A játék inicializásásért a <function>initGame</function> felel, mely a kígyó, a falak és az almák pozicióját meghatározó függvényeket hívja meg.
+            Mielőtt megnéznénk, hogy ezek mit tartatlmaznak, fontos megjegyezni, hogy a képernyőt egy 42x29 rácsra osztjuk fel, és minden rácsról tároljuk, hogy
+            mit tartalamaz. Ehhez hoztuk létre a <classname>TileType</classname> enum osztályt.
+            <programlisting language="java">
+public enum TileType {
+    Nothing,
+    Wall,
+    SnakeHead,
+    SnakeTail,
+    Apple
+}
+            </programlisting>
+            Hogy a létrehozott rácsban könnyebb legyen a koordinátákat megadni, ezért készítünk egy <classname>Coordinate</classname> osztályt, melyben 
+            tagváltozóként tároljuk az x,y értékeket.
+            <programlisting language="java"><![CDATA[
+public class Coordinate {
+    private int x;
+    private int y;
 
+    public Coordinate(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Coordinate that = (Coordinate) o;
+        return x == that.x &&
+                y == that.y;
+    }
+}]]>                
+            </programlisting>
+            Ahhoz, hogy a <classname>Coordinate</classname> típusú objektumokat összetudjuk hasonlítani, ezért implementáljuk a 
+            <function>equals</function> függvényt, mely a akkor ad igaz értéket, hogyha a két objektumnak ugyanazok az x és y koordinátái.
+            Mostmár visszatérhetünk a játékmotorhoz. Első lépsében a kígyó helyét határozzuk meg a rácsban a <function>AddSnake</function>
+            függvény segítségével.
+            <programlisting language="java"><![CDATA[
+private void AddSnake() {
+    snake.clear();
+
+    snake.add(new Coordinate(7,7));
+    snake.add(new Coordinate(6,7));
+    snake.add(new Coordinate(5,7));
+    snake.add(new Coordinate(4,7));
+    snake.add(new Coordinate(3,7));
+    snake.add(new Coordinate(2,7));
+
+}]]>          
+            </programlisting>
+            Látható, hogy a koordinátákat egy tömben tároljuk, és ugyanezt alkalmazzuk mind a  falak, mind az almák koordinátája esetén. Lássuk, hogy 
+            hogy utóbbiakat, hogyan inicializáljuk.
+            <programlisting><![CDATA[
+private void AddWalls() {
+    for (int i = 0; i < GameWidth; i++) {
+        walls.add(new Coordinate(i,0));
+        walls.add(new Coordinate(i, GameHeight - 1));
+    }
+
+    for (int i = 1; i < GameHeight; i++) {
+        walls.add(new Coordinate(0, i));
+        walls.add(new Coordinate(GameWidth-1, i));
+    }
+}]]>          
+            </programlisting>
+            A falak elhelyezése már érdekesebb. A célünk az, hogy a rácsháló szélén lévő négyzetekben helyezzük el a fal részeit. Ehhez első
+            lépésként elkészítjük az alsó és a felső határhoz tartozó koordinátákat, majd a szélsőket is. A szélsők elkészítésénél két-két 
+            rácsot ki hagyunk, ugyanis azt már az első <function>for</function> ciklusban hozzáadtunk a tömböhöz. Ha ezzel megvagyunk, akkor
+            már csak az almákat kell elhelyezni. Mivel a klasszikus Snake játékban az almák véletlenszerűen jelennek meg, ezért 
+            radnom számokkal fogjuk megoldni az alma elhelyezését.
+            <programlisting language="java"><![CDATA[
+private void AddApples() {
+    Coordinate coordinate = null;
+
+    boolean added = false;
+
+    while ( !added ){
+        int x = 1 + random.nextInt(GameWidth - 2);
+        int y = 1 + random.nextInt(GameHeight -2);
+
+        coordinate = new Coordinate(x,y);
+        boolean collision = false;
+
+        for (Coordinate s : snake) {
+            if(s.equals(coordinate)){
+                collision = true;
+                break;
+            }
+        }
+        if(collision) continue;
+
+        for (Coordinate s : apples) {
+            if(apples.equals(coordinate)){
+                collision = true;
+                break;
+            }
+        }
+
+        added = !collision;
+
+    }
+
+    apples.add(coordinate);
+}]]>           
+            </programlisting>
+            A random szám generálást már több feladatban is láthattuk, szóval annak megvalósítását nem részletezzük. Amire figyelni, hogy nem szabad
+            teljesen rábízni magunkat a generátorra, ugyanis ekkor lehet, hogy pont a kígyóra dobjuk rá az új almát. Emiatt mindig ellenőriznünk kell, hogy
+            az adott koordinátán nincs-e kígyó. Ha ez nem fordul elő, akkor hozzáadjuk a <varname>apples</varname> tömbhöz az új alma koordinátáit.
+        </para>
+        <para>
+            Tehát a motorunk képes feltölteni a rácshálót a szükséges elemekkel. Már csak arra lenne szükség, hogy a képes éegyen frissíteni is a 
+            háló állapotát. Erre a célra szolgál a <function>Update</function> függvény.
+            <programlisting language="java"><![CDATA[
+public void Update (){
+    switch (currentDirection){
+
+        case North:
+            UpdateSnake(0, -1);
+            break;
+        case East:
+            UpdateSnake(1,0);
+            break;
+        case South:
+            UpdateSnake(0,1);
+            break;
+        case West:
+            UpdateSnake(-1, 0);
+            break;
+    }
+
+    for(Coordinate w : walls){
+        if(snake.get(0).equals(w)){
+            currentGameState = GameState.Lost;
+        }
+    }
+
+    for (int i = 1; i < snake.size(); ++i) {
+        if(getSnakeHead().equals(snake.get(i))){
+            currentGameState = GameState.Lost;
+            return;
+        }
+    }
+
+    Coordinate appleToRemove = null;
+    for ( Coordinate apple : apples ){
+        if(getSnakeHead().equals(apple)){
+            appleToRemove = apple;
+            increaseTail = true;
+        }
+    }
+
+    if(appleToRemove != null) {
+        apples.remove(appleToRemove);
+        AddApples();
+    }
+}]]>
+            </programlisting>
+            Az aktuális menetirányt a <varname>currentDirection</varname> változóban tároljuk, mely egy <classname>Direction</classname> típusú objektum.
+            <programlisting language="java">
+public enum Direction {
+    North,
+    East,
+    South,
+    West
+}
+            </programlisting>
+            A frissítés során elsőnek tehát meg kell határoznunk, hogy merre megy a kígyó, ennek függvényében frissítjük a <varname>snake</varname>
+            tömböt. Ehhez pedig a <function>updateSnake</function> függvényt használjuk.
+            <programlisting language="java"><![CDATA[
+private void UpdateSnake(int x, int y){
+    int newX = snake.get(snake.size() - 1).getX();
+    int newY = snake.get(snake.size() - 1).getY();
+
+    for (int i = snake.size() - 1; i > 0 ; i--) {
+        snake.get(i).setX(snake.get(i-1).getX());
+        snake.get(i).setY(snake.get(i-1).getY());
+    }
+
+    if(increaseTail){
+        snake.add(new Coordinate(newX, newY));
+        increaseTail = false;
+    }
+
+    snake.get(0).setX(snake.get(0).getX() + x);
+    snake.get(0).setY(snake.get(0).getY() + y);
+}]]>            
+            </programlisting>
+            Ez a függvény kezeli a kígyó irányváltását, mozgását, és a növekedését is. Mivel mozgatjuk a kígyót, ezért lényegében annyit csinálunk, hogy a 
+            eggyel toljuk a kígyó részeihez tartozó elemek koordinátáit. Vagyis ami az fejhez tartozott, az most a második elemhez fog tartozni, és így tovább.
+            Ha a kígyó megevett egy almát, akkor pedig bővítjük a <varname>snake</varname> tömböt. Ez nagyon egyszerű múvelet, ugyanis elég mindig az 
+            utolsó elem koordinátáját megtudni, és oda berakni az újat. Ez annak kösz9nhető, hogy amikor bővítünk, akkor már az elemek eltolódtak. Jogosan merül
+            fel a kérdés, hogy ez így nagyon jól hangzik, de mi lesz a fejjel. Hiszen a fej előtt már nincs több elem, aminek a koordinátáit lekérdezhetnénk.
+            Emiatt kezeljük külön a kígyó feját, mely az aktuáls irány alapján változik. 
+        </para>
+        <para>
+            Térjünk vissza az <function>Update</function> függvényre. Az irány meghatározása után azt kell ellenőriznünk, hogy a kígyó feje 
+            ütközik-e a saját testével, vagy a fallal. Ezekben az esetkben uyganis a játék véget ér. Ahhoz, hogy az állapotokat könnyen tudjuk kezelni, 
+            egy újabb enum osztályt vezetünk be, a <classname>GameState</classname>-et.
+            <programlisting language="java"><![CDATA[
+                public enum GameState {
+                    Ready,
+                    Running,
+                    Lost
+                }]]>
+            </programlisting>
+            Ha pedig a kígyó feje egy almával ütközik, akkor pedig növeljük az kígyó hosszát, ahogy már az <function>UpdateSnake</function> függvényben láthattuk.
+            Ezután pedig  egy új almát jelenítünk meg a képernyőn.
+        </para>
+        <para>
+            Lassan már mindent tud a játékmotor, amire szükségünk van. Azt kéne még megoldni, hogy az egyes rácspontok "állapotát" tartalmazó
+            tömböt át tudja adni majd a megjelenítésért felelős osztályunknak.
+            <programlisting language="java"><![CDATA[
+public TileType[][] getMap  (){
+    TileType[][] map = new TileType[GameWidth][GameHeight];
+
+    for (int i = 0; i < GameWidth; i++) {
+        for (int j = 0; j < GameHeight; j++) {
+            map[i][j] = TileType.Nothing;
+        }
+
+    }
+
+    for(Coordinate s : snake){
+        map[s.getX()][s.getY()] = TileType.SnakeTail;
+    }
+
+    map[snake.get(0).getX()][snake.get(0).getY()] = TileType.SnakeHead;
+
+
+    for (Coordinate a : apples) {
+        map[a.getX()][a.getY()] = TileType.Apple;
+    }
+
+    for (Coordinate wall: walls) {
+        map[wall.getX()][wall.getY()] = TileType.Wall;
+    }
+    return map;
+    }]]>           
+            </programlisting>
+            Eddig még nem tároltuk az egyes rácsok állapotát, csak koordinátákat adtunk hozzá a játékot felépítő elemek tömbjeihez. A <function>getMap</function>
+            függvény definiál egy <classname>TileType</classname> kétdimenziós tömböt. Ezt elsőnek feltöltjük csupa üres állapottal. Majd a végig megyünk egy 
+            <function>for</function> ciklussal a <varname>snake</varname>, <varname>apples</varname>, <varname>walls</varname> tömbökön, és beállítjuk a 
+            megfelelő állapotokat. A kígyó feje itt is külön szerepel, ugyanis az a megjelenítés során is el fog különülni a kígyó farkától.
+            Ezzel a végére értünk a játékmotor készítésnek. 
+        </para>
+        <para>
+            A következő lépés, hogy a <classname>GameEngine</classname> osztályunk által biztosított <varname>map</varname>-ot megjelenítsük. Erre szolgál a 
+            <classname>SnakeView</classname> osztályunk, mely a <classname>View</classname> osztály gyermeke. A <classname>View</classname> egy Android-os 
+            osztály, mely segítségével a képernyőre tudunk rajzolni. Lássuk a <classname>SnakeView</classname> osztály forrását.
+            Androidon 4 fontos elemre van szükségünk, hoyg rajzoli tudjunk. Az első az, amire rajzolunk, ez jelen esetben egy <classname>SnakeView</classname>
+            objektum. Szükség van egy <classname>Canvas</classname> objektumra, mely a rajzolást végzi. Ennek meg kell határoznunk, hogy mit szeretnénk rajzolni,
+            és, hogy milyen színnel. Utóbbi miatt szükség van még egy <classname>Paint</classname> típusú objektumra.
+            <programlisting language="java"><![CDATA[
+public class SnakeView extends View {
+    private Paint m_Paint = new Paint();
+    private TileType snakeViewMap[][];
+
+    public SnakeView(Context context) {
+        super(context);
+    }
+
+    public SnakeView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public SnakeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    public SnakeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public void setSnakeViewMap(TileType[][] map){
+        this.snakeViewMap = map;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas){
+        super.onDraw(canvas);
+
+        if (snakeViewMap != null){
+            float tileSizeX = canvas.getWidth() / snakeViewMap.length;
+            float tileSizeY = canvas.getHeight() / snakeViewMap[0].length;
+
+            float circleSize = Math.min(tileSizeX, tileSizeY) / 2;
+
+            for (int x = 0; x < snakeViewMap.length; ++x){
+                for (int y = 0; y < snakeViewMap[x].length; ++y){
+//                    if(snakeViewMap[x][y] != null) {
+                        switch (snakeViewMap[x][y]) {
+
+                            case Nothing:
+                                m_Paint.setColor(Color.WHITE);
+                                break;
+                            case Wall:
+                                m_Paint.setColor(Color.BLACK);
+                                break;
+                            case SnakeHead:
+                                m_Paint.setColor(Color.RED);
+                                break;
+                            case SnakeTail:
+                                m_Paint.setColor(Color.YELLOW);
+                                break;
+                            case Apple:
+                                m_Paint.setColor(Color.GREEN);
+                                break;
+                        }
+//                      }
+                    canvas.drawCircle(x * tileSizeX + tileSizeX / 2f + circleSize / 2, y * tileSizeY + tileSizeY / 2f + circleSize / 2, circleSize, m_Paint);
+                }
+            }
+        }
+    }
+}]]>
+            </programlisting>
+            A fentieknek megfelelően szükségünk van egy <classname>Paint</classname> típusú objektumra, ez lesz az <varname>m_Paint</varname>. A konstruktorokra figyleni kell, ugyanis 
+            ha nem a megfelelő verzióját implementáljuk, akkor hibát kaphatunk. Ez amiatt van, mert Androidon <classname>Viwe</classname> típusú osztályok az xml fájlon keresztül
+            lesznek példányosítva, mely meghív egy megfelelő konstruktort, de előfordulhat, hoyg az éppen nincs implementálva. A mi megoldásunkban az összes
+            konstruktor implementálva lett, garantálva ezzel a biztos működést. A <varname>map</varname>-ot a motortól majd a <function>setSnakeViewMap</function>
+            függvényen keresztül fogjuk megkapni. Végezetül jöjjön a legfontosabb része a <classname>SnakeView</classname> osztályunknak, az <function>onDraw</function>
+            függvény. A függvényünk lényegében annyit tesz, hogy a rácsok 
+            típusa alapján átállítja az <varname>m_Paint</varname> objektumunk színét, majd rajzol <classname>Canvas</classname> segítségével egy kört az adott 
+            színnel, az adott rácspontba.
+        </para>
+        <para>
+            Végül pedig elékeztünk a fő osztályunkhoz, a <classname>MainActivity</classname>-hez. Most nézzük végig ennek az osztálynak a fontosabb részeit.
+            <programlisting language="java"><![CDATA[
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_starting);
+
+    Button start = findViewById(R.id.startbutton);
+    Button quit = findViewById(R.id.quitbutton);
+
+    start.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setContentView(R.layout.activity_main);
+            gameEngine = new GameEngine();
+            gameEngine.initGame();
+
+            snakeView = (SnakeView)findViewById(R.id.snakeView);
+            CreateTouchListener();
+
+            startUpdateHandler();
+
+        }
+    });
+    
+    quit.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+            System.exit(0);
+        }
+    });
+}
+]]>            
+            </programlisting>
+            Az <function>onCreate</function> függvény akkot hívódik meg, amikor megnyitjuk az alkalmazást. A <function>setContentView</function> függvény
+            segítségével tudjuk megadni melyik megjelenítési réteget szeretnénk használni. A rétegetket xml fájlokban kell megadni Android-on. Ebből
+            nekünk 3 van, az egyik a kezdőképernyő, a majd jön, ami tartalmazza a <classname>SnakeView</classname> osztályunk egy példányát, végül pedig a 
+            vereség esetén használt képernyő. Ezeket tudjuk váltogatni, akárhányszor csak szeretnénk. Tehát elsőnek a <filename>acrivity_starting.xml</filename>
+            fájlt adjuk meg rétegnek. Ez tartalmaz két gombot, egy indítót, és egy bezárót. Ezek refernciáját az xml fájlban megadott ID-jük alapján érjük el. 
+            Ezután egy <classname>onClickListener</classname> osztály <function>onClick</function> függvényére, mely utasításokat hajt végre, ha valamelyik gombot megnyomjuk. A használni kívánt
+            <classname>onClickListener</classname> objektumot a <function>setOnClickListener</function> függvény segítségével adhatjuk meg. A <varname>start</varname>
+            gomb esetén átállunk a <classname>SnakeView</classname> típusú objektumunkat tartalmazó <filename>activity_main.xml</filename> rétegre. Majd 
+            példányosítunk egy <classname>GameEngine</classname> objektumot, és meghívjuk az <function>initGame</function> tagfüggvényét. Majd lekérjük a 
+            <varname>snakeView</varname> objektumunk refernciáját. Ahhoz, hogy a kígyót tudjuk mozgatni, be kell állítanunk a használni kívánt 
+            <classname>onTouchListener</classname> típusú objektumot. Mivel a <classname>MainActivity</classname> osztály implementálja ezt az interfészt, ezért
+            önmagát adjuk meg a <function>snakeView</function> objektumnak.
+            <programlisting language="java"><![CDATA[
+private void CreateTouchListener() {
+    snakeView.setOnTouchListener(this);
+}]]>            
+            </programlisting>
+            Ahhoz, hogy a Androidon bizonyos időközönként hajtsunk végre egy utasítást, ahhoz a <classname>Handler</classname> osztályt használjuk.
+            A <function>startUpdateHandler</function> függvény segítségével a <varname>handler</varname> objektumunknak adjuk meg, hogy milyen utasításokat
+            hajtson végre, a <varname>delay</varname> változóban megadott időközönként.
+            <programlisting language="java"><![CDATA[
+private void startUpdateHandler(){
+    m_Runnable = new Runnable() {
+        @Override
+        public void run() {
+            gameEngine.Update();
+
+            if (gameEngine.getCurrentState() == GameState.Running){
+                handler.postDelayed(this, updateDelay);
+            }
+            if (gameEngine.getCurrentState() == GameState.Lost) {
+                OnGameLost();
+            }
+
+            snakeView.setSnakeViewMap(gameEngine.getMap());
+            snakeView.invalidate();
+        }
+    };
+    handler.postDelayed(m_Runnable,updateDelay);
+}]]>           
+            </programlisting>
+            Elsőnek szükség van egy <classname>Runnnable</classname> objektumra. Ennek a <function>run</function> metódusát definiáljuk, melyben meghívjuk a 
+            motorunk <function>Update()</function> tagfüggvényét, lekérjük az aktuális rácsháló állapotot, és átadjuk a <varname>snakeView</varname> objektumnak,
+            majd a <function>invalidate</function> függvénnyel elérjük, hogy a <varname>snakeView</varname> újra rajzolja önmagát. Ahhoz, hogy ezt a 
+            a <varname>handler</varname> elvégezze a megaddott késleltetéssel, meg kell hívnunk a <function>postDelayed</function> metódusét, mely egy 
+            <classname>Runnable</classname> objektumot, és egy <classname>int</classname>-et kér paraméteréül. Ha már a játék véget ért, akkor hívódik meg a 
+            <function>OnGameLost</function> függvény.
+            <programlisting><![CDATA[
+private void OnGameLost() {
+    Toast.makeText(this, "Game Over", Toast.LENGTH_SHORT).show();
+    setContentView(R.layout.activity_gameover);
+
+    Button retry = findViewById(R.id.retrybutton);
+    Button quit = findViewById(R.id.quitbutton_2);
+
+    retry.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setContentView(R.layout.activity_main);
+            gameEngine = new GameEngine();
+            gameEngine.initGame();
+
+            snakeView = (SnakeView)findViewById(R.id.snakeView);
+            CreateTouchListener();
+
+            startUpdateHandler();
+
+        }
+    });
+
+    quit.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+            System.exit(0);
+        }
+    });
+
+}]]>            
+            </programlisting> 
+            Ez a függvény leváltja az aktuális réteget a <filename>activity_gameover.xml</filename>-re. Itt a már megszokott dolgot hatjuk végre, van két gomb,
+            a <varname>retry</varname> és a <varname>quit</varname>. Ha az előbbit nyomjuk meg, akkor újraindítjuk a játékot, míg utóbbi esetében kilépünk a 
+            programból.
+        </para>
+        <para>
+            Mivel implementáltuk a <classname>onTouchListener</classname> interfészt, emiatt implemetálnunk kell az <function>onTouch</function>
+            metódust.
+            <programlisting language="java"><![CDATA[
+@Override
+public boolean onTouch(View v, MotionEvent event) {
+    switch(event.getAction()){
+        case MotionEvent.ACTION_DOWN:
+            prevX = event.getX();
+            prevY = event.getY();
+
+            break;
+        case MotionEvent.ACTION_UP:
+            float newX = event.getX();
+            float newY = event.getY();
+
+
+            if(Math.abs(newX - prevX) > Math.abs(newY - prevY)){
+                if ( newX > prevX){
+                    //RIGHT
+                    gameEngine.UpdateDirection(Direction.East);
+                } else {
+                    //LEFT
+                    gameEngine.UpdateDirection(Direction.West);
+                }
+            }else{
+                if (newY > prevY){
+                    //UP
+                    gameEngine.UpdateDirection(Direction.South);
+                } else {
+                    //DOWN
+                    gameEngine.UpdateDirection(Direction.North);
+                }
+            }
+            break;
+    }
+
+    return true;
+}]]>
+            </programlisting>
+            Ezzel azt valósítjuk meg, hogy a kígyó annak függvényében, hogy merre húzzuk az ujjunkat. 
+        </para>
+        <para>
+            Egy fontos dolog van még, ami zavaró lehet, ha nem oldjuk meg. Jelen esetben nem kezeljük azt, hogy mi történjen, ha az alkalmazást szüneteltetjük.
+            Tehát a kígyó akkor is tovább mozog, és nem tudjuk ott folytatni, ahol abba haygtuk. Emiatt 2 függvényt még definiálnunk kell, az
+            <function>onPause</function> és <function>onResume</function>-ot.
+            Előbbi azért felel, hogy a felesleges erőforrásokat felszabadítsuk a szünet alatt, utóbbi pedig a újra inicializálja azokat.
+            <programlisting language="java"><![CDATA[
+@Override
+protected void onPause() {
+    super.onPause();
+    handler.removeCallbacks(m_Runnable);
+}]]>            
+            </programlisting> 
+            A probléma megoldásához nekünk csak annyi kell, hogy el kell távolítanunk a <varname>m_Runnable</varname> objektumunkat a 
+            végrehajtandó postok közül.
+            <programlisting language="java"><![CDATA[
+@Override
+protected void onResume() {
+    super.onResume();
+    handler.postDelayed(m_Runnable, updateDelay);
+}]]>
+            </programlisting>
+            Ha pedig visszatérünk a játékhoz, akkor újra végrehajtatjuk az <varname>m_Runnable</varname> objektumot a <varname>handler</varname>-rel. 
+        </para>
+        <para>
+            Ezzel az utolsó javításokat is elvégeztük a programban. Lássuk, hogyan néz ki működés közben.
+            <figure>
+                <title>Android Snake</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/AndroidSnake/program.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
+    </section>
     <section>
         <title>JUnit teszt</title>
         <para>
