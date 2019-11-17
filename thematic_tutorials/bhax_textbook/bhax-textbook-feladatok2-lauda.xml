@@ -872,6 +872,383 @@ public class LZWBinFaTest {
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Ebben a feladatban az Unreal Engine 4-el fogunk megismerkedni alapszinten, azon belül is a 
+            hivatalos pédájával. Azért előnyös egy már kész játékmotort használni, mert ezzel 
+            az alap játékmechanikát már készen kapjuk, ráaddásul sokkal könnyebben lehet vele 
+            látványos grafikát készíteni. 
+        </para>
+        <para>
+            Tehát a feladat előnek annyi, hogy le kell tölteni az Unreal Engine-t a számítógépre. Ha Windows-t
+            használsz, akkor a legegyszerűbb, ha az Epic Launcheren keresztül teszed ezt meg. Linux-ra 
+            pedig a <link xlink:href="https://docs.unrealengine.com/en-US/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html">https://docs.unrealengine.com/en-US/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html</link>
+            oldlon találsz teljes leírást. A feladatban mi a 4.19-es verziót használtuk, mivel ehhez a verzióhoz elérhető
+            egy olyan kiegészító, mellyel OSM térképeket lehet importálni az Unreal Engine-es projektünkbe. Viszont ezt
+            ebben a feladatban most nem részletezzük. Ha érdekel ez a kiegészítő, akkor látogass el a 
+            <link xlink:href="https://github.com/ue4plugins/StreetMap">https://github.com/ue4plugins/StreetMap</link> oldalra!
+        </para>
+        <para>
+            Ha sikeresen feltelepítetted az Unreal Engine-t, akkor Windows-on telepíteni kell még a Visual Studio-t, Linux-on pedig
+            egy jó választás lehet a Qt. Ezután el tudjuk készíteni az első C++ projektünket. 
+            <figure>
+                <title>Eredmény</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/OSCI/createproject.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Ha létrehoztuk a projektet, megnyílik az Unreal Editor, melyben lehetőségünk van a grafikusan programozni a 
+            játékünkat, és emellett a Visual Studio/Qt-ben pedig a klaszzikus módon. Lássuk, hoyg miből épül fel a 
+            most létrehozott programunk.
+        </para>
+        <para>
+            Az első, a feladat szempontjából a legfontosabb az autó. Ez egy bábúnak felel meg az Unreal Engine-ben, mely
+            különböző tulajdonságokkal rendelkezik annak érdekében, hogy a felhasználó úgy érezze, hogy tényleg egy autót vezet.
+            <programlisting language="c++">
+AOSCIPawn::AOSCIPawn()
+{
+    ...
+}
+            </programlisting>
+            Az autó objektumunkat az <classname>AOSCIPAWN</classname> osztállyal hozzuk léret, melynek kontruktorával fogjuk most
+            végignézni. Első lépésként szükségünk van magára az autó vázát megadó meshre, mely jelenleg készen van, hiszen gyári példát
+            használunk. Ezt a következő kódrészlettel érjük el.
+            <programlisting language="c++"><![CDATA[
+// Car mesh
+static ConstructorHelpers::FObjectFinder<USkeletalMesh> CarMesh(TEXT("/Game/Vehicle/Sedan/Sedan_SkelMesh.Sedan_SkelMesh"));
+GetMesh()->SetSkeletalMesh(CarMesh.Object);]]>            
+            </programlisting>
+            Emellett készen kapjuk az autó mozgatásához szükséges eszközöket és a hozzá tartozó animációkat.
+            <programlisting language="c++"><![CDATA[
+static ConstructorHelpers::FClassFinder<UObject> AnimBPClass(TEXT("/Game/Vehicle/Sedan/Sedan_AnimBP"));
+GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
+
+// Simulation
+UWheeledVehicleMovementComponent4W* Vehicle4W = CastChecked<UWheeledVehicleMovementComponent4W>(GetVehicleMovement());]]>
+            </programlisting>
+            Következő lépséként azt kell meghatároznunk, hogy hány hány kereke legyen az elkészítendő tárgyunknak, mivel 
+            jelen esetben autóról van szó, ezért természetesen 4db-ot állítunk be. 
+            <programlisting language="c++"><![CDATA[
+check(Vehicle4W->WheelSetups.Num() == 4);
+
+Vehicle4W->WheelSetups[0].WheelClass = UOSCIWheelFront::StaticClass();
+Vehicle4W->WheelSetups[0].BoneName = FName("Wheel_Front_Left");
+Vehicle4W->WheelSetups[0].AdditionalOffset = FVector(0.f, -12.f, 0.f);
+
+Vehicle4W->WheelSetups[1].WheelClass = UOSCIWheelFront::StaticClass();
+Vehicle4W->WheelSetups[1].BoneName = FName("Wheel_Front_Right");
+Vehicle4W->WheelSetups[1].AdditionalOffset = FVector(0.f, 12.f, 0.f);
+
+Vehicle4W->WheelSetups[2].WheelClass = UOSCIWheelRear::StaticClass();
+Vehicle4W->WheelSetups[2].BoneName = FName("Wheel_Rear_Left");
+Vehicle4W->WheelSetups[2].AdditionalOffset = FVector(0.f, -12.f, 0.f);
+
+Vehicle4W->WheelSetups[3].WheelClass = UOSCIWheelRear::StaticClass();
+Vehicle4W->WheelSetups[3].BoneName = FName("Wheel_Rear_Right");
+Vehicle4W->WheelSetups[3].AdditionalOffset = FVector(0.f, 12.f, 0.f);]]>          
+            </programlisting>
+            A kerekeknél több beállítás is létezik. Amikor egy autót készítünk érdemes az első, és a hátsó kerekeket külön kezelni, 
+            ezzel a későbiiekben nagyobb szabadságunk lesz az autó testreszabásában. Tehát 2 osztályra van szükségünk, ezek az 
+            <classname>OSCIWheelFront</classname> és az <classname>OSCIWheelRear</classname> lesznek.
+            Lássuk, hogy mit tartalmaznak.
+            <programlisting language="c++"><![CDATA[
+UOSCIWheelFront::UOSCIWheelFront()
+{
+    ShapeRadius = 35.f;
+    ShapeWidth = 10.0f;
+    bAffectedByHandbrake = false;
+    SteerAngle = 50.f;
+}
+
+UOSCIWheelRear::UOSCIWheelRear()
+{
+	ShapeRadius = 35.f;
+	ShapeWidth = 10.0f;
+	bAffectedByHandbrake = true;
+	SteerAngle = 0.f;
+}]]>
+            </programlisting>
+            Ahogy látható, meg lehet adni a kerék nagyságát, szélességét. Azon kívül, hogy a kerekeket külön tudjuk méretezni a két tengelyen, 
+            van még egy nagon fontos célja annak, hogy külön választottuk őket. Olyan tulajdonságokat tudunk megadni, hoyg az mely kerekek
+            legyenek fordíthatóak, melyekre legyen hatással a kézifék.
+            Tehát visszatérve az autónkhoz, a kerekeket egy tömbben tároljuk el, és elforgarjuk őket a megfelelő irányba az 
+            <function>FVector</function> metódussal. Annak érdekében, hogy a autónkat mutató kamera a tudja kezelni azokat a helyzeteket
+            amikor egy objektum kitakarja az autót, készíteünk kell egy spring arm-ot. Ezt írja le következő kédrsézlet.
+            <programlisting language="c++"><![CDATA[
+// Create a spring arm component
+SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
+SpringArm->TargetOffset = FVector(0.f, 0.f, 200.f);
+SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
+SpringArm->SetupAttachment(RootComponent);
+SpringArm->TargetArmLength = 600.0f;
+SpringArm->bEnableCameraRotationLag = true;
+SpringArm->CameraRotationLagSpeed = 7.f;
+SpringArm->bInheritPitch = false;
+SpringArm->bInheritRoll = false;]]>            
+            </programlisting>
+            A <function>TargetOffSet</function> tulajdonságnak megadunk egy vektort, mellyel meghatározzuk, hogy hol 
+            legyen elhelyezve a kar. Megtudjuk adni, hogy mennyire tudjon forogni a kamera, milyen sebességgel. Már
+            csak létre kell hozni a kamerát, melyet rögzítünk a most elkészített a spring arm-on. 
+            <programlisting language="c++"><![CDATA[
+// Create camera component 
+Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
+Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+Camera->bUsePawnControlRotation = false;
+Camera->FieldOfView = 90.f;]]>  
+            </programlisting>
+            A <function>SetupAttachement</function> függvény segítségével meg tudjuk adni, hogy milyen 
+            spring arm-ot szeretnénk használni. Emellett nem engedélyezzük, hogy a bábú forgatni tudja a kamerát. 
+            A <varname>FieldOfView</varname>, melyel azt adjuk meg, hogy a kamera mekkora szögben "lásson",
+            értékét pedig 90 fokosra állítjuk. Mivel autós játékot készítünk, ezért érdemes lehet egy belső 
+            maerát is készítenünk.
+            <programlisting language="c++"><![CDATA[
+InternalCameraOrigin = FVector(0.0f, -40.0f, 120.0f);
+
+InternalCameraBase = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase"));
+InternalCameraBase->SetRelativeLocation(InternalCameraOrigin);
+InternalCameraBase->SetupAttachment(GetMesh());
+
+InternalCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("InternalCamera"));
+InternalCamera->bUsePawnControlRotation = false;
+InternalCamera->FieldOfView = 90.f;
+InternalCamera->SetupAttachment(InternalCameraBase);]]>          
+            </programlisting>
+            Ebben az esetben nincs szükség spring armra, hiszen az autó belsejében valászínűtlen, hogy egy objektum eltakarna bármit is.
+            Ezért helyette az <varname>InternalCameraBase</varname> objektum képében kétrehozzuk a kamerát tartó eszközt, majd 
+            pedig a második kamerát ehhez csatlakoztattjuk hozzá. A "kamertartó" jelen esetben az autónkhoz van rögzítve.
+            <programlisting language="c++"><![CDATA[
+//Setup TextRenderMaterial
+static ConstructorHelpers::FObjectFinder<UMaterial> TextMaterial(TEXT("Material'/Engine/EngineMaterials/AntiAliasedTextMaterialTranslucent.AntiAliasedTextMaterialTranslucent'"));
+
+UMaterialInterface* Material = TextMaterial.Object;
+
+// Create text render component for in car speed display
+InCarSpeed = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarSpeed"));
+InCarSpeed->SetTextMaterial(Material);
+InCarSpeed->SetRelativeLocation(FVector(70.0f, -75.0f, 99.0f));
+InCarSpeed->SetRelativeRotation(FRotator(18.0f, 180.0f, 0.0f));
+InCarSpeed->SetupAttachment(GetMesh());
+InCarSpeed->SetRelativeScale3D(FVector(1.0f, 0.4f, 0.4f));
+
+// Create text render component for in car gear display
+InCarGear = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarGear"));
+InCarGear->SetTextMaterial(Material);
+InCarGear->SetRelativeLocation(FVector(66.0f, -9.0f, 95.0f));	
+InCarGear->SetRelativeRotation(FRotator(25.0f, 180.0f,0.0f));
+InCarGear->SetRelativeScale3D(FVector(1.0f, 0.4f, 0.4f));
+InCarGear->SetupAttachment(GetMesh());
+
+// Colors for the incar gear display. One for normal one for reverse
+GearDisplayReverseColor = FColor(255, 0, 0, 255);
+GearDisplayColor = FColor(255, 255, 255, 255);
+
+// Colors for the in-car gear display. One for normal one for reverse
+GearDisplayReverseColor = FColor(255, 0, 0, 255);
+GearDisplayColor = FColor(255, 255, 255, 255);
+
+bInReverseGear = false;]]>           
+            </programlisting>
+            Mivel szeretnénk, hogy lássuk mekkora sebességgel haladunk, milyen fokozatban, ezért ezt valahogy meg kell jeleníteni a 
+            képernyőn. Ehhez van szükség a fentebbi kódrészletre. Ehhez egy <classname>UMaterialInterface</classname> objektumra van
+            szükség. És ezzel az autónkkal készen is vagyunk. Viszont még nem tudjuk mozgatni. A <function>SetupPlayerInputComponent</function>
+            ezt valósítja meg.
+            <programlisting><![CDATA[
+void AOSCIPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	// set up gameplay key bindings
+	check(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &AOSCIPawn::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AOSCIPawn::MoveRight);
+	PlayerInputComponent->BindAxis("LookUp");
+	PlayerInputComponent->BindAxis("LookRight");
+
+	PlayerInputComponent->BindAction("Handbrake", IE_Pressed, this, &AOSCIPawn::OnHandbrakePressed);
+	PlayerInputComponent->BindAction("Handbrake", IE_Released, this, &AOSCIPawn::OnHandbrakeReleased);
+	PlayerInputComponent->BindAction("SwitchCamera", IE_Pressed, this, &AOSCIPawn::OnToggleCamera);
+
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AOSCIPawn::OnResetVR); 
+}]]>
+            </programlisting>
+            A <function>BindAction</function> és a <function>BindAxis</function> függvények hasonló funkcionalitással bírnak, 
+            mint a Qt-ban megismert signal-slot mechanizmus. Tehát tudunk mozogni előre-hátra, jobbra-balra. Tudunk
+            váltani a kamerák között, és tudjuk mozgatni is a kamerát. Természetsen a kézifék használata is meg van oldva. 
+            A bind-olt függvények a következőek:
+            <programlisting language="c++"><![CDATA[
+void AOSCIPawn::MoveForward(float Val)
+{
+    GetVehicleMovementComponent()->SetThrottleInput(Val);
+}
+
+void AOSCIPawn::MoveRight(float Val)
+{
+    GetVehicleMovementComponent()->SetSteeringInput(Val);
+}
+
+void AOSCIPawn::OnHandbrakePressed()
+{
+    GetVehicleMovementComponent()->SetHandbrakeInput(true);
+}
+
+void AOSCIPawn::OnHandbrakeReleased()
+{
+    GetVehicleMovementComponent()->SetHandbrakeInput(false);
+}
+
+void AOSCIPawn::OnToggleCamera()
+{
+    EnableIncarView(!bInCarCameraActive);
+}
+
+void AOSCIPawn::OnResetVR()
+{
+#if HMD_MODULE_INCLUDED
+	if (GEngine->XRSystem.IsValid())
+	{
+		GEngine->XRSystem->ResetOrientationAndPosition();
+		InternalCamera->SetRelativeLocation(InternalCameraOrigin);
+		GetController()->SetControlRotation(FRotator());
+	}
+#endif // HMD_MODULE_INCLUDED
+}
+]]>                
+            </programlisting>
+            Az autó mozgatásáért felelős metódusok egyértelműk, azokat nem rsézletezzük. Viszont nézzük meg az utóbbi kettő függvényt.
+            Az <function>OnToggleCamera</function> a kamerák közötti váltást kezeli az <function>EnableincarView</function>
+            függvény segítségével. 
+            <programlisting><![CDATA[
+void AOSCIPawn::EnableIncarView(const bool bState, const bool bForce)
+{
+	if ((bState != bInCarCameraActive) || ( bForce == true ))
+	{
+		bInCarCameraActive = bState;
+		
+		if (bState == true)
+		{
+			OnResetVR();
+			Camera->Deactivate();
+			InternalCamera->Activate();
+		}
+		else
+		{
+			InternalCamera->Deactivate();
+			Camera->Activate();
+		}
+		
+		InCarSpeed->SetVisibility(bInCarCameraActive);
+		InCarGear->SetVisibility(bInCarCameraActive);
+	}
+}]]>
+            </programlisting>
+            Ahogy látható, lényegében csak annyit teszünk, hogy kikapcsoljuk az egyik kamerát, a másikat meg be. 
+            Viszont a sebességet és az aktuálsi fokozatot mutató kijelzónek is át kelle kerülnie a 
+            kameraváltások során a megfelelő kameranézetbe. Ehhez van szükségünk az <function>OnResetVR</function>
+            függvényre. Azt, hogy milyen formában jelenjen meg belső nézetben a HUD, azt a köbetkezőképpen deifiniáljuk:
+            <programlisting language="c++"><![CDATA[
+void AOSCIPawn::SetupInCarHUD()
+{
+    APlayerController* PlayerController = Cast<APlayerController>(GetController());
+    if ((PlayerController != nullptr) && (InCarSpeed != nullptr) && (InCarGear != nullptr) )
+    {
+        // Setup the text render component strings
+        InCarSpeed->SetText(SpeedDisplayString);
+        InCarGear->SetText(GearDisplayString);
+        
+        if (bInReverseGear == false)
+        {
+            InCarGear->SetTextRenderColor(GearDisplayColor);
+        }
+        else
+        {
+            InCarGear->SetTextRenderColor(GearDisplayReverseColor);
+        }
+    }
+}]]>                
+            </programlisting>
+            Mostmár megoldottuk, hogy az autó mozogjon, tudjunk kamerát váltani, meg tudjuk jeleníteni a 
+            HUD-ot. Egy dologra van még szükség, arra, hogy a HUD adatai  frissülni tudjanak.
+            <programlisting language="c++"><![CDATA[
+void AOSCIPawn::UpdateHUDStrings()
+{
+    float KPH = FMath::Abs(GetVehicleMovement()->GetForwardSpeed()) * 0.036f;
+    int32 KPH_int = FMath::FloorToInt(KPH);
+
+    // Using FText because this is display text that should be localizable
+    SpeedDisplayString = FText::Format(LOCTEXT("SpeedFormat", "{0} km/h"), FText::AsNumber(KPH_int));
+    
+    if (bInReverseGear == true)
+    {
+        GearDisplayString = FText(LOCTEXT("ReverseGear", "R"));
+    }
+    else
+    {
+        int32 Gear = GetVehicleMovement()->GetCurrentGear();
+        GearDisplayString = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
+    }	
+}]]>                
+            </programlisting>
+            2 fontos függvény maradt még hátra, a <function>BeginPlay</function> és a <function>Tick</function>. 
+            <programlisting language="c++"><![CDATA[
+void AOSCIPawn::Tick(float Delta)
+{
+	Super::Tick(Delta);
+
+	// Setup the flag to say we are in reverse gear
+	bInReverseGear = GetVehicleMovement()->GetCurrentGear() < 0;
+	
+	// Update the strings used in the hud (incar and onscreen)
+	UpdateHUDStrings();
+
+	// Set the string in the incar hud
+	SetupInCarHUD();
+
+	bool bHMDActive = false;
+#if HMD_MODULE_INCLUDED
+	if ((GEngine->XRSystem.IsValid() == true) && ((GEngine->XRSystem->IsHeadTrackingAllowed() == true) || (GEngine->IsStereoscopic3D() == true)))
+	{
+		bHMDActive = true;
+	}
+#endif // HMD_MODULE_INCLUDED
+	if (bHMDActive == false)
+	{
+		if ( (InputComponent) && (bInCarCameraActive == true ))
+		{
+			FRotator HeadRotation = InternalCamera->RelativeRotation;
+			HeadRotation.Pitch += InputComponent->GetAxisValue(LookUpBinding);
+			HeadRotation.Yaw += InputComponent->GetAxisValue(LookRightBinding);
+			InternalCamera->RelativeRotation = HeadRotation;
+		}
+	}
+}
+
+void AOSCIPawn::BeginPlay()
+{
+	Super::BeginPlay();
+
+	bool bEnableInCar = false;
+#if HMD_MODULE_INCLUDED
+	bEnableInCar = UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled();
+#endif // HMD_MODULE_INCLUDED
+	EnableIncarView(bEnableInCar,true);
+}]]>
+            </programlisting>
+            A <function>Tick</function> függvény vizsgálja azt, hogy a milyen sebességben vagyunk éppen, és 
+            frissíti a HUD-ot a már korábban említett függvények meghívsásával. A <function>BeginPlay</function>
+            pedig megadja, hogy a játékot mindig külső nézetben kezdjük. Ezzel pedig elkészítettük az autót, és a 
+            mozgatásához szükséges függvéyneket, vagyis kész a feladat. Az autónk köré a világot programozás nélkül, 
+            az Unreal Editor-on keresztül a legegyszerűbb megcsinálni.
+            <figure>
+                <title>Eredmény</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/OSCI/ingame.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
     </section>        
 
 
