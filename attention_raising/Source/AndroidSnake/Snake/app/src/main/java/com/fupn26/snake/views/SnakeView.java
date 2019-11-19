@@ -1,6 +1,7 @@
 package com.fupn26.snake.views;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,14 +10,17 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import com.fupn26.snake.enums.TileType;
+import com.fupn26.snake.enums.Orientation;
 
 public class SnakeView extends View {
     private Paint m_Paint = new Paint();
-    private TileType snakeViewMap[][];
+    private String snakeViewMap[][];
+    private Orientation orientation;
 
     public SnakeView(Context context) {
         super(context);
+        setSaveEnabled(true);
+        setKeepScreenOn(true);
     }
 
     public SnakeView(Context context, @Nullable AttributeSet attrs) {
@@ -31,14 +35,19 @@ public class SnakeView extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void setSnakeViewMap(TileType[][] map){
+    public void setSnakeViewMap(String[][] map){
         this.snakeViewMap = map;
     }
+
+    public void setOrientation(Orientation orientation){
+        this.orientation = orientation;
+    }
+
+
 
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
-
         if (snakeViewMap != null){
             float tileSizeX = canvas.getWidth() / snakeViewMap.length;
             float tileSizeY = canvas.getHeight() / snakeViewMap[0].length;
@@ -48,24 +57,24 @@ public class SnakeView extends View {
             for (int x = 0; x < snakeViewMap.length; ++x){
                 for (int y = 0; y < snakeViewMap[x].length; ++y){
 //                    if(snakeViewMap[x][y] != null) {
-                        switch (snakeViewMap[x][y]) {
+                    switch (snakeViewMap[x][y]) {
 
-                            case Nothing:
-                                m_Paint.setColor(Color.WHITE);
-                                break;
-                            case Wall:
-                                m_Paint.setColor(Color.BLACK);
-                                break;
-                            case SnakeHead:
-                                m_Paint.setColor(Color.RED);
-                                break;
-                            case SnakeTail:
-                                m_Paint.setColor(Color.YELLOW);
-                                break;
-                            case Apple:
-                                m_Paint.setColor(Color.GREEN);
-                                break;
-                        }
+                        case "Nothing":
+                            m_Paint.setColor(Color.WHITE);
+                            break;
+                        case "Wall":
+                            m_Paint.setColor(Color.BLACK);
+                            break;
+                        case "SnakeHead":
+                            m_Paint.setColor(Color.RED);
+                            break;
+                        case "SnakeTail":
+                            m_Paint.setColor(Color.YELLOW);
+                            break;
+                        case "Apple":
+                            m_Paint.setColor(Color.GREEN);
+                            break;
+                    }
 //                      }
                     canvas.drawCircle(x * tileSizeX + tileSizeX / 2f + circleSize / 2, y * tileSizeY + tileSizeY / 2f + circleSize / 2, circleSize, m_Paint);
                 }

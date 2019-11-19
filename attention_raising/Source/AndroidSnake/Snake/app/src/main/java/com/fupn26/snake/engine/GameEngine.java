@@ -1,17 +1,24 @@
 package com.fupn26.snake.engine;
 
+import android.os.Bundle;
+import android.util.Log;
+
 import com.fupn26.snake.classes.Coordinate;
 import com.fupn26.snake.enums.Direction;
 import com.fupn26.snake.enums.GameState;
-import com.fupn26.snake.enums.TileType;
+import com.fupn26.snake.enums.Orientation;
+//import com.fupn26.snake.enums.TileType;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
 
 public class GameEngine {
-    public static final int GameWidth = 28;
-    public static final int  GameHeight = 42;
+    //for Landscape mode
+    public int GameWidth = 42 + 3 ;     // for portrait 28;
+    public int GameHeight = 28 - 3 - 2;    // fo portrait 42;
+
+    private final String TileType[] = {"Nothing", "Wall", "SnakeHead", "SnakeTail", "Apple"};
 
     private List<Coordinate> walls = new ArrayList<>();
     private List<Coordinate> snake = new ArrayList<>();
@@ -25,14 +32,316 @@ public class GameEngine {
 
     private boolean increaseTail = false;
 
-    private Coordinate getSnakeHead(){
+    public void SwitchCoordinates() {
+//        for (Coordinate wall:walls) {
+//            int x = wall.getY();
+//            int y = wall.getX();
+//            wall.setX(x);
+//            wall.setY(y);
+//        }
+
+        for (Coordinate snake_element : snake) {
+            int x = snake_element.getY();
+            int y = snake_element.getX();
+            snake_element.setX(x);
+            snake_element.setY(y);
+        }
+
+        for (Coordinate apple : apples) {
+            int x = apple.getY();
+            int y = apple.getX();
+            apple.setX(x);
+            apple.setY(y);
+        }
+    }
+
+    private Coordinate getSnakeHead() {
         return snake.get(0);
     }
 
-    public GameEngine(){
+    public GameEngine(Orientation orienntation) {
+        if (orienntation == Orientation.PORTRAIT) {
+            GameHeight += GameWidth;
+            GameWidth = GameHeight - GameWidth;
+            GameHeight -= GameWidth;
+        }
+        initGame();
+    }
+
+    public GameEngine(List<Coordinate> walls, List<Coordinate> snake,
+                      List<Coordinate> apples, Direction direction, GameState gameState,
+                      Orientation orientation, Orientation prevOrientation) {
+
+        this.snake = snake;
+        this.apples = apples;
+        this.currentDirection = direction;
+        this.currentGameState = gameState;
+
+        SwitchCoordinates();
+//        SetDirection(orientation, prevOrientation, direction);
+        if (orientation == Orientation.PORTRAIT || orientation == Orientation.REVERSEPORTRAIT) {
+            GameHeight += GameWidth;
+            GameWidth = GameHeight - GameWidth;
+            GameHeight -= GameWidth;
+        }
+        AddWalls();
+    }
+
+
+    private void SetDirection(Orientation orientation, Orientation prevOrientation, Direction direction){
+
+        Coordinate irany = new Coordinate(snake.get(0).getX() - snake.get(1).getX(), snake.get(0).getY() - snake.get(1).getY());
+        switch(orientation){
+            case PORTRAIT:
+                switch(prevOrientation){
+//                    case PORTRAIT:
+//                        if(irany.getX()==-1)
+//                        {
+//                            if (irany.getY() == 0) this.currentDirection = Direction.North;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                            else if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                        }
+//                        else if(irany.getX()==0)
+//
+//                        {
+//                            if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                        }
+//                        else if(irany.getX()==1)
+//
+//                        {
+//                            if (irany.getY() == 0) this.currentDirection = Direction.South;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                            else if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                        }
+//
+//                        break;
+                    case LANDSCAPE:
+//                        if(irany.getX()==-1)
+//                        {
+//                            if (irany.getY() == 0) this.currentDirection = Direction.West;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.South;
+//                            else if (irany.getY() == 1) this.currentDirection = Direction.North;
+//                        }
+//                        else if(irany.getX()==0)
+//
+//                        {
+//                            if (irany.getY() == 1) this.currentDirection = Direction.North;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.South;
+//                        }
+//                        else if(irany.getX()==1)
+//
+//                        {
+//                            if (irany.getY() == 0) this.currentDirection = Direction.East;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.South;
+//                            else if (irany.getY() == 1) this.currentDirection = Direction.North;
+//                        }
+                        switch(direction){
+
+                            case North:
+                                this.currentDirection = Direction.South;
+                                break;
+                            case East:
+                                this.currentDirection = Direction.North;
+                                break;
+                            case South:
+                                this.currentDirection = Direction.North;
+                                break;
+                            case West:
+                                this.currentDirection = Direction.East;
+                                break;
+                        }
+                        break;
+                    case REVERSEPORTRAIT:
+                        break;
+                    case REVERSELANDSCAPE:
+                        if(irany.getX()==-1)
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.East;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.North;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.South;
+                        }
+                        else if(irany.getX()==0)
+
+                        {
+                            if (irany.getY() == 1) this.currentDirection = Direction.South;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.North;
+                        }
+                        else if(irany.getX()==1)
+
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.West;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.North;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.South;
+                        }
+                        break;
+                }
+                break;
+            case LANDSCAPE:
+                switch(prevOrientation){
+
+                    case PORTRAIT:
+                        if(irany.getX()==-1)
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.West;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.South;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.North;
+                        }
+                        else if(irany.getX()==0)
+
+                        {
+                            if (irany.getY() == 1) this.currentDirection = Direction.North;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.South;
+                        }
+                        else if(irany.getX()==1)
+
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.East;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.South;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.North;
+                        }
+
+                        break;
+//                    case LANDSCAPE:
+//                        if(irany.getX()==-1)
+//                        {
+//                            if (irany.getY() == 0) this.currentDirection = Direction.North;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                            else if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                        }
+//                        else if(irany.getX()==0)
+//
+//                        {
+//                            if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                        }
+//                        else if(irany.getX()==1)
+//
+//                        {
+//                            if (irany.getY() == 0) this.currentDirection = Direction.South;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                            else if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                        }
+//                        break;
+                    case REVERSEPORTRAIT:
+                        break;
+                    case REVERSELANDSCAPE:
+                        if(irany.getX()==-1)
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.South;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.East;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.West;
+                        }
+                        else if(irany.getX()==0)
+
+                        {
+                            if (irany.getY() == 1) this.currentDirection = Direction.West;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.East;
+                        }
+                        else if(irany.getX()==1)
+
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.North;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.East;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.West;
+                        }
+
+                        break;
+                }
+                break;
+            case REVERSEPORTRAIT:
+                break;
+            case REVERSELANDSCAPE:
+                switch(prevOrientation){
+
+                    case PORTRAIT:
+                        if(irany.getX()==-1)
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.East;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.North;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.South;
+                        }
+                        else if(irany.getX()==0)
+
+                        {
+                            if (irany.getY() == 1) this.currentDirection = Direction.South;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.North;
+                        }
+                        else if(irany.getX()==1)
+
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.West;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.South;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.North;
+                        }
+
+                        break;
+                    case LANDSCAPE:
+                        if(irany.getX()==-1)
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.South;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.East;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.West;
+                        }
+                        else if(irany.getX()==0)
+
+                        {
+                            if (irany.getY() == 1) this.currentDirection = Direction.West;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.East;
+                        }
+                        else if(irany.getX()==1)
+
+                        {
+                            if (irany.getY() == 0) this.currentDirection = Direction.North;
+                            else if (irany.getY() == -1) this.currentDirection = Direction.East;
+                            else if (irany.getY() == 1) this.currentDirection = Direction.West;
+                        }
+
+                        break;
+                    case REVERSEPORTRAIT:
+                        break;
+//                    case REVERSELANDSCAPE:
+//                        if(irany.getX()==-1)
+//                        {
+//                            if (irany.getY() == 0) this.currentDirection = Direction.North;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                            else if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                        }
+//                        else if(irany.getX()==0)
+//
+//                        {
+//                            if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                        }
+//                        else if(irany.getX()==1)
+//
+//                        {
+//                            if (irany.getY() == 0) this.currentDirection = Direction.South;
+//                            else if (irany.getY() == -1) this.currentDirection = Direction.West;
+//                            else if (irany.getY() == 1) this.currentDirection = Direction.East;
+//                        }
+//
+//                        break;
+                }
+                break;
+        }
 
     }
 
+
+    public List<Coordinate> getWalls(){
+        return walls;
+    }
+    public List<Coordinate> getSnake(){
+        return snake;
+    }
+    public List<Coordinate> getApples(){
+        return apples;
+    }
+
+    public Direction getDirection(){
+        return currentDirection;
+    }
     public void initGame(){
         AddSnake();
         AddWalls();
@@ -81,6 +390,7 @@ public class GameEngine {
     }
 
     private void UpdateSnake(int x, int y){
+    //    Log.i("UpdateSnake", Integer.toString(count++));
         int newX = snake.get(snake.size() - 1).getX();
         int newY = snake.get(snake.size() - 1).getY();
 
@@ -111,72 +421,72 @@ public class GameEngine {
     }
 
     public void Update (){
-        switch (currentDirection){
+            switch (currentDirection) {
 
-            case North:
-                UpdateSnake(0, -1);
-                break;
-            case East:
-                UpdateSnake(1,0);
-                break;
-            case South:
-                UpdateSnake(0,1);
-                break;
-            case West:
-                UpdateSnake(-1, 0);
-                break;
-        }
-
-        for(Coordinate w : walls){
-            if(snake.get(0).equals(w)){
-                currentGameState = GameState.Lost;
+                case North:
+                    UpdateSnake(0, -1);
+                    break;
+                case East:
+                    UpdateSnake(1, 0);
+                    break;
+                case South:
+                    UpdateSnake(0, 1);
+                    break;
+                case West:
+                    UpdateSnake(-1, 0);
+                    break;
             }
-        }
 
-        for (int i = 1; i < snake.size(); ++i) {
-            if(getSnakeHead().equals(snake.get(i))){
-                currentGameState = GameState.Lost;
-                return;
+            for (Coordinate w : walls) {
+                if (snake.get(0).equals(w)) {
+                    currentGameState = GameState.Lost;
+                }
             }
-        }
 
-        Coordinate appleToRemove = null;
-        for ( Coordinate apple : apples ){
-            if(getSnakeHead().equals(apple)){
-                appleToRemove = apple;
-                increaseTail = true;
+            for (int i = 1; i < snake.size(); ++i) {
+                if (getSnakeHead().equals(snake.get(i))) {
+                    currentGameState = GameState.Lost;
+                    return;
+                }
             }
-        }
 
-        if(appleToRemove != null) {
-            apples.remove(appleToRemove);
-            AddApples();
-        }
+            Coordinate appleToRemove = null;
+            for (Coordinate apple : apples) {
+                if (getSnakeHead().equals(apple)) {
+                    appleToRemove = apple;
+                    increaseTail = true;
+                }
+            }
+
+            if (appleToRemove != null) {
+                apples.remove(appleToRemove);
+                AddApples();
+            }
     }
 
-    public TileType[][] getMap  (){
-        TileType[][] map = new TileType[GameWidth][GameHeight];
+    public String[][] getMap  (){
+        String[][] map = new String[GameWidth][GameHeight];
 
         for (int i = 0; i < GameWidth; i++) {
             for (int j = 0; j < GameHeight; j++) {
-                map[i][j] = TileType.Nothing;
+                map[i][j] = TileType[0];
             }
 
         }
 
         for(Coordinate s : snake){
-            map[s.getX()][s.getY()] = TileType.SnakeTail;
+            map[s.getX()][s.getY()] = TileType[3];
         }
 
-        map[snake.get(0).getX()][snake.get(0).getY()] = TileType.SnakeHead;
+        map[snake.get(0).getX()][snake.get(0).getY()] = TileType[2];
 
 
         for (Coordinate a : apples) {
-            map[a.getX()][a.getY()] = TileType.Apple;
+            map[a.getX()][a.getY()] = TileType[4];
         }
 
         for (Coordinate wall: walls) {
-            map[wall.getX()][wall.getY()] = TileType.Wall;
+            map[wall.getX()][wall.getY()] = TileType[1];
         }
         return map;
      }
@@ -192,6 +502,7 @@ public class GameEngine {
             walls.add(new Coordinate(GameWidth-1, i));
         }
     }
+
 
 
     public GameState getCurrentState() {

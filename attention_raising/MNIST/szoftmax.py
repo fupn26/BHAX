@@ -20,7 +20,6 @@
 # ==============================================================================
 
 """A very simple MNIST classifier.
-
 See extensive documentation at
 http://tensorflow.org/tutorials/mnist/beginners/index.md
 """
@@ -43,10 +42,10 @@ import matplotlib.pyplot
 FLAGS = None
 
 
-#def readimg():
-#    file = tf.read_file("sajat8a.png")
-#    img = tf.image.decode_png(file)
-#    return img
+def readimg():
+    file = tf.read_file("sajat8as.png")
+    img = tf.image.decode_png(file, 1)
+    return img
 
 def main(_):
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
@@ -107,11 +106,11 @@ def main(_):
 
   #print("-- A sajat kezi 8-asom felismerese, mutatom a szamot, a tovabblepeshez csukd be az ablakat")
   print("-- A MNIST 11. tesztkepenek felismerese, mutatom a szamot, a tovabblepeshez csukd be az ablakat")
-#  img = readimg()
-#  image = img.eval()
-#  image = image.reshape(28*28)
-  img = mnist.test.images[11]
-  image = img
+  img = readimg()
+  image = img.eval()
+  image = image.reshape(28*28)
+#  img = mnist.test.images[11]
+#  image = img
   matplotlib.pyplot.imshow(image.reshape(28,28), cmap=matplotlib.pyplot.cm.binary)
   matplotlib.pyplot.savefig("8.png")  
   matplotlib.pyplot.show()
