@@ -28,6 +28,7 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+from datetime import datetime
 
 # Import data
 from tensorflow.examples.tutorials.mnist import input_data
@@ -48,6 +49,18 @@ def readimg():
     return img
 
 def main(_):
+#   stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+#   logdir = 'logs/func/%s' % stamp
+# #  writer = tf.summary.create_file_writer(logdir)
+#   writer = tf.summary.FileWriter(logdir)
+
+#   train_test()
+#   with writer.as_default():
+#     tf.summary.trace_export(
+#       name="train_test",
+#       step=0,
+#       profiler_outdir=logdir)
+
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
   # Create the model
@@ -85,6 +98,8 @@ def main(_):
   # Test trained model
   print("-- A halozat tesztelese")  
   correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+  print(y)
+  print(tf.argmax(y,1))
   accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))  
   print("-- Pontossag: ", sess.run(accuracy, feed_dict={x: mnist.test.images,
                                       y_: mnist.test.labels}))
@@ -104,8 +119,8 @@ def main(_):
   print("-- Ezt a halozat ennek ismeri fel: ", classification[0])
   print("----------------------------------------------------------")
 
-  #print("-- A sajat kezi 8-asom felismerese, mutatom a szamot, a tovabblepeshez csukd be az ablakat")
-  print("-- A MNIST 11. tesztkepenek felismerese, mutatom a szamot, a tovabblepeshez csukd be az ablakat")
+  print("-- A sajat kezi 8-asom felismerese, mutatom a szamot, a tovabblepeshez csukd be az ablakat")
+#  print("-- A MNIST 11. tesztkepenek felismerese, mutatom a szamot, a tovabblepeshez csukd be az ablakat")
   img = readimg()
   image = img.eval()
   image = image.reshape(28*28)

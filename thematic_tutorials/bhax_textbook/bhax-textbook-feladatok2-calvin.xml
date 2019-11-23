@@ -23,6 +23,135 @@
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Ebben a feladatban egy neurális hálót fogunk tanítani az MNIST adatbázisát felhasználva és a Softmax regressziót használva. A cél
+            az, hogy a programunk fel tudja ismerni a képen látható számot. Maga a forráskód a 
+            hivatalos Tensorflow repo-jában lévő forráson alapszik, csak annyival let kiegészítve, hogy a saját kézzel írt számainkat is fel tudja ismerni. 
+        </para>
+        <para>
+            Tehát az MNIST egy adatbázis, mely kézzel írt számokat ábrázoló képeket tartalmaz. Ezekhez a képekhez tartozik egy címke, ami megadja, hogy mit kéne
+            látnia a képen a programnak. Szóval ennek az adatbázisnak a segítségével betanítjuk a neurális hálónkat, majd pedig a teszteljük. Lássuk a forrást.
+            <programlisting>
+from tensorflow.examples.tutorials.mnist import input_data
+            </programlisting>
+            Elsőnek importáljuk a tanításhoz szükséges mintákat. Következő feladat a model létrehozása.
+            <programlisting language="python">
+x = tf.placeholder(tf.float32, [None, 784])
+W = tf.Variable(tf.zeros([784, 10]))
+b = tf.Variable(tf.zeros([10]))
+y = tf.matmul(x, W) + b           
+            </programlisting>
+            A <varname>x</varname> változó nem egy konkrét értéket fog tartalmazni, csak placeholder-ként 
+            funkcionál. Ez egy 2 dimenziós tensor lesz, melybe akárhány MNIST képet, melyeket 784 dimenziós
+            vektorokká alakítunk, szeretnénk tárolni. A <varname>W</varname> fogja tartalmazni a 
+            súlyokat. Ennek típusa <classname>Variable</classname>, mely egy módosítható tensort 
+            jelent. Ugyanilyen típusú lesz a <varname>b</varname>, mely az eltolási 
+            értékeket fogja tartalmazni. De mind a kettő esetén igaz, hogy inicializálás 
+            során nullákkal töltjük fel. Mivel a <varname>W</varname>-t szeretnénk balról 
+            szorozni <varname>x</varname>-el, emiatt ez egy 784x10-es mátrix lesz. A szorzás 
+            erdeménye pedig egy 10 dimenziójú vektor lesz. Ehhez pedig hozzá tudjuk majd adni a
+            <varname>b</varname>-t. Ezt az értéket adjuk át <varname>y</varname>-nak. Ahhoz, hogy 
+            tesztelni tudjuk a modellt, szükségünk van egy indikátorra. Az indikátor azt szokta muatatni, 
+            hogy a modell rossz, szokták veszteségnek is nevezni. A cél az, hogy ezt minimalizáljuk. 
+            Egy elterjed függvény a veszteség kiszámítsásra a <function>cross-entropy</function>.
+            <figure>
+                <title>Cross-entropy függvény</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/MNIST/cross-entropy-function.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Tehát ezt a függvényt fogjuk végrehajtani az <varname>y</varname>-on. De ehhez 
+            szükség van még <varname>y_</varname>-ra.
+            <programlisting language="python">
+y_ = tf.placeholder(tf.float32, [None, 10])
+            </programlisting>
+            Az <varname>y</varname>-ba fogjuk tárolni az általunk kiszámított
+            eloszlásokat, míg az <varname>y_</varname>-ban a valódi eloszlást.
+            Ezután kiszámítjuk a <function>cross-entropy</function> értékét.
+            <programlisting language="python">
+cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = y_, logits = y))
+            </programlisting>
+            A <function>tf.nn.softmax_cross_entropy_with_logits</function> függvény kiszámolja a <function>cross entropy-t</function>
+            <varname>y</varname> és <varname>y_</varname> értékek között. Majd a <function>tf.reduce_mean</function> kiszámolja az
+            így keletkezett újabb vektorban lévő értékek átlagát. Még arra van szükség, hogy ezt az átlagot csökkentsük. 
+            <programlisting language="python">
+train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+            </programlisting>
+            A gradient decent algoritmust használjuk, csökkentsük az átlagos veszteséget, és a 0.5-ös paraméter azt adja meg, hogy
+            milyen lépésekkel közelítünk a minimum veszteséghez.  Ezután szükségünk van egy metódusra, mely inicializálja változóinkat, és 
+            elindít egy <classname>Session</classname>-t. Ez egy olyan osztály, amivel Tensorflow művelteket hajtunk végre.
+            <programlisting language="python">
+sess = tf.InteractiveSession()
+tf.initialize_all_variables().run(session=sess)
+            </programlisting>
+            Ezután a már csak tanítanunk kell a modellt.
+            <programlisting language="python">
+for i in range(1000):
+    batch_xs, batch_ys = mnist.train.next_batch(100)
+    sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})            
+            </programlisting>
+            Ezt a tanítást 1000-szer hatjuk végre. Minden alkalommal választunk random 100 batch-et a tanításra használt 
+            adatbázisunkból, melyet átadunk a változóinknak. Ezzel újból kiszámítunk egy <varname>y</varname>-ot. Majd ezzel
+            és <varname>y_</varname> segítségével kiszámoljuk az átlagos veszteséget, és minimalizáljuk. Ha ezzel készen vagyunk, 
+            akkot teszteljük.
+            <programlisting language="python">
+                correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+                accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))  
+                print("-- Pontossag: ", sess.run(accuracy, feed_dict={x: mnist.test.images,
+                                                    y_: mnist.test.labels}))              
+            </programlisting>
+            A <function>tf.argmax</function> függvény azt adja vissza, hogy az adott tensor adott tengelye mentén mi a legnagyobb értékű
+            elem indexe. Ezt végrehajtjuk a várt értékeken és a kapottakon. Ha a két indexérték egyenlő, akkor helyesen következtette ki a modell a 
+            számot. A <function>tf.cast</function> függvény átalakítja az igaszágértékünket lebegőpontos számmá. Majd adunk bementet és kiszámoljuk, hogy 
+            mennyire pontos a modell.
+            <programlisting language="python">
+img = mnist.test.images[42]
+image = img
+
+matplotlib.pyplot.imshow(image.reshape(28, 28), cmap=matplotlib.pyplot.cm.binary)
+matplotlib.pyplot.savefig("4.png")  
+matplotlib.pyplot.show()
+
+classification = sess.run(tf.argmax(y, 1), feed_dict={x: [image]})
+
+print("-- Ezt a halozat ennek ismeri fel: ", classification[0])
+print("----------------------------------------------------------")
+
+print("-- A sajat kezi 8-asom felismerese, mutatom a szamot, a tovabblepeshez csukd be az ablakat")
+img = readimg()
+image = img.eval()
+image = image.reshape(28*28)
+matplotlib.pyplot.imshow(image.reshape(28,28), cmap=matplotlib.pyplot.cm.binary)
+matplotlib.pyplot.savefig("8.png")  
+matplotlib.pyplot.show()
+
+classification = sess.run(tf.argmax(y, 1), feed_dict={x: [image]})
+
+print("-- Ezt a halozat ennek ismeri fel: ", classification[0])
+print("----------------------------------------------------------")
+
+            </programlisting>
+            Az utolsó kódrészetben pedig már mi adunk meg képeket a modellnek, amit fel kell ismernie. A képet eslőnek megjelenítjük a 
+            felhasználó számára. Erre van a <function>matplotlib</function> könyvtár. Majd ha bezárja, akkor a proggram kiírja, hogy minek ismerte fel.
+            A saját kézi 8-ast pedig a <function>readimg</function> függvénnyel olvassuk be.
+            <programlisting language="python">
+def readimg():
+    file = tf.read_file("sajat8as.png")
+    img = tf.image.decode_png(file, 1)
+    return img
+            </programlisting>
+            Mivel szürkeáryalatos képre van szükségünk, ezért adjuk meg az 1-es paramétert a <function>tf.image.decode_png</function> függvénynek.
+            <figure>
+                <title>Szoftmax müködés közben</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/MNIST/szoftmax.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
     </section>        
 
     <section>
@@ -40,6 +169,224 @@
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
+        <para>
+            Az előző feladatban megoldottuk, hogy a modellünk képes legyen felismerni a kézzel írt számokat. Gondolhatnánk, hogy egész jó eredménnyel, hiszen
+            92%-ban helyes megfejtést adott. Viszont ez egyáltalán nem egy jó érték, ezért is készítették el ennek mély változatát, mellyel 99.2%-osra
+            növeljük a helyes megfejtések arányát. Egy konvolúciós neurális hálót fogunk elkészítni, melynek semantikus ábrája így néz ki:
+            <figure>
+                <title>Deep MNIST ábra</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/MNIST/deep_minst_abra.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>          
+        </para>
+        <para>
+            Lássuk, hoygan épül fel a modellünk. Először is több súlyra és bias-re lesz 
+            szükségünk. A súlyokat kis zajszinttel inicializáljuk, hogy elkerüljük a 
+            szimmetria megtörését és a 0 grádienseket. Olyan neuronokat használunk, melynek
+            aktivációs függvénye mindig a bemenet pozitív részét adja vissza, vagyis 
+            0-át, ha a szám negatív, ellenben pedig önmagát. Emiatt érdemes pozitív bias-okat
+            használni. A bias amúgy azt adja meg, hoyg mennyire térhet el a várt és a kapott 
+            érték egymástól. Az előbbeik alapján készítünk 2 függvényt:
+            <programlisting language="python">
+def weight_variable(shape):
+    """weight_variable generates a weight variable of a given shape."""
+    initial = tf.truncated_normal(shape, stddev=0.1)
+    return tf.Variable(initial)
+
+
+def bias_variable(shape):
+    """bias_variable generates a bias variable of a given shape."""
+    initial = tf.constant(0.1, shape=shape)
+    return tf.Variable(initial)              
+            </programlisting>
+            A <function>tf.truncated_normal</function> függvény a kapott alaknak megfelelő tensort 
+            feltölt random számokkal, melyek normlis eloszlásúak, és a 
+            szórásuk 0.1. A <function>tf.constant</function> pedig a megadott értékkel
+            tölt fel egy tensort, melynek formája megegyezik a <varname>shape</varname>
+            attribútummal. Tehát így kapjuk meg a kezdő súlyokkal és bias-okkal 
+            feltöltött tensorainket.
+        </para>
+        <para>
+            Ezután szükségünk van még 2 függvényre, mellyel a konvolúciót és az
+            összevonást hajtjuk végre.
+            <programlisting language="python">
+def conv2d(x, W):
+    """conv2d returns a 2d convolution layer with full stride."""
+    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+    
+def max_pool_2x2(x):
+    """max_pool_2x2 downsamples a feature map by 2X."""
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
+                          strides=[1, 2, 2, 1], padding='SAME')
+  
+            </programlisting>
+            A <function>tf.nn.conv2d</function> függvény a 4D-s bemenetből és a szűrőből
+            egy 2D konvolúciót számol és visszaadja tensor formájában. Folyamat abból áll, hogy
+            a szűrőként megadott tensort 2D-ssé alakítja, a bemenetből képrészleteket szed ki, és 
+            egy virtuális tensort készít. Minden egyes képrészlet esetén jobbról szorozza a 
+            szűrő mártixor a képrészlet vektorával. A padding értéke pedig azért "SAME", hogy a 
+            bemenettel megegyező méretű tensort kapjunk. A <function>tf.nn.max_pool</function>
+            függvény pedig a bemenetként kapott tensoron maximum összevonást hajt végre, vagyis a 
+            a legnagyobb értékeket tartjuk csak meg. 
+        </para>
+        <para>
+            Elkészíthatjük mostmár az első réteget. Ez egy konvolúcióból és egy maximum
+            összevonásból fog állni. Mielőtt alkalmaznánk, a bementként kapott képet kell
+            átalakítani.
+            <programlisting language="python"><![CDATA[
+def deepnn(x):
+    x_image = tf.reshape(x, [-1,28,28,1])
+    with tf.name_scope('reshape'):
+    x_image = tf.reshape(x, [-1, 28, 28, 1])
+
+# First convolutional layer - maps one grayscale image to 32 feature maps.
+with tf.name_scope('conv1'):
+    W_conv1 = weight_variable([5, 5, 1, 32])
+    b_conv1 = bias_variable([32])
+    h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
+
+# Pooling layer - downsamples by 2X.
+with tf.name_scope('pool1'):
+    h_pool1 = max_pool_2x2(h_conv1)]]>
+            </programlisting>
+            A súlyokat tartalmazó tensor a <varname>W_conv1</varname>, melynek 
+            alakja [5, 5, 1, 32]. Eből az első kettő azt adja meg, hogy mekkora a 
+            képrészleteket viszgálunk, a harmadik a bemenő csatornák, a negyedik a 
+            kimenőekét adja meg. A konvolúció pedig minden 5x5-ös képrészletekhez 32 db összeget
+            számít ki. A <varname>b</varname>-ben tároljuk a 32 db bias-t. Végül a 
+            végrehatjuk a konvolúciót a paraméterként kapott képre és a súlyokra, majd 
+            hozzáadjuk a bias-okat. A <function>tf.nn.relu</function> függvény pedig, 
+            nullát ad vissza, ha negatív az érték, és az értéket, ha pozitív. Ezután
+            pedig alkalmazzuk az maximum összevonást a rétegünkön. 
+        </para>
+        <para>
+            Mivel most mély neurális hálót készítünk, ezért több ilyan rétegünk is lesz. 
+            Folyatssuk tehát a másodikkal.
+            <programlisting language="python"><![CDATA[
+# Second convolutional layer -- maps 32 feature maps to 64.
+with tf.name_scope('conv2'):
+    W_conv2 = weight_variable([5, 5, 32, 64])
+    b_conv2 = bias_variable([64])
+    h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+
+# Second pooling layer.
+with tf.name_scope('pool2'):
+    h_pool2 = max_pool_2x2(h_conv2)]]>                  
+            </programlisting>
+            A másodiik réteg az elsőből számítjuk ki. Most a súlyokat tartalmazó 
+            tensorunk 32-es bemenetet kap, és 64-eset ad vissza. Ebből következik,
+            hogy a konvolúcia minden 5x5-ös képrészlethez 64 összeget számol ki. 
+            Ezután a lépés után a 28x28-as képünket átalakítottuk egy 7x7-essé
+            alakítottuk.
+        </para>
+        <para>
+            Ezután egy 1024 neuronból álló, fully-connected (FC) réteget adunk hozzá a 
+            modellünkhöz. Ezzel pedig feldolgozzuk az egész képet.
+            <programlisting language="python">
+with tf.name_scope('fc1'):
+    W_fc1 = weight_variable([7 * 7 * 64, 1024])
+    b_fc1 = bias_variable([1024])
+
+    h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
+    h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)                
+            </programlisting>
+            Ehhez a réteghez is kiszámoljuk a súlyokat és a bias-okat. Majd a 
+            <function>tf.reshape</function> függvénnyel pedig az <varname>h_pool2</varname>
+            réteget ix7*7*64-es mátrixxá alakítjuk. Majd az így kapott réteget jobbról szorozzuk
+            a súlyokat tartalmazó <varname>W_fc1</varname> mátrixxal. Ehhez hozzáadjuk a 
+            bias-okat tartalmazó <varname>b_fc1</varname> mátrixot, majd az így kapott 
+            mátrixon alkalmazzuk a <function>tf.nn.relu</function> függvényt. Mely a 
+            negatív számokból nullát csinál, a többit pedig hagyja. 
+        </para>
+        <para>
+            Annak érdekében, hogy a csökkentsük a modellünk bonyolultságát. Lényegében a 
+            felesleges neuronokat eldobjuk. De annak érdekében, hogy ezeket lehessen tárolni, 
+            létrehozunk egy új <classname>placeholder</classname>-t.
+            <programlisting language="python">
+with tf.name_scope('dropout'):
+    keep_prob = tf.placeholder(tf.float32)
+    h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)                
+            </programlisting>
+            A <function>tf.nn.dropout</function> függvény pedig <varname>keep_prob</varname>
+            valószínűséggel ejt ki neuronokat a <varname>h_fc1</varname> tensorból. A maradék
+            neuronokat pedig <function>1 / (1-rate)</function> módon skálázza, vagy 0-át ad vissza.
+            Erre azért van szükség, hogy a <varname>h_fc1</varname>-ből kiszámítható összeg ne 
+            változzon. 
+        </para>
+        <para>
+            Az utolsó lépsét pedig már ismerjük, ez lesz a szoftmax réteg.
+            <programlisting>
+with tf.name_scope('fc2'):
+    W_fc2 = weight_variable([1024, 10])
+    b_fc2 = bias_variable([10])
+
+    y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2                
+            </programlisting>
+            Ezzel elkészítettük a mély neurális hálónkat, most jöhet a betanítás. 
+            Ebben az esetben a betanítás elég hosszú ideig tarthat, ezért, ha egyszer lefuttatjuk,
+            akkor már érdemes el is meneteni a kapott súlyokat.
+            <programlisting><![CDATA[
+with tf.name_scope('loss'):
+    cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=y_,
+                                                        logits=y_conv)
+cross_entropy = tf.reduce_mean(cross_entropy)
+
+with tf.name_scope('adam_optimizer'):
+    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+
+with tf.name_scope('accuracy'):
+    correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
+    correct_prediction = tf.cast(correct_prediction, tf.float32)
+accuracy = tf.reduce_mean(correct_prediction)
+
+graph_location = tempfile.mkdtemp()
+    print('Saving graph to: %s' % graph_location)
+    train_writer = tf.summary.FileWriter(graph_location)
+    train_writer.add_graph(tf.get_default_graph())
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    for i in range(20000):
+        batch = mnist.train.next_batch(50)
+        if i % 100 == 0:
+        train_accuracy = accuracy.eval(feed_dict={
+            x: batch[0], y_: batch[1], keep_prob: 1.0})
+        print('step %d, training accuracy %g' % (i, train_accuracy))
+        train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+
+    print('test accuracy %g' % accuracy.eval(feed_dict={
+        x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+
+    saver = tf.compat.v1.train.Saver()
+    saver.save(sess, "./model/model.ckpt")]]>      
+            </programlisting>
+            Az utolsó két sorban látható, hogyan kell elmenetni a modellt.
+            Látható, hogy a tanítás nagyjából megegyezik a Szoftmax-os példával,
+            annyi különbséggel, hogy ebben a 20 000 lépést hajtunk végre, és 
+            a képekeen is 50-esével haladunk. A hivatalos forrsában nincs különválsztva, de
+            mi szétszedtük 2 fájlra a programot. Az egyik az <filename>mnist_deep_train.py</filename>, ezt 
+            kell futtani elsőnek, onnantól pedig az <filename>mnist_deep_eval.py</filename> lehet használni, mely
+            csak betölti a kiszámolt értékeket. Ezzel végére értünk a Deep MNIST-es feladatnak.
+            <figure>
+                    <title>Deep MNIST tanítás</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/MNIST/deep_mnist_train.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+            <figure>
+                    <title>Deep MNIST futtatása</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/MNIST/deep_minst.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>            
+        </para>
     </section>        
         
     <section>
@@ -56,13 +403,147 @@
         <para>
             Megoldás forrása:                
         </para>
+        <caution>
+                <title>Megjegyzés</title>
+                <para>
+                    A tanítási idő jelentős lehet, ezért a kész súlyok itt elérhatőek: <link xlink:href="https://github.com/fupn26/Cifar-seged/blob/master/cifar_train.tar.gz">https://github.com/fupn26/Cifar-seged/blob/master/cifar_train.tar.gz</link>
+                    Aki pedig szeretné maga megcsinálni a betanítást, annak érdemes a <link xlink:href="https://www.tensorflow.org/install/docker">Docker</link>-es telepítést választania, hogy a GPU-t is tudja használni.
+                    Tensorflow verzióból érdmes a 1.14-est választani, mivel azzal teszteltük mi is, plusz a 2.0 több módosítást hozott a példákban is. A futtatáshoz előfordulhat, hogy 
+                    szükség lesz a <filename>tensorflow_datasets</filename> csomagra.
+                    <programlisting language="bash">
+pip install tensorflow_datasets
+                    </programlisting>
+                    Illetve a <filename>cifar10_bin.py</filename> script futtatásához szükség lehet az <filename>PIL</filename> csomagra.
+                    <programlisting language="bash">
+pip install image
+                    </programlisting>
+                </para>
+        </caution>    
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
-    </section>        
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+        <para>
+            A korábbi feladatokban azzal ismerkedtünk meg, hogyan tudunk megtanítani egy neurális hálót arra, hogy írott számokat ismerjen fel. Most egy kicsit
+            komolyabb dolgoról lesz szó, melyet nem is fejtünk ki olyan részletesen. A CIFAR-10 egy olyan program mely 10 osztályból kiválasztja, hogy melyikbe tartozik a 
+            bemenetként kapott képen látható dolog. Ezek az osztályok a következőek:
+            <orderedlist numeration="upperroman">
+                <listitem>
+                    <para>repülő</para>
+                </listitem>
+                <listitem>
+                    <para>autó</para>
+                </listitem>
+                <listitem>
+                    <para>madár</para>
+                </listitem>
+                <listitem>
+                    <para>macska</para>
+                </listitem>
+                <listitem>
+                    <para>szarvas</para>
+                </listitem>
+                <listitem>
+                    <para>kutya</para>
+                </listitem>
+                <listitem>
+                    <para>béka</para>
+                </listitem>
+                <listitem>
+                    <para>ló</para>
+                </listitem>
+                <listitem>
+                    <para>hajó</para>
+                </listitem>
+                <listitem>
+                    <para>kamion</para>
+                </listitem>
+            </orderedlist>
+            A hivatalos forrás itt található: <link xlink:href="https://github.com/tensorflow/models/tree/master/tutorials/image/cifar10">https://github.com/tensorflow/models/tree/master/tutorials/image/cifar10</link>.
+            A betanításhoz a <filename>cifar10_train.py</filename> scriptet kell futtani, mely akár 24 óráig is tarthat. De nem muszály végig várni a 100 000
+            lépést, a <function>--max-step</function> kapcsolóval meg lehet adni, hogy hány ismétlést szeretnénk. Aki szeretné kipróbálni, annak fentebb 
+            linkelt oldalakat érdemes használnia, de ott találhatóak az általunk betanított modell is. A modellt a <filename>/tmp/cifar10_train/</filename>
+            mappába menti, és a külön beszerzett modellt is ide kell másolni, ahhoz, hogy a <filename>cifar10_eval.py</filename> script megtalálja. 
+        </para>
+        <para>
+            Ha már megvan a betanított modellünk, akkor foglakozhatunk a fontosabb részével a feladatnak. Ez pedig az, hogy módosítjuk a gyári forrásokat a 
+            számunkra fontos funkcionalitás elérése érdekében. Azt szeretnénk elérni, hogy a program képes legyen beolvasni a saját képünket. Mivel 
+            a képek beolvasása bináris formában történik, ezért szükség van egy programra, ami a saját képeinket átalakítja.
+            <programlisting language="python">
+from PIL import Image
+import numpy as np
+import sys
+
+im = Image.open(sys.argv[1])
+im = (np.array(im))
+r = im[:,:,0].flatten()
+g = im[:,:,1].flatten()
+b = im[:,:,2].flatten()
+label = [0]
+out = np.array(list(label) + list(r) + list(g) + list(b),np.uint8)
+out.tofile("./cifar10_data/cifar-10-batches-bin/" + sys.argv[2])
+            </programlisting>
+            Ez lényegében annyit csinál, hogy a bemeneti képet R, G, B komponensekre bontja, melyeket egy dimenziós vektorban tárolunk. A <function>flatten</function>
+            függvény alakítja a tömbből készít egydimenziós vektort. Majd ezzeket listává fűzzük, és bájttá alakítjuk. Végül pedig kiírjuk egy fájlba. Fontos, hogy a 
+            <filename>cifar10_data</filename> és a <filename>cifar10-10-batches-bin</filename> mappák már legyenek létrehozva a futtatás előtt.
+        </para>
+        <para>
+            Ezután pedig a feladat, hogy a felkészítsük a forrásokat arra, hogy képes legyen beolvasni a képünket. Elsőnek azt kell megnézni, hogy melyik ágát 
+            töltöttük le a GitHub-so repónak, ha a legújabbat, akkor érdemes az általam linkelt a <filename>cifar10_input.py</filename> fájlt használni. Ha 
+            vizsont egy régebbit, akkor lehet, hogy elég csak a következő sorokat módosítani:
+            <programlisting language="python">
+def inputs(eval_data, data_dir, batch_size):
+            ...
+    if not eval_data:
+        filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
+                    for i in xrange(1, 6)]
+        num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+    else:
+        filenames = [os.path.join(data_dir, 'input.bin')] #ez módosított sor
+        num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
+            ...
+            </programlisting>
+            Ha a legújabb források vannak meg, akkor a további módosítások szükségesek a <filename>cifar10.py</filename> szriptben.
+            <programlisting language="python">
+def inputs(eval_data):
+                ...
+    images, labels = cifar10_input.inputs(eval_data=eval_data, 
+        data_dir='./cifar10_data/cifar-10-batches-bin', batch_size=FLAGS.batch_size) #módosított sor
+            </programlisting>
+            Emellet pedig át kell a batch nagyságát át kell állítani 1-re. (Ezt mindenkinek meg kell tennie.)
+            <programlisting language="python">
+tf.app.flags.DEFINE_integer('batch_size', 1,
+        """Number of images to process in a batch.""")
+            </programlisting>
+            Utolsó lépésként pedig a <filename>cifar10_eval.py</filename> szkript módosítása következik. A hivatalos példában ez ponotosságot is számol, de erre
+            nem lesz szükségünk. Nekünk annyi kell, hogy a szrikpt adja meg, hogy melyik CIFAR-10 osztálbya sorolta a bemenetet.
+            <programlisting language="python"><![CDATA[
+def eval_once(saver, summary_writer, top_k_op, summary_op, logits):
+                ...
+    #while step < num_iter and not coord.should_stop():
+    predictions = sess.run([top_k_op])
+
+    print(sess.run(logits[0]))
+    classification = sess.run(tf.argmax(logits[0], 0))
+    cifar10classes = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse",
+    "ship", "truck"]
+    print(cifar10classes[classification])
+                ...]]>     
+            </programlisting>
+        </para>
+        <para>
+            Ezután pedig már futtathatjuk a <filename>cifar10_eval.py</filename> szkriptet.
+            <figure>
+                    <title>CIFAR-10 futtatása</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/CIFAR-10/cifar10.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>            
+        </para>
+    </section>
     <section>
-        <title>Android telefonra a TF objektum detektálója</title>
+        <title>Android telefonra a TF objektum detektálója</title>    
         <para>
             Telepítsük fel, próbáljuk ki!
         </para>
@@ -70,10 +551,79 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/tensorflow/tensorflow/tree/r1.14/tensorflow/examples/android">https://github.com/tensorflow/tensorflow/tree/r1.14/tensorflow/examples/android</link>               
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
+        </para>
+        <para>
+            Ebben a feldatban feltelepítjük a telefonuknra a Tensorflow hivatalos Androidos példacsomagját, mely a fenti linkről letölthető. A feladathoz szükség lesz 
+            az Android Studióra. Amikor betöltjük a projektet, akkor hibát fog dobni amiatt mert túl régi a gradée verzió. Ennek orvoslására a 
+            <filename>gradle-wrapper.properties</filename> fájl tartalmát kell módosítani.
+            <programlisting>
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/
+                gradle-4.10.1-all.zip #ezt kell módosítani a hiba szövegében szereplő javasolt verzióra                  
+            </programlisting>
+            Egy másik módosítás el kell még végeznünk a <filename>build.gradle</filename> fájlban.
+            <programlisting>
+def nativeBuildSystem = 'none'
+            </programlisting>
+            Ezután pedig a telefonunkra tudjuk telepíteni az 4 programból álló csomagot, melyből mi most a TF detect-et próbáljuk ki.
+            <figure>
+                    <title>Autó</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/TF_Detect/car.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+            <figure>
+                    <title>Számítógépes egér</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/TF_Detect/mouse.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+            <figure>
+                    <title>Motor</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/TF_Detect/motor.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+            <figure>
+                    <title>Laptop</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/TF_Detect/notebook.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+            Ezekből a példákból azt hihetnénk, hogy a program tévedhetetlen. Most jöjjön néhány olyan példa, amikor nem működik megfelelően.
+            <figure>
+                    <title>Sütő</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/TF_Detect/oven.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+            <figure>
+                    <title>Toilet</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/TF_Detect/toilet.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>
+            Az utolsó két kép kiválóan megmutatja, hogy a program még nem tökéletes, de a egészen nagy valószínűséggel jó
+            eredményt ad.
         </para>
     </section>        
 
