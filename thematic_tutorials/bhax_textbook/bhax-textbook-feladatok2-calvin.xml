@@ -18,7 +18,7 @@
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST">https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST</link>          
         </para>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -164,7 +164,7 @@ def readimg():
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST">https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST</link>               
         </para>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -401,7 +401,7 @@ with tf.Session() as sess:
             Megoldás videó:
         </para>
         <para>
-            Megoldás forrása:                
+            Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/CIFAR-10">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/CIFAR-10</link>            
         </para>
         <caution>
                 <title>Megjegyzés</title>
@@ -548,9 +548,6 @@ def eval_once(saver, summary_writer, top_k_op, summary_op, logits):
             Telepítsük fel, próbáljuk ki!
         </para>
         <para>
-            Megoldás videó:
-        </para>
-        <para>
             Megoldás forrása: <link xlink:href="https://github.com/tensorflow/tensorflow/tree/r1.14/tensorflow/examples/android">https://github.com/tensorflow/tensorflow/tree/r1.14/tensorflow/examples/android</link>               
         </para>
         <para>
@@ -657,15 +654,197 @@ def nativeBuildSystem = 'none'
         <para>
             <link xlink:href="https://bhaxor.blog.hu/2018/10/28/minecraft_steve_szemuvege">https://bhaxor.blog.hu/2018/10/28/minecraft_steve_szemuvege</link>
         </para>
-        <para>
-            Megoldás videó:
-        </para>
-        <para>
-            Megoldás forrása:                
-        </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>
+                A Minecraft MALMO jelenleg Linux-on csak a Python 3.6-ot támogatja. Abban az esetben, ha ezt nem tudod feltelepíteni jelenlegi rendszeredre, akkor
+                létrehozhatsz egy virtuális környezetet Python 3.6 interpreterrel. Ehhez telepíteni kell a miniconda-t, majd az alábbi paranccsal létrehozzuk a környezetet:
+                <programlisting>
+                    conda create --name malmo -c conda-forge python=3.6.8 pip  
+                </programlisting>
+                Aktiválni pedig így kell:
+                <programlisting>
+                    conda activate malmo
+                </programlisting>
+            </para>
+        </caution>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
-    </section>        
+        <para>
+            A Minecraft MALMO egy mesterséges intelligencia kutató projekt, melyet a Microsoft hozott létre. Segítségével betekintést nyerhetünk abba, hogyan 
+            készítsünk egy Ai-t, ami helyettünk játszik. Mi most nem alkottjuk meg a Skynetet csak azt nézzük meg, hogy alapvetően milyen 2 lehetőségünk van
+            mesterséges intelligenciát létrehozni. Ehhez a Malmo Python-os példáiból a <filename>tutorial_5.py</filename>-t és a <filename>depth_map_runner.py</filename>-t
+            fogjuk kipróbálni. 
+        </para>
+        <para>
+            Kezdjük az 5-ös példával. Ebben azt a megoldást láthatjuk, hogy információt kérünk le a jelenleg előttünk lévő kockákról, és annak függvényében 
+            utasítást adunk az ágensünknek a cselekvésre. Elsőnek meg kell adnunk az XML-be, hogy hogyan szertnénk információt kérni a világról.
+            <programlisting><![CDATA[
+<ObservationFromGrid>
+    <Grid name="floor3x3">
+        <min x="-1" y="-1" z="-1"/>
+        <max x="1" y="-1" z="1"/>
+    </Grid>
+</ObservationFromGrid>]]>
+            </programlisting>
+            Ahogy látható meghatározzuk, hogy az előttünk lévő 3x3-as területet adja vissza a <varname>floor3x3</varname>. Majd jöhet az ágens beprogramozása. 
+            Nézzük a forrást:
+            <programlisting language="python"><![CDATA[
+agent_host.sendCommand("hotbar.9 1")
+agent_host.sendCommand("hotbar.9 0")
+
+agent_host.sendCommand("pitch 0.2")
+time.sleep(1)
+agent_host.sendCommand("pitch 0")
+agent_host.sendCommand("move 1")
+agent_host.sendCommand("attack 1")
+
+jumping = False
+# Loop until mission ends:
+while world_state.is_mission_running:
+    print(".", end="")
+    time.sleep(0.1)
+    world_state = agent_host.getWorldState()
+    for error in world_state.errors:
+        print("Error:",error.text)
+    if world_state.number_of_observations_since_last_state > 0: # Have any observations come in?
+        msg = world_state.observations[-1].text                 # Yes, so get the text
+        observations = json.loads(msg)                          # and parse the JSON
+        grid = observations.get(u'floor3x3', 0)                 # and get the grid we asked for
+        # ADD SOME CODE HERE TO SAVE YOUR AGENT
+        if grid[3] == u'lava':
+            agent_host.sendCommand("jump 1")
+            jumping = True
+        elif grid[4] != u'lava' and jumping == True:
+            agent_host.sendCommand("jump 0")
+            jumping = False ]]>               
+            </programlisting>
+            Az első lépésben az láthatjuk, hogy az ágenst utasítjuk, hogy az eszköztáráből vegye elő a 9-es elemet, ami jelen esetben egy csákány lesz. 
+            Majd a <function>pitch</function> segítségével megadjuk, hogy kezdjen el lefele nézni, és amikor 0-át adunk paramétreként, akkor abba hagyja. 
+            Ezután elundulunk előre teljes sebességgel, és közben minden ami az ágens elé kerül, azt szétütünk. Ezután jön az érdekes rész, amikor 
+            eljutunk a lávához. Alap esetben simán belemenne és meghal. Viszont a kódrészlet végén látható <function>if</function> ágban megvizsgáljuk, hogy 
+            érkezett-e frissítés az előttünk lévő tárgyakról. Ha igen, akkor megvizsgáljuk, hogy az előttünk lévő 3x3-as területet. Mivel az ágens feljebb úgy lett
+            beállítva, hogy nyugat fele nézzen, emiatt mi a 3x3-as négyzet bal oldalához érünk elsőnek.
+            <figure>
+                <title>3x3-as mező</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Malmo/malmo_5.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            A blokkok indexelése balról jobbra halad 0-tól. A nyíl mutatja, hogy honnan érkezik az ágensünk. Tehát, lekérjük ezt a 3x3-as területet, és megviszgáljuk, hogy
+            a harmadik eleme láva-e. Ha igen, akkor ugrunk, viszont nem akarunk folyamatosan ugrálni, tehát, amint már nincs láva előttünk az ugrálás értékét 0-ra állítjuk.
+            <figure>
+                <title>Program futás közben</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/Source/Malmo/malmo_5_2.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+        </para>
+        <para>
+            Azért érezhetően van egy kis csalás a dologban, hiszen le tudjuk kérdezni, hogy mi van előtte. De a másik megoldás már közelebb áll egy mesterséges
+            intelligenciához. A <filename>depth_map_runner.py</filename> az ágens a képkockákat vizsgálja, és ez alapján dönti el, hogy merre menjen.
+            <programlisting><![CDATA[
+<AgentHandlers>
+        <VideoProducer want_depth="true">
+            <Width>''' + str(video_width) + '''</Width>
+            <Height>''' + str(video_height) + '''</Height>
+        </VideoProducer>
+        <ContinuousMovementCommands turnSpeedDegs="720" />
+        <AgentQuitFromTouchingBlockType>
+            <Block type="redstone_block"/>
+        </AgentQuitFromTouchingBlockType>
+</AgentHandlers>]]>                
+            </programlisting>
+            Elsőnek megint az XML fájlt kell módosítani. A <function>VideoProducer</function> visszaadja az éppen aktuális képkockát, ami az ágens előtt van.
+            A képkockák feldogozását pedig a <function>processFrame</function> metódus hajtja végre.
+            <programlisting language="python"><![CDATA[
+def processFrame( frame ):
+'''Track through the middle line of the depth data and find the max discontinuities'''
+global current_yaw_delta_from_depth
+
+y = int(old_div(video_height, 2))
+rowstart = y * video_width
+
+v = 0
+v_max = 0
+v_max_pos = 0
+v_min = 0
+v_min_pos = 0
+
+dv = 0
+dv_max = 0
+dv_max_pos = 0
+dv_max_sign = 0
+
+d2v = 0
+d2v_max = 0
+d2v_max_pos = 0
+d2v_max_sign = 0
+
+for x in range(0, video_width):
+    nv = frame[(rowstart + x) * 4 + 3]
+    ndv = nv - v
+    nd2v = ndv - dv
+
+    if nv > v_max or x == 0:
+        v_max = nv
+        v_max_pos = x
+        
+    if nv < v_min or x == 0:
+        v_min = nv
+        v_min_pos = x
+
+    if abs(ndv) > dv_max or x == 1:
+        dv_max = abs(ndv)
+        dv_max_pos = x
+        dv_max_sign = ndv > 0
+        
+    if abs(nd2v) > d2v_max or x == 2:
+        d2v_max = abs(nd2v)
+        d2v_max_pos = x
+        d2v_max_sign = nd2v > 0
+        
+    d2v = nd2v
+    dv = ndv
+    v = nv
+
+logger.info("d2v, dv, v: " + str(d2v) + ", " + str(dv) + ", " + str(v))
+
+if dv_max_sign:
+    edge = old_div(video_width, 4)
+else:
+    edge = 3 * video_width / 4
+
+# Now, if there is something noteworthy in d2v, steer according to the above comment:
+if d2v_max > 8:
+    current_yaw_delta_from_depth = (old_div(float(d2v_max_pos - edge), video_width))
+else:
+    # Nothing obvious to aim for, so aim for the farthest point:
+    if v_max < 255:
+        current_yaw_delta_from_depth = (old_div(float(v_max_pos), video_width)) - 0.5
+    else:
+        # No real data to be had in d2v or v, so just go by the direction we were already travelling in:
+        if current_yaw_delta_from_depth < 0:
+            current_yaw_delta_from_depth = -1
+        else:
+            current_yaw_delta_from_depth = 1]]>
+            </programlisting>
+            A csalás a dologban az, hogy a mélységi információkat is lekérdezünk a képkocka mellett. Lényegében a mélységet vizsgájuk, annak 
+            grádiensében a legnagyobb szakadást. Az ágens ez alapján próbál kijutni a labirintusból.
+            <figure>
+                    <title>Szabadulás a labirintusból</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="../../attention_raising/Source/Malmo/depth_run.png" format="PNG"/>
+                            </imageobject>
+                        </mediaobject>
+            </figure>    
+        </para>
+    </section>       
 
 </chapter>                
