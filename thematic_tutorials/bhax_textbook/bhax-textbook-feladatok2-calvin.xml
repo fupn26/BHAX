@@ -166,6 +166,10 @@ def readimg():
         <para>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST">https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST</link>               
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>Tutorált: Stiegelmayer Máté</para>
+        </caution>
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
@@ -418,6 +422,9 @@ pip install tensorflow_datasets
 pip install image
                     </programlisting>
                 </para>
+                <para>
+                    Tutorált: Mezei Botond
+                </para>
         </caution>    
         <para>
            <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
@@ -666,6 +673,9 @@ def nativeBuildSystem = 'none'
                 <programlisting>
                     conda activate malmo
                 </programlisting>
+            </para>
+            <para>
+                Tutorált: Szabó Benedek
             </para>
         </caution>
         <para>

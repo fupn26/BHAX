@@ -382,6 +382,14 @@ std::vector<std::pair<std::string, int>> sort_map ( std::map <std::string, int> 
         <para>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/PrologFamily">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/PrologFamily</link>               
         </para>
+        <caution>
+            <title>
+                Megjegyzés
+            </title>
+            <para>
+                Tutorált: Racs Tamás
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>

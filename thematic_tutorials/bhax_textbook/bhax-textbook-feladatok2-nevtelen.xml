@@ -21,6 +21,12 @@
         <para>
             Megoldás forrása:                
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para>
+                Tutorált: Pallagi Ádám
+            </para>
+        </caution>
         <para>
             <emphasis role="strong">JavaFx beizzítása NetBeans-ben</emphasis>
         </para>
