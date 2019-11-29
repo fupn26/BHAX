@@ -403,6 +403,17 @@ with tf.Session() as sess:
         </para>
         <para>
             Megoldás videó:
+            <orderedlist numeration="upperroman">
+                <listitem>
+                    <para><link xlink:href="https://youtu.be/x6X6qReq4K0">https://youtu.be/x6X6qReq4K0</link></para>
+                </listitem>
+                <listitem>
+                    <para><link xlink:href="https://youtu.be/oe4lR9URJDs">https://youtu.be/oe4lR9URJDs</link></para>
+                </listitem>
+                <listitem>
+                    <para><link xlink:href="https://youtu.be/u4cjNyzvkEc">https://youtu.be/u4cjNyzvkEc</link></para>
+                </listitem>
+            </orderedlist>
         </para>
         <para>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/CIFAR-10">https://github.com/fupn26/BHAX/tree/master/attention_raising/Source/CIFAR-10</link>            
@@ -667,11 +678,11 @@ def nativeBuildSystem = 'none'
                 A Minecraft MALMO jelenleg Linux-on csak a Python 3.6-ot támogatja. Abban az esetben, ha ezt nem tudod feltelepíteni jelenlegi rendszeredre, akkor
                 létrehozhatsz egy virtuális környezetet Python 3.6 interpreterrel. Ehhez telepíteni kell a miniconda-t, majd az alábbi paranccsal létrehozzuk a környezetet:
                 <programlisting>
-                    conda create --name malmo -c conda-forge python=3.6.8 pip  
+conda create --name malmo -c conda-forge python=3.6.8 pip  
                 </programlisting>
                 Aktiválni pedig így kell:
                 <programlisting>
-                    conda activate malmo
+conda activate malmo
                 </programlisting>
             </para>
             <para>
@@ -740,7 +751,7 @@ while world_state.is_mission_running:
                 <title>3x3-as mező</title>
                     <mediaobject>
                         <imageobject>
-                            <imagedata fileref="../../attention_raising/Source/Malmo/malmo_5.png" format="PNG"/>
+                            <imagedata fileref="../../attention_raising/Source/Malmo/malmo_5.png" format="PNG" scale="150"/>
                         </imageobject>
                     </mediaobject>
             </figure>
@@ -750,7 +761,7 @@ while world_state.is_mission_running:
                 <title>Program futás közben</title>
                     <mediaobject>
                         <imageobject>
-                            <imagedata fileref="../../attention_raising/Source/Malmo/malmo_5_2.png" format="PNG"/>
+                            <imagedata fileref="../../attention_raising/Source/Malmo/malmo_5_2.png" format="PNG" scale="300"/>
                         </imageobject>
                     </mediaobject>
             </figure>
@@ -850,7 +861,7 @@ else:
                     <title>Szabadulás a labirintusból</title>
                         <mediaobject>
                             <imageobject>
-                                <imagedata fileref="../../attention_raising/Source/Malmo/depth_run.png" format="PNG"/>
+                                <imagedata fileref="../../attention_raising/Source/Malmo/depth_run.png" format="PNG" scale="300"/>
                             </imageobject>
                         </mediaobject>
             </figure>    
