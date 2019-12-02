@@ -1,4 +1,4 @@
-<!DOCTYPE chapter SYSTEM "docbook.dtd">
+<!--<!DOCTYPE chapter SYSTEM "docbook.dtd">-->
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
     <info>
         <title>Helló, Calvin!</title>
@@ -20,6 +20,10 @@
         <para>
             Megoldás forrása: <link xlink:href="https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST">https://github.com/fupn26/BHAX/tree/master/attention_raising/MNIST</link>          
         </para>
+        <caution>
+            <title>Megjegyzés</title>
+            <para><!--Tutorált: Bene Imre--></para>
+        </caution>
         <para>
             <emphasis role="strong">Tanulságok, tapasztalatok, magyarázat...</emphasis>
         </para>
@@ -42,17 +46,28 @@ b = tf.Variable(tf.zeros([10]))
 y = tf.matmul(x, W) + b           
             </programlisting>
             A <varname>x</varname> változó nem egy konkrét értéket fog tartalmazni, csak placeholder-ként 
-            funkcionál. Ez egy 2 dimenziós tensor lesz, melybe akárhány MNIST képet, melyeket 784 dimenziós
-            vektorokká alakítunk, szeretnénk tárolni. A <varname>W</varname> fogja tartalmazni a 
+            funkcionál. Ez egy 2 dimenziós tensor lesz, melyben az MNIST képeit fogjuk tárolni 784 dimenziós
+            vektorok formájában.
+            A <varname>W</varname> fogja tartalmazni a 
             súlyokat. Ennek típusa <classname>Variable</classname>, mely egy módosítható tensort 
             jelent. Ugyanilyen típusú lesz a <varname>b</varname>, mely az eltolási 
             értékeket fogja tartalmazni. De mind a kettő esetén igaz, hogy inicializálás 
             során nullákkal töltjük fel. Mivel a <varname>W</varname>-t szeretnénk balról 
             szorozni <varname>x</varname>-el, emiatt ez egy 784x10-es mátrix lesz. A szorzás 
             erdeménye pedig egy 10 dimenziójú vektor lesz. Ehhez pedig hozzá tudjuk majd adni a
-            <varname>b</varname>-t. Ezt az értéket adjuk át <varname>y</varname>-nak. Ahhoz, hogy 
-            tesztelni tudjuk a modellt, szükségünk van egy indikátorra. Az indikátor azt szokta muatatni, 
-            hogy a modell rossz, szokták veszteségnek is nevezni. A cél az, hogy ezt minimalizáljuk. 
+            <varname>b</varname>-t. Ezt az értéket adjuk át <varname>y</varname>-nak.
+            <figure>
+                <title>MNIST ábra</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="../../attention_raising/MNIST/mnist_abra.png" format="PNG"/>
+                        </imageobject>
+                    </mediaobject>
+            </figure>
+            Ahhoz, hogy 
+            tesztelni tudjuk a modellt, szükségünk van egy indikátorra. Az indikátor azt jelzi, hogy
+            a modell mennyire "rossz", azaz milyen veszteséggel dolgozik.
+            A cél az, hogy ezt minimalizáljuk. 
             Egy elterjed függvény a veszteség kiszámítsásra a <function>cross-entropy</function>.
             <figure>
                 <title>Cross-entropy függvény</title>
@@ -181,7 +196,7 @@ def readimg():
                 <title>Deep MNIST ábra</title>
                     <mediaobject>
                         <imageobject>
-                            <imagedata fileref="../../attention_raising/MNIST/deep_minst_abra.png" format="PNG"/>
+                            <imagedata fileref="../../attention_raising/MNIST/deep_minst_abra.png" format="PNG" scale="150"/>
                         </imageobject>
                     </mediaobject>
             </figure>          
