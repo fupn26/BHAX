@@ -57,8 +57,7 @@
             egy speciális fajtája. Az aggregáció tartalmazást jelöl. Az UML-ből generált kódban meg sem jelenik, emiatt sokan nem is javasolják használatát.
             Jele az ábrában az üres rombusz. A kompozíciót teli rombusszal jelöljük, lényegében erős aggregációnak is nevezhetnénk. Fontos megkötések a 
             kompozíció  esetén, hogy a tartalmazott objektum nem lehet megosztva több objektum között. Emellett a tartalmazó és a tartalmazott objektum együtt
-            jön létre, ennek következtében a tartalmazott objektumért a tartalmazó felel. A tartalmazó objektum destruktorábnak kell tartalmaznia a tartalmazott 
-            objektum felszabadításához szükséges kódot. Kompozícióra példa a mi feladatunkban a <function>gyoker</function> attribútum. 
+            jön létre, ennek következtében a tartalmazott objektumért a tartalmazó felel. Kompozícióra példa a mi feladatunkban a <function>gyoker</function> attribútum. 
         </para>
     </section>        
 
